@@ -6,6 +6,8 @@ const API_BASE_URL = "https://localhost:7076/api/TodoItems";
 function App() {
   const [todos, setTodos] = useState([]);
   const [newTodoName, setNewTodoName] = useState("");
+  const [newPriority, setNewPriority] = useState("Medium");
+  const [newDueDate, setNewDueDate] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -43,6 +45,8 @@ function App() {
         body: JSON.stringify({
           name: newTodoName,
           isComplete: false,
+          priority: newPriority,
+          dueDate: newDueDate || null,
         }),
       });
 
@@ -150,6 +154,21 @@ function App() {
               onChange={(e) => setNewTodoName(e.target.value)}
               placeholder="Add a new task"
             />
+            <select
+              className="add-input"
+              value={newPriority}
+              onChange={(e) => setNewPriority(e.target.value)}
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+            <input
+              className="add-input"
+              type="date"
+              value={newDueDate}
+              onChange={(e) => setNewDueDate(e.target.value)}
+            />
             <button className="add-button" type="submit"> + Add Task </button>
           </form>
           {error && <div className="error-text">{error}</div>}
@@ -160,6 +179,8 @@ function App() {
                 <tr>
                   <th className="checkbox-cell"></th>
                   <th>Item</th>
+                  <th>Priority</th>
+                  <th>Due Date</th>
                   <th>Status</th>
                   <th className="actions-cell">Actions</th>
                 </tr>
@@ -184,17 +205,21 @@ function App() {
                         />
                       </td>
                       <td>
-                        <span
-                          className={
-                            "item-name" + (todo.isComplete ? "completed" : "")
-                          }>{todo.name}
+                        <span className={ "item-name" + (todo.isComplete ? "completed" : "") }>
+                          {todo.name}
                         </span>
                       </td>
                       <td>
-                        <span
-                          className={
-                            "status-pill " + (todo.isComplete ? "done" : "working")
-                          }>{todo.isComplete ? "Done" : "Working on it"}
+                        <span className={`status-pill priority-${(todo.priority || "Medium").toLowerCase()}`}>
+                          {todo.priority || "Medium"}
+                        </span>
+                      </td>
+                      <td>
+                        {todo.dueDate ? new Date(todo.dueDate).toLocaleDateString() : "—"}
+                      </td>
+                      <td>
+                        <span className={"status-pill " + (todo.isComplete ? "done" : "working")}>
+                          {todo.isComplete ? "Done" : "Working on it"}
                         </span>
                       </td>
                       <td className="actions-cell">

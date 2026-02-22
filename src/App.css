@@ -256,6 +256,22 @@ body {
   color: var(--text-muted);
 }
 
+.status-pill.priority-low {
+  background-color: #e0f2fe;
+  color: #0267c1;
+}
+
+.status-pill.priority-medium {
+  background-color: #fff7e0;
+  color: #b54708;
+}
+
+.status-pill.priority-high {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/*------------------------ SCREEN SIZE --------------------- */
 @media (max-width: 1024px) {
   .app-container {
     max-width: 100%;
