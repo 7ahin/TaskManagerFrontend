@@ -1,0 +1,1050 @@
+:root {
+  --bg: #0f172a;
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --accent: #ef4444;
+  --danger: #ef4444;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --card-bg: rgba(30, 41, 59, 0.7);
+  --border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: var(--bg);
+  /* Global Blue-Red Gradient Background */
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 30%, #7f1d1d 80%, #450a0a 100%);
+  background-size: 200% 200%;
+  animation: gradientFlow 15s ease infinite;
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App Header - Glassmorphism */
+.app-header {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: all 0.3s ease;
+}
+
+/* Landing View Styles */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  padding: 4rem 2rem 2rem 2rem;
+  /* Background handled by body now */
+  background: transparent;
+  color: #ffffff;
+  position: relative; /* Changed from absolute to flow naturally */
+  box-sizing: border-box;
+}
+
+/* Ensure body background is consistent */
+body:has(.landing-container) {
+  background-color: #0f172a;
+  overflow-x: hidden;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.landing-hero {
+  max-width: 1000px;
+  animation: fadeIn 0.8s ease-out;
+  margin-bottom: 4rem;
+  z-index: 10;
+  position: relative;
+}
+
+/* Add a subtle glow behind the hero text */
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.landing-title {
+  font-size: 5.5rem; /* Slightly larger */
+  line-height: 1.05;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  letter-spacing: -0.04em;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.1); /* Soft glow on text */
+}
+
+.landing-highlight {
+  /* Vibrant Gradient Text */
+  background: linear-gradient(to right, #60a5fa, #f87171);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  position: relative;
+  /* Fix for clipped descenders (like 'g' or 'y') */
+  padding-bottom: 0.1em;
+  line-height: 1.2;
+}
+
+.landing-subtitle {
+  font-size: 1.35rem;
+  color: #94a3b8; /* Slate-400 for softer contrast */
+  margin-bottom: 3rem;
+  line-height: 1.6;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Improved Header Scroll Effect --- */
+.app-header.landing-header {
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: 1px solid transparent;
+  height: 80px;
+  padding-top: 1rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Smooth transition */
+}
+
+.app-header.landing-header.scrolled {
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  backdrop-filter: blur(20px); /* Heavy blur for glass effect */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Subtle border */
+  height: 70px; /* Slightly compact on scroll */
+  padding-top: 0;
+}
+
+.app-header.landing-header.scrolled .logo-nav-img {
+  height: 40px; /* Shrink logo back to normal size */
+}
+
+/* Adjust nav tabs on scroll */
+.app-header.landing-header.scrolled .app-nav-tab {
+  font-size: 0.95rem;
+  padding: 0.4rem 1rem;
+  color: #e2e8f0;
+}
+
+.app-header.landing-header.scrolled .app-nav-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px; /* Pill shape on hover when scrolled */
+}
+
+/* --- End Header Scroll Effect --- */
+
+.landing-mockup-section {
+  width: 100%;
+  max-width: 1200px;
+  perspective: 1000px;
+  margin-bottom: 5rem;
+  z-index: 10;
+}
+
+.landing-mockup-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transform: rotateX(10deg) scale(0.95);
+  transition: transform 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-mockup-card:hover {
+  transform: rotateX(0deg) scale(1);
+}
+
+/* Abstract UI Elements for Mockup */
+.mockup-header {
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  width: 30%;
+}
+
+.mockup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.mockup-col {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  height: 300px;
+  padding: 1rem;
+}
+
+.mockup-item {
+  height: 60px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  z-index: 10;
+}
+
+.feature-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: left;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3b82f6, #ef4444);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #fff;
+}
+
+.feature-desc {
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+/* --- End New Sections --- */
+
+.landing-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.landing-btn-primary {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.3);
+}
+
+.landing-btn-secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #374151; /* Gray-700 */
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.landing-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+/* Header Adjustments for Landing */
+.app-header.landing-header {
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: none;
+  height: 80px; /* Taller header for landing */
+  padding-top: 1rem;
+}
+
+/* --- Kanban Board Styles --- */
+.kanban-board {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  height: calc(100vh - 280px);
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  animation: fadeIn 0.5s ease;
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 300px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.kanban-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  flex: 1;
+}
+
+.count-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.kanban-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.empty-kanban {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-top: 2rem;
+  font-style: italic;
+}
+
+.kanban-card {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.kanban-card.completed {
+  opacity: 0.7;
+  background: #0f172a;
+}
+
+.kanban-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.kanban-card-title {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  color: #f1f5f9;
+  line-height: 1.4;
+}
+
+.completed .kanban-card-title {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.kanban-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.due-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #94a3b8;
+}
+
+.mark-done-btn, .mark-undone-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.mark-done-btn {
+  color: #10b981;
+}
+
+.mark-done-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.mark-undone-btn {
+  color: #f59e0b;
+}
+
+.mark-undone-btn:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.card-action-btn.delete {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.kanban-card:hover .card-action-btn.delete {
+  opacity: 1;
+}
+
+.priority-tag {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.priority-tag.low { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.priority-tag.medium { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.priority-tag.high { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.status-dot.working { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+.status-dot.done { background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+.board-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.view-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.view-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 0.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.view-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.view-btn:hover:not(.active) {
+  color: #cbd5e1;
+}
+
+.icon-sm { width: 16px; height: 16px; }
+.icon-xs { width: 14px; height: 14px; }
+.app-header.landing-header .logo-nav-img {
+  height: 120px; /* Significantly bigger logo on landing (was 64px) */
+  width: auto;
+  transition: height 0.3s ease;
+  /* Light/White glow as requested */
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+}
+
+/* --- Navigation Styles on Landing Page --- */
+.app-header.landing-header .app-nav-tabs {
+  background-color: transparent;
+  padding: 0;
+}
+
+.app-header.landing-header .app-nav-tab {
+  color: #9ca3af; /* Gray-400 */
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.5rem 1.25rem;
+}
+
+.app-header.landing-header .app-nav-tab:hover {
+  color: #ffffff;
+}
+
+.app-header.landing-header .app-nav-tab.active {
+  background-color: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  font-weight: 700;
+}
+
+/* --- CTA Section --- */
+.landing-cta-section {
+  text-align: center;
+  padding: 6rem 2rem;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.3));
+  width: 100%;
+  animation: fadeInUp 1s ease-out 0.8s backwards;
+}
+
+.cta-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.cta-subtitle {
+  font-size: 1.25rem;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Footer Styles --- */
+.landing-footer {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 0; /* Adjusted from 4rem since CTA is above */
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.footer-link.icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  transition: all 0.2s ease;
+}
+
+.footer-link.icon-link:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-hero {
+  animation: fadeInUp 1s ease-out;
+}
+
+.landing-mockup-section {
+  animation: fadeInUp 1s ease-out 0.3s backwards;
+}
+
+.landing-features-grid {
+  animation: fadeInUp 1s ease-out 0.6s backwards;
+}
+
+/* --- Social Proof Styles --- */
+.landing-social-proof {
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  z-index: 10;
+}
+
+.social-proof-text {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.social-proof-logos {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  opacity: 0.7;
+}
+
+.social-logo {
+  height: 24px;
+  filter: grayscale(100%) brightness(200%); /* Make logos white/gray */
+  transition: filter 0.3s ease;
+}
+
+.social-logo:hover {
+  filter: grayscale(0%) brightness(100%); /* Reveal color on hover */
+}
+/* Header Icons on Landing Page */
+.app-header.landing-header .icon-button {
+  color: #ffffff;
+}
+
+.app-header.landing-header .icon-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* General Header Tweaks */
+.app-header-right {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.logo-nav-img {
+  height: 40px; /* Bigger logo globally */
+  width: auto;
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-text {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.app-nav-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  background-color: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 12px;
+}
+
+.app-nav-tab {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.9rem;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.app-nav-tab:hover {
+  color: #111827;
+}
+
+.app-nav-tab.active {
+  background-color: #ffffff;
+  color: #1d4ed8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.icon-button {
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button:hover {
+  background-color: #f1f5f9;
+  color: #111827;
+}
+
+.icon-svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-container {
+  position: relative;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.dashboard-grid-wide {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dashboard-card {
+  animation: fadeInUp 0.35s ease-out;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.dashboard-card-label {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.dashboard-card-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.get-started-button {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(15, 23, 42, 0.2);
+  color: #f9fafb;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.get-started-button:hover {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+}
+
+.logo-big-logo {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, outline-color 0.2s ease;
+  height: 130px;        
+  width: auto;
+  display: block;
+}
+
+logo-big-logo:hover {
+  transform: scale(1.04);
+  outline-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
+}
+
+.priority-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.priority-bar-row {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+}
+
+.priority-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.priority-bar-fill.high {
+  background-color: #fecaca;
+}
+
+.priority-bar-fill.medium {
+  background-color: #facc15;
+}
+
+/* ========================================================================== */
+/* MISSING CONTENT GAP (approx 200 lines)                                     */
+/* ========================================================================== */
+
+.board-card {
+  width: 100%;             
+  max-width: 1400px;       
+  margin: 0 auto;         
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem 1.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.board-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.board-subtitle {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.search-input {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.85rem;
+  width: 220px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+}
+
+/* Add Row Layout */
+.add-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ========================================================================== */
+/* MISSING CONTENT GAP (approx 2000 lines)                                    */
+/* ========================================================================== */
+
+@keyframes floatSoft {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* --- Interactive Cute Animations (Added by Assistant) --- */
+
+/* Pop In with a slight bounce */
+@keyframes popIn {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  60% { 
+    opacity: 1; 
+    transform: scale(1.03); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+/* Slide In from Left */
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Slide In from Right */
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Animation Utilities */
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-pop-in {
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0; /* Start hidden */
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0; /* Start hidden */
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0; /* Start hidden */
+}
+
+/* Stagger Delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Interactive Hover Effects */
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}

@@ -1,5 +1,18 @@
-import "./App.css";
 import { useEffect, useMemo, useState } from "react";
+import "./App.css";
+import toast from "react-hot-toast";
+import BoardView from "./components/BoardView.jsx";
+import DashboardView from "./components/DashboardView.jsx";
+import CalendarView from "./components/CalendarView.jsx";
+import LandingView from "./components/LandingView.jsx";
+import TimelineView from "./components/TimelineView.jsx";
+import GoalsView from "./components/GoalsView.jsx";
+import logoImg from "./assets/logo.png";
+import {
+  Cog6ToothIcon,
+  GlobeAltIcon,
+  UserCircleIcon,
+} from "@heroicons/react/24/outline";
 
 const API_BASE_URL = "https://localhost:7076/api/TodoItems";
 
@@ -11,6 +24,10 @@ function App() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [activeView, setActiveView] = useState("landing");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   async function loadTodos() {
     try {
@@ -56,26 +73,21 @@ function App() {
 
       setNewTodoName("");
       await loadTodos();
+      toast.success("Task added");
     } catch (err) {
       setError(err.message || "Unknown error");
     }
   }
 
-  async function handleToggleComplete(todo) {
+  async function handleUpdateTodo(updatedTodo) {
     try {
       setError("");
-      const updated = {
-        id: todo.id,
-        name: todo.name,
-        isComplete: !todo.isComplete,
-      };
-
-      const response = await fetch(`${API_BASE_URL}/${todo.id}`, {
+      const response = await fetch(`${API_BASE_URL}/${updatedTodo.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updated),
+        body: JSON.stringify(updatedTodo),
       });
 
       if (!response.ok) {
@@ -83,9 +95,18 @@ function App() {
       }
 
       await loadTodos();
+      toast.success("Task updated");
     } catch (err) {
       setError(err.message || "Unknown error");
     }
+  }
+
+  async function handleToggleComplete(todo) {
+    const updated = {
+      ...todo,
+      isComplete: !todo.isComplete,
+    };
+    await handleUpdateTodo(updated);
   }
 
   async function handleDelete(todo) {
@@ -102,14 +123,13 @@ function App() {
       await loadTodos();
     } catch (err) {
       setError(err.message || "Unknown error");
+      toast.error("Failed to delete");
     }
   }
 
   const filteredTodos = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) {
-      return todos;
-    }
+    if (!term) return todos;
     return todos.filter((t) => t.name?.toLowerCase().includes(term));
   }, [todos, search]);
 
@@ -117,131 +137,176 @@ function App() {
     loadTodos();
   }, []);
 
+  // Handle scroll effect for header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="app-root">
-      <header className="app-header">
-        <div>
-          <div className="app-header-title">Task Board</div>
-          <div className="app-header-subtitle">Simple high-level overview of your tasks</div>                  
+      <header className={`app-header landing-header ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="app-header-left">
+          <button 
+            className="logo-button" 
+            onClick={() => setActiveView('landing')}
+            style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
+          >
+            <div className="logo-group">
+              <img src={logoImg} alt="Task Senpai logo" className="logo-nav-img" />
+            </div>
+          </button>
         </div>
+
+        <nav className="app-header-center">
+          <div className="app-nav-tabs">
+            <button
+              className={
+                "app-nav-tab" + (activeView == "dashboard" ? " active" : "")
+              }
+              onClick={() => setActiveView("dashboard")}
+            >
+              Dashboard
+            </button>
+            <button
+              className={"app-nav-tab" + (activeView == "board" ? " active" : "")}
+              onClick={() => setActiveView("board")}
+            >
+              Board
+            </button>
+            <button
+              className={"app-nav-tab" + (activeView == "timeline" ? " active" : "")}
+              onClick={() => setActiveView("timeline")}
+            >
+              Timeline
+            </button>
+            <button
+              className={"app-nav-tab" + (activeView == "calendar" ? " active" : "")}
+              onClick={() => setActiveView("calendar")}
+            >
+              Calendar
+            </button>
+            <button
+              className={"app-nav-tab" + (activeView == "goals" ? " active" : "")}
+              onClick={() => setActiveView("goals")}
+            >
+              Goals
+            </button>
+          </div>
+        </nav>
+
         <div className="app-header-right">
-          <span>My Workspace</span>
-          <div className="avatar-circle">U</div>
+          <button className="icon-button" title="Language">
+            <GlobeAltIcon className="icon-svg" />
+          </button>
+          <button className="icon-button" title="Settings">
+            <Cog6ToothIcon className="icon-svg" />
+          </button>
+          <div className="profile-container">
+            <button
+              className="icon-button"
+              onClick={() => setShowProfilePopup((v) => !v)}
+              title="Profile"
+            >
+              <UserCircleIcon className="icon-svg" />
+            </button>
+            {showProfilePopup && (
+              <div className="profile-popup">
+                <div className="profile-popup-title">
+                  {isLoggedIn ? "Profile" : "Welcome to Task Senpai"}
+                </div>
+                <div className="profile-popup-text">
+                  {isLoggedIn
+                    ? "You are logged in as Demo User."
+                    : "You are currently browsing as a guest."}
+                </div>
+                <div className="profile-popup-actions">
+                  <button
+                    className="profile-popup-button"
+                    onClick={() => setShowProfilePopup(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    className="profile-popup-button primary"
+                    onClick={() => {
+                      setIsLoggedIn((v) => !v);
+                    }}
+                  >
+                    {isLoggedIn ? "Log out" : "Log in"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       <main className="app-container">
-        <section className="board-card">
-          <div className="board-header">
-            <div>
-                <div className="board-title">High Level Overview</div>
-                <div className="board-subtitle">Inspired by Monday-style boards: items, status, quick actions</div>
-            </div>
-            <input 
-              className="search-input"
-              type="search"
-              placeholder="Search tasks"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+        {activeView == "landing" && (
+          <LandingView onGetStarted={() => setActiveView("dashboard")} />
+        )}
 
-          <form className="add-row" onSubmit={handleAddTodo}>
-            <input
-              className="add-input"
-              type="text"
-              value={newTodoName}
-              onChange={(e) => setNewTodoName(e.target.value)}
-              placeholder="Add a new task"
-            />
-            <select
-              className="add-input"
-              value={newPriority}
-              onChange={(e) => setNewPriority(e.target.value)}
-            >
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-            <input
-              className="add-input"
-              type="date"
-              value={newDueDate}
-              onChange={(e) => setNewDueDate(e.target.value)}
-            />
-            <button className="add-button" type="submit"> + Add Task </button>
-          </form>
-          {error && <div className="error-text">{error}</div>}
+        {activeView == "dashboard" && (
+          <DashboardView
+            todos={todos}
+            onGoBoard={() => setActiveView("board")}
+          />
+        )}
 
-          <div className="board-table-wrapper">
-            <table className="board-table">
-              <thead>
-                <tr>
-                  <th className="checkbox-cell"></th>
-                  <th>Item</th>
-                  <th>Priority</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                  <th className="actions-cell">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTodos.length === 0 && !loading ? (
-                  <tr>
-                    <td colSpan={4}
-                    className="empty-state">
-                      No tasks to show. Add one above to get started.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredTodos.map((todo) => (
-                    <tr key={todo.id}>
-                      <td className="checkbox-cell">
-                        <input 
-                          className="checkbox-input"
-                          type="checkbox"
-                          checked={todo.isComplete}
-                          onChange={() => handleToggleComplete(todo)}
-                        />
-                      </td>
-                      <td>
-                        <span className={ "item-name" + (todo.isComplete ? "completed" : "") }>
-                          {todo.name}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`status-pill priority-${(todo.priority || "Medium").toLowerCase()}`}>
-                          {todo.priority || "Medium"}
-                        </span>
-                      </td>
-                      <td>
-                        {todo.dueDate ? new Date(todo.dueDate).toLocaleDateString() : "—"}
-                      </td>
-                      <td>
-                        <span className={"status-pill " + (todo.isComplete ? "done" : "working")}>
-                          {todo.isComplete ? "Done" : "Working on it"}
-                        </span>
-                      </td>
-                      <td className="actions-cell">
-                        <button
-                          className="action-button delete"
-                          onClick={() => handleDelete(todo)}>Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+        {activeView == "board" && (
+          <BoardView
+            todos={todos}
+            filteredTodos={filteredTodos}
+            search={search}
+            setSearch={setSearch}
+            newTodoName={newTodoName}
+            setNewTodoName={setNewTodoName}
+            newPriority={newPriority}
+            setNewPriority={setNewPriority}
+            newDueDate={newDueDate}
+            setNewDueDate={setNewDueDate}
+            loading={loading}
+            error={error}
+            onAddTodo={handleAddTodo}
+            onUpdateTodo={handleUpdateTodo}
+            onToggleComplete={handleToggleComplete}
+            onDelete={handleDelete}
+          />
+        )}
 
-          <div className="meta-bar">
-            <span>
-              Total tasks: {todos.length} • Showing: {filteredTodos.length}
-            </span>
-            {loading && <span>Syncing with server...</span>}
-          </div>
-        </section>
+        {activeView === "calendar" && (
+          <CalendarView
+            todos={todos}
+            onToggleComplete={handleToggleComplete}
+            onGoBoard={() => setActiveView("board")}
+          />
+        )}
+
+        {activeView === "goals" && (
+          <GoalsView todos={todos} onGoBoard={() => setActiveView("board")} />
+        )}
+
+        {activeView === "timeline" && (
+          <TimelineView
+            todos={todos}
+            onToggleComplete={handleToggleComplete}
+            onUpdateTask={handleUpdateTodo}
+            onGoBoard={() => setActiveView("board")}
+            onOpenTask={(t) => {
+              setSearch(t.name || "");
+              setActiveView("board");
+            }}
+          />
+        )}
       </main>
     </div>
   );
