@@ -13,11 +13,31 @@ import {
   Cog6ToothIcon,
   GlobeAltIcon,
   UserCircleIcon,
+  CheckIcon,
 } from "@heroicons/react/24/outline";
+import ReactCountryFlag from "react-country-flag";
+import { useTranslation } from 'react-i18next';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
+import LoginModal from './components/LoginModal';
+import './i18n';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
+
+
+const LANGUAGES = [
+  { code: 'en', label: 'English', countryCode: 'US' },
+  { code: 'ja', label: '日本語', countryCode: 'JP' },
+  { code: 'es', label: 'Español', countryCode: 'ES' },
+  { code: 'fr', label: 'Français', countryCode: 'FR' },
+  { code: 'de', label: 'Deutsch', countryCode: 'DE' },
+  { code: 'ms', label: 'Bahasa Melayu', countryCode: 'MY' },
+];
 
 const API_BASE_URL = "https://localhost:7076/api/TodoItems";
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [todos, setTodos] = useState([]);
   const [newTodoName, setNewTodoName] = useState("");
   const [newPriority, setNewPriority] = useState("Medium");
@@ -29,10 +49,76 @@ function App() {
   const [activeView, setActiveView] = useState(() => {
     return localStorage.getItem("taskSenpai.activeView") || "landing";
   });
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("taskSenpai.user");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const isLoggedIn = !!user;
   const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showLanguagePopup, setShowLanguagePopup] = useState(false);
+  const [showSettingsPopup, setShowSettingsPopup] = useState(false);
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem("taskSenpai.language") || "en";
+  });
+  const [settings, setSettings] = useState(() => {
+    const saved = localStorage.getItem("taskSenpai.settings");
+    return saved ? JSON.parse(saved) : {
+      theme: 'dark',
+      sound: true,
+      notifications: true,
+      compactMode: false
+    };
+  });
+
+  const handleLanguageChange = (langCode) => {
+    i18n.changeLanguage(langCode);
+    setLanguage(langCode);
+    localStorage.setItem("taskSenpai.language", langCode);
+    setShowLanguagePopup(false);
+    toast.success(`Language changed to ${LANGUAGES.find(l => l.code === langCode).label}`);
+  };
+
+  const handleSettingChange = (key, value) => {
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+    localStorage.setItem("taskSenpai.settings", JSON.stringify(newSettings));
+    
+    // Apply side effects
+    if (key === 'theme') {
+      // Future implementation for theme switching
+      document.body.classList.toggle('light-mode', value === 'light');
+    }
+  };
+
+  const handleLoginSuccess = (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      console.log('Google Login Success:', decoded);
+      setUser(decoded);
+      localStorage.setItem("taskSenpai.user", JSON.stringify(decoded));
+      setShowLoginModal(false);
+      setShowProfilePopup(false);
+      toast.success(t('app.profile.login_success', 'Logged in successfully'));
+    } catch (error) {
+      console.error('Login Failed:', error);
+      toast.error(t('app.profile.login_error', 'Login failed'));
+    }
+  };
+
+  const handleLoginError = () => {
+    console.error('Login Failed');
+    toast.error(t('app.profile.login_error', 'Login failed'));
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("taskSenpai.user");
+    setShowProfilePopup(false);
+    toast.success(t('app.profile.logout_success', 'Logged out successfully'));
+  };
 
   async function loadTodos() {
     try {
@@ -146,6 +232,11 @@ function App() {
 
   useEffect(() => {
     loadTodos();
+    
+    // Initialize settings
+    if (settings.theme === 'light') {
+      document.body.classList.add('light-mode');
+    }
   }, []);
 
   // Handle scroll effect for header
@@ -163,7 +254,15 @@ function App() {
   }, []);
 
   return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <div className="app-root">
+      {showLoginModal && (
+        <LoginModal 
+          onClose={() => setShowLoginModal(false)}
+          onLoginSuccess={handleLoginSuccess}
+          onLoginError={handleLoginError}
+        />
+      )}
       <header className={`app-header landing-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="app-header-left">
           <button 
@@ -185,74 +284,176 @@ function App() {
               }
               onClick={() => setActiveView("dashboard")}
             >
-              Dashboard
+              {t('app.nav.dashboard')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "board" ? " active" : "")}
               onClick={() => setActiveView("board")}
             >
-              Board
+              {t('app.nav.board')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "timeline" ? " active" : "")}
               onClick={() => setActiveView("timeline")}
             >
-              Timeline
+              {t('app.nav.timeline')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "calendar" ? " active" : "")}
               onClick={() => setActiveView("calendar")}
             >
-              Calendar
+              {t('app.nav.calendar')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "goals" ? " active" : "")}
               onClick={() => setActiveView("goals")}
             >
-              Goals
+              {t('app.nav.goals')}
             </button>
           </div>
         </nav>
 
         <div className="app-header-right">
-          <button className="icon-button" title="Language">
-            <GlobeAltIcon className="icon-svg" />
-          </button>
-          <button className="icon-button" title="Settings">
-            <Cog6ToothIcon className="icon-svg" />
-          </button>
-          <div className="profile-container">
-            <button
-              className="icon-button"
-              onClick={() => setShowProfilePopup((v) => !v)}
-              title="Profile"
+          <div className="language-container" style={{ position: 'relative' }}>
+            <button 
+              className={`icon-button ${showLanguagePopup ? 'active' : ''}`}
+              title={t('app.header.language')}
+              onClick={() => {
+                setShowLanguagePopup(!showLanguagePopup);
+                setShowSettingsPopup(false);
+                setShowProfilePopup(false);
+              }}
             >
-              <UserCircleIcon className="icon-svg" />
+              <GlobeAltIcon className="icon-svg" />
+            </button>
+            {showLanguagePopup && (
+              <div className="language-popup">
+                <div className="popup-title">{t('app.languages.title')}</div>
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    className={`language-option ${language === lang.code ? 'active' : ''}`}
+                    onClick={() => handleLanguageChange(lang.code)}
+                  >
+                    <ReactCountryFlag countryCode={lang.countryCode} svg style={{ width: '1.5em', height: '1.5em' }} />
+                    <span className="lang-label">{lang.label}</span>
+                    {language === lang.code && <CheckIcon className="icon-xs" style={{ marginLeft: 'auto', width: '16px', height: '16px' }} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="settings-container" style={{ position: 'relative' }}>
+            <button 
+              className={`icon-button ${showSettingsPopup ? 'active' : ''}`}
+              title={t('app.header.settings')}
+              onClick={() => {
+                setShowSettingsPopup(!showSettingsPopup);
+                setShowLanguagePopup(false);
+                setShowProfilePopup(false);
+              }}
+            >
+              <Cog6ToothIcon className="icon-svg" />
+            </button>
+            {showSettingsPopup && (
+            <div className="settings-popup">
+              <div className="popup-title">{t('app.settings.title')}</div>
+              
+              <div className="setting-item">
+                <span>{t('app.settings.theme')}</span>
+                <div className="toggle-group">
+                  <button 
+                    className={`toggle-btn ${settings.theme === 'dark' ? 'active' : ''}`}
+                    onClick={() => handleSettingChange('theme', 'dark')}
+                  >
+                    {t('app.settings.theme_dark')}
+                  </button>
+                  <button 
+                    className={`toggle-btn ${settings.theme === 'light' ? 'active' : ''}`}
+                    onClick={() => handleSettingChange('theme', 'light')}
+                  >
+                    {t('app.settings.theme_light')}
+                  </button>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <span>{t('app.settings.sound')}</span>
+                <button 
+                  className={`toggle-switch ${settings.sound ? 'active' : ''}`}
+                  onClick={() => handleSettingChange('sound', !settings.sound)}
+                >
+                  <div className="toggle-knob"></div>
+                </button>
+              </div>
+
+              <div className="setting-item">
+                <span>{t('app.settings.notifications')}</span>
+                <button 
+                  className={`toggle-switch ${settings.notifications ? 'active' : ''}`}
+                  onClick={() => handleSettingChange('notifications', !settings.notifications)}
+                >
+                  <div className="toggle-knob"></div>
+                </button>
+              </div>
+
+              <div className="setting-item">
+                <span>{t('app.settings.compact_mode')}</span>
+                <button 
+                  className={`toggle-switch ${settings.compactMode ? 'active' : ''}`}
+                  onClick={() => handleSettingChange('compactMode', !settings.compactMode)}
+                >
+                  <div className="toggle-knob"></div>
+                </button>
+              </div>
+            </div>
+          )}
+          </div>
+          <div className="profile-container" style={{ position: 'relative' }}>
+            <button
+              className={`icon-button ${showProfilePopup ? 'active' : ''}`}
+              onClick={() => {
+                setShowProfilePopup(!showProfilePopup);
+                setShowLanguagePopup(false);
+                setShowSettingsPopup(false);
+              }}
+              title={t('app.header.profile')}
+            >
+              {isLoggedIn && user?.picture ? (
+                <img src={user.picture} alt="Profile" className="profile-avatar" />
+              ) : (
+                <UserCircleIcon className="icon-svg" />
+              )}
             </button>
             {showProfilePopup && (
               <div className="profile-popup">
-                <div className="profile-popup-title">
-                  {isLoggedIn ? "Profile" : "Welcome to Task Senpai"}
+                <div className="popup-title">
+                  {isLoggedIn ? (user?.name || t('app.profile.title_user')) : t('app.profile.title_guest')}
                 </div>
                 <div className="profile-popup-text">
                   {isLoggedIn
-                    ? "You are logged in as Demo User."
-                    : "You are currently browsing as a guest."}
+                    ? (user?.email || t('app.profile.desc_user'))
+                    : t('app.profile.desc_guest')}
                 </div>
                 <div className="profile-popup-actions">
                   <button
                     className="profile-popup-button"
                     onClick={() => setShowProfilePopup(false)}
                   >
-                    Close
+                    {t('app.profile.close')}
                   </button>
                   <button
-                    className="profile-popup-button primary"
+                    className={`profile-popup-button ${isLoggedIn ? 'danger' : 'primary'}`}
                     onClick={() => {
-                      setIsLoggedIn((v) => !v);
+                      if (isLoggedIn) {
+                        handleLogout();
+                      } else {
+                        setShowLoginModal(true);
+                        setShowProfilePopup(false);
+                      }
                     }}
                   >
-                    {isLoggedIn ? "Log out" : "Log in"}
+                    {isLoggedIn ? t('app.profile.logout') : t('app.profile.login')}
                   </button>
                 </div>
               </div>
@@ -327,6 +528,7 @@ function App() {
         )}
       </main>
     </div>
+    </GoogleOAuthProvider>
   );
 }
 

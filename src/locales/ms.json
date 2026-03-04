@@ -1,0 +1,49 @@
+{
+  "app": {
+    "nav": {
+      "dashboard": "Papan Pemuka",
+      "board": "Papan",
+      "timeline": "Garis Masa",
+      "calendar": "Kalendar",
+      "goals": "Matlamat"
+    },
+    "header": {
+      "profile": "Profil",
+      "settings": "Tetapan",
+      "language": "Bahasa"
+    },
+    "profile": {
+      "title_guest": "Selamat Datang ke Task Senpai",
+      "title_user": "Profil",
+      "desc_guest": "Anda sedang melayari sebagai tetamu.",
+      "desc_user": "Anda log masuk sebagai Pengguna Demo.",
+      "login": "Log masuk",
+      "logout": "Log keluar",
+      "close": "Tutup",
+      "login_title": "Selamat Kembali",
+      "login_desc": "Log masuk untuk menyegerakkan tugasan anda merentas peranti.",
+      "login_terms": "Dengan meneruskan, anda bersetuju dengan Syarat Perkhidmatan dan Dasar Privasi kami.",
+      "login_success": "Berjaya log masuk",
+      "login_error": "Gagal log masuk",
+      "logout_success": "Berjaya log keluar"
+    },
+    "languages": {
+      "title": "Pilih Bahasa",
+      "en": "Bahasa Inggeris",
+      "ja": "Bahasa Jepun",
+      "es": "Bahasa Sepanyol",
+      "fr": "Bahasa Perancis",
+      "de": "Bahasa Jerman",
+      "ms": "Bahasa Melayu"
+    },
+    "settings": {
+      "title": "Tetapan",
+      "theme": "Tema",
+      "theme_dark": "Gelap",
+      "theme_light": "Terang",
+      "sound": "Kesan Bunyi",
+      "notifications": "Pemberitahuan",
+      "compact_mode": "Mod Padat"
+    }
+  }
+}

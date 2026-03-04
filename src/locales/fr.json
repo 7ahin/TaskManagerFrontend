@@ -1,0 +1,49 @@
+{
+  "app": {
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "board": "Tableau",
+      "timeline": "Chronologie",
+      "calendar": "Calendrier",
+      "goals": "Objectifs"
+    },
+    "header": {
+      "profile": "Profil",
+      "settings": "Paramètres",
+      "language": "Langue"
+    },
+    "profile": {
+      "title_guest": "Bienvenue sur Task Senpai",
+      "title_user": "Profil",
+      "desc_guest": "Vous naviguez actuellement en tant qu'invité.",
+      "desc_user": "Vous êtes connecté en tant qu'utilisateur de démonstration.",
+      "login": "Connexion",
+      "logout": "Déconnexion",
+      "close": "Fermer",
+      "login_title": "Bon retour",
+      "login_desc": "Connectez-vous pour synchroniser vos tâches sur tous les appareils.",
+      "login_terms": "En continuant, vous acceptez nos Conditions d'Utilisation et notre Politique de Confidentialité.",
+      "login_success": "Connexion réussie",
+      "login_error": "Échec de la connexion",
+      "logout_success": "Déconnexion réussie"
+    },
+    "languages": {
+      "title": "Choisir la langue",
+      "en": "Anglais",
+      "ja": "Japonais",
+      "es": "Espagnol",
+      "fr": "Français",
+      "de": "Allemand",
+      "ms": "Malais"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "theme": "Thème",
+      "theme_dark": "Sombre",
+      "theme_light": "Clair",
+      "sound": "Effets sonores",
+      "notifications": "Notifications",
+      "compact_mode": "Mode compact"
+    }
+  }
+}

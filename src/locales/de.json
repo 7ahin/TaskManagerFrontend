@@ -1,0 +1,49 @@
+{
+  "app": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "board": "Board",
+      "timeline": "Zeitplan",
+      "calendar": "Kalender",
+      "goals": "Ziele"
+    },
+    "header": {
+      "profile": "Profil",
+      "settings": "Einstellungen",
+      "language": "Sprache"
+    },
+    "profile": {
+      "title_guest": "Willkommen bei Task Senpai",
+      "title_user": "Profil",
+      "desc_guest": "Sie surfen derzeit als Gast.",
+      "desc_user": "Sie sind als Demo-Benutzer angemeldet.",
+      "login": "Anmelden",
+      "logout": "Abmelden",
+      "close": "Schließen",
+      "login_title": "Willkommen zurück",
+      "login_desc": "Melden Sie sich an, um Ihre Aufgaben geräteübergreifend zu synchronisieren.",
+      "login_terms": "Durch Ihre Fortsetzung stimmen Sie unseren Nutzungsbedingungen und Datenschutzrichtlinien zu.",
+      "login_success": "Erfolgreich angemeldet",
+      "login_error": "Anmeldung fehlgeschlagen",
+      "logout_success": "Erfolgreich abgemeldet"
+    },
+    "languages": {
+      "title": "Sprache wählen",
+      "en": "Englisch",
+      "ja": "Japanisch",
+      "es": "Spanisch",
+      "fr": "Französisch",
+      "de": "Deutsch",
+      "ms": "Malaiisch"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "theme": "Thema",
+      "theme_dark": "Dunkel",
+      "theme_light": "Hell",
+      "sound": "Soundeffekte",
+      "notifications": "Benachrichtigungen",
+      "compact_mode": "Kompaktmodus"
+    }
+  }
+}

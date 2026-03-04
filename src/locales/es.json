@@ -1,0 +1,49 @@
+{
+  "app": {
+    "nav": {
+      "dashboard": "Tablero",
+      "board": "Tablero",
+      "timeline": "Cronología",
+      "calendar": "Calendario",
+      "goals": "Metas"
+    },
+    "header": {
+      "profile": "Perfil",
+      "settings": "Ajustes",
+      "language": "Idioma"
+    },
+    "profile": {
+      "title_guest": "Bienvenido a Task Senpai",
+      "title_user": "Perfil",
+      "desc_guest": "Actualmente navegas como invitado.",
+      "desc_user": "Has iniciado sesión como Usuario Demo.",
+      "login": "Iniciar sesión",
+      "logout": "Cerrar sesión",
+      "close": "Cerrar",
+      "login_title": "Bienvenido de nuevo",
+      "login_desc": "Inicia sesión para sincronizar tus tareas en todos los dispositivos.",
+      "login_terms": "Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad.",
+      "login_success": "Sesión iniciada correctamente",
+      "login_error": "Error al iniciar sesión",
+      "logout_success": "Sesión cerrada correctamente"
+    },
+    "languages": {
+      "title": "Seleccionar idioma",
+      "en": "Inglés",
+      "ja": "Japonés",
+      "es": "Español",
+      "fr": "Francés",
+      "de": "Alemán",
+      "ms": "Malayo"
+    },
+    "settings": {
+      "title": "Ajustes",
+      "theme": "Tema",
+      "theme_dark": "Oscuro",
+      "theme_light": "Claro",
+      "sound": "Efectos de sonido",
+      "notifications": "Notificaciones",
+      "compact_mode": "Modo compacto"
+    }
+  }
+}

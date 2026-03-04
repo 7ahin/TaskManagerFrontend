@@ -1,0 +1,49 @@
+{
+  "app": {
+    "nav": {
+      "dashboard": "ダッシュボード",
+      "board": "ボード",
+      "timeline": "タイムライン",
+      "calendar": "カレンダー",
+      "goals": "目標"
+    },
+    "header": {
+      "profile": "プロフィール",
+      "settings": "設定",
+      "language": "言語"
+    },
+    "profile": {
+      "title_guest": "タスク先輩へようこそ",
+      "title_user": "プロフィール",
+      "desc_guest": "現在ゲストとして閲覧しています。",
+      "desc_user": "デモユーザーとしてログインしています。",
+      "login": "ログイン",
+      "logout": "ログアウト",
+      "close": "閉じる",
+      "login_title": "おかえりなさい",
+      "login_desc": "デバイス間でタスクを同期するにはサインインしてください。",
+      "login_terms": "続行することで、利用規約とプライバシーポリシーに同意したことになります。",
+      "login_success": "ログインしました",
+      "login_error": "ログインに失敗しました",
+      "logout_success": "ログアウトしました"
+    },
+    "languages": {
+      "title": "言語を選択",
+      "en": "英語",
+      "ja": "日本語",
+      "es": "スペイン語",
+      "fr": "フランス語",
+      "de": "ドイツ語",
+      "ms": "マレー語"
+    },
+    "settings": {
+      "title": "設定",
+      "theme": "テーマ",
+      "theme_dark": "ダーク",
+      "theme_light": "ライト",
+      "sound": "効果音",
+      "notifications": "通知",
+      "compact_mode": "コンパクトモード"
+    }
+  }
+}
