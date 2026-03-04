@@ -3,7 +3,7 @@ import "./GoalsView.css";
 import toast from "react-hot-toast";
 import { normalizeDueDate } from "../utils/dateUtils";
 
-const GOALS_STORAGE_KEY = "taskSenpai.goals.v1";
+const API_URL = "https://localhost:7076/api/Goals";
 
 const GOAL_TEMPLATES = [
   { title: "Productive Week (20 tasks)", target: 20, type: "completed_all" },
@@ -11,53 +11,34 @@ const GOAL_TEMPLATES = [
   { title: "Daily Grind (5 tasks)", target: 5, type: "completed_all" },
 ];
 
-const makeId = () => {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
-
 function GoalsView({ todos, onGoBoard }) {
-  const [goals, setGoals] = useState(() => {
-    try {
-      const raw = localStorage.getItem(GOALS_STORAGE_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
-      return parsed
-        .filter((g) => g && typeof g === "object")
-        .map((g) => ({
-          id: typeof g.id === "string" ? g.id : makeId(),
-          title: typeof g.title === "string" ? g.title : "Untitled goal",
-          type: g.type === "completed_high" ? "completed_high" : "completed_all",
-          target:
-            typeof g.target === "number" && Number.isFinite(g.target) && g.target > 0
-              ? Math.floor(g.target)
-              : 10,
-          dueDate:
-            typeof g.dueDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(g.dueDate)
-              ? g.dueDate
-              : null,
-          createdAt: typeof g.createdAt === "string" ? g.createdAt : new Date().toISOString(),
-        }));
-    } catch {
-      return [];
-    }
-  });
+  const [goals, setGoals] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [newGoalType, setNewGoalType] = useState("completed_all");
   const [newGoalTarget, setNewGoalTarget] = useState(10);
   const [newGoalDueDate, setNewGoalDueDate] = useState("");
   const [editingGoal, setEditingGoal] = useState(null);
 
+  // Load goals from API
   useEffect(() => {
+    loadGoals();
+  }, []);
+
+  async function loadGoals() {
     try {
-      localStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify(goals));
-    } catch {
-      return;
+      setLoading(true);
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error("Failed to load goals");
+      const data = await response.json();
+      setGoals(data);
+    } catch (error) {
+      console.error("Error loading goals:", error);
+      toast.error("Could not load goals");
+    } finally {
+      setLoading(false);
     }
-  }, [goals]);
+  }
 
   const goalStats = useMemo(() => {
     const completed = todos.filter((t) => t.isComplete).length;
@@ -82,38 +63,75 @@ function GoalsView({ todos, onGoBoard }) {
     return { completed, completedHigh, overdue, active, completionRate };
   }, [todos]);
 
-  const handleAddGoal = (e) => {
+  const handleAddGoal = async (e) => {
     e.preventDefault();
     const title = newGoalTitle.trim();
     const target = Number(newGoalTarget);
     if (!title) return;
     if (!Number.isFinite(target) || target <= 0) return;
 
-    const goal = {
-      id: makeId(),
+    const newGoal = {
       title,
       type: newGoalType === "completed_high" ? "completed_high" : "completed_all",
       target: Math.floor(target),
       dueDate: newGoalDueDate || null,
-      createdAt: new Date().toISOString(),
     };
 
-    setGoals((prev) => [goal, ...prev]);
-    setNewGoalTitle("");
-    setNewGoalTarget(10);
-    setNewGoalDueDate("");
-    toast.success("Goal added");
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newGoal),
+      });
+
+      if (!response.ok) throw new Error("Failed to create goal");
+      
+      const savedGoal = await response.json();
+      setGoals((prev) => [savedGoal, ...prev]);
+      
+      setNewGoalTitle("");
+      setNewGoalTarget(10);
+      setNewGoalDueDate("");
+      toast.success("Goal added");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add goal");
+    }
   };
 
-  const handleDeleteGoal = (id) => {
-    setGoals((prev) => prev.filter((g) => g.id !== id));
-    toast.success("Goal removed");
+  const handleDeleteGoal = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete goal");
+
+      setGoals((prev) => prev.filter((g) => g.id !== id));
+      toast.success("Goal removed");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete goal");
+    }
   };
 
-  const handleSaveEdit = (updated) => {
-    setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
-    setEditingGoal(null);
-    toast.success("Goal updated");
+  const handleSaveEdit = async (updated) => {
+    try {
+      const response = await fetch(`${API_URL}/${updated.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+
+      if (!response.ok) throw new Error("Failed to update goal");
+
+      setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
+      setEditingGoal(null);
+      toast.success("Goal updated");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update goal");
+    }
   };
 
   const achievedPct = (g) => {
@@ -233,7 +251,9 @@ function GoalsView({ todos, onGoBoard }) {
 
         <div className="goals-panel">
           <div className="goals-panel-title">Your goals</div>
-          {goals.length === 0 ? (
+          {loading ? (
+             <div className="empty-state">Loading goals...</div>
+          ) : goals.length === 0 ? (
             <div className="empty-state">No goals yet. Create one to start tracking.</div>
           ) : (
             <div className="goals-list">

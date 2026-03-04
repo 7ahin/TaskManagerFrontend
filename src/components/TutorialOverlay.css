@@ -1,0 +1,156 @@
+.tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tutorial-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.tutorial-card {
+  position: relative;
+  width: 320px;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  color: white;
+  animation: floatIn 0.3s ease-out;
+  z-index: 10000;
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Positioning variants */
+.tutorial-card.center {
+  /* Default centered by flex parent */
+}
+
+.tutorial-card.top-left {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  /* Adjust arrow if needed */
+}
+
+.tutorial-card.top-center {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tutorial-card.top-right {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+}
+
+/* Senpai Avatar */
+.tutorial-senpai {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background: #1e293b;
+  border-radius: 50%;
+  padding: 4px;
+  border: 2px solid #60a5fa;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.senpai-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tutorial-content {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.tutorial-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.tutorial-text {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.tutorial-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.tutorial-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tutorial-btn.primary {
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.tutorial-btn.primary:hover {
+  background: #2563eb;
+}
+
+.tutorial-btn.secondary {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tutorial-btn.secondary:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tutorial-progress {
+  margin-top: 16px;
+  font-size: 0.75rem;
+  color: #64748b;
+}

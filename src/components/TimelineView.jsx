@@ -35,7 +35,8 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
       const p = (t.priority || "Medium");
       if (priorityFilter !== "All" && p !== priorityFilter) continue;
 
-      const ymd = normalizeDueDate(t.dueDate);
+      // Use startDate if available, otherwise fallback to dueDate
+      const ymd = normalizeDueDate(t.startDate || t.dueDate);
       if (!ymd) {
         noDate.push(t);
         continue;
@@ -191,16 +192,28 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         <span className={`timeline-status-pill ${t.isComplete ? "done" : "working"}`}>
                           {t.isComplete ? "Done" : "Working on it"}
                         </span>
+                        {t.dueDate && (
+                           <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
+                              Due {new Date(t.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                           </span>
+                        )}
+                        {t.startDate && t.dueDate && t.startDate > t.dueDate && (
+                           <span className="timeline-conflict-warning" title="Start date is after due date">
+                              ⚠️ Conflict
+                           </span>
+                        )}
                       </div>
                     </div>
                     <div className="timeline-item-actions">
-                      <input
-                        type="date"
-                        className="timeline-date-input"
-                        value={normalizeDueDate(t.dueDate) || ""}
-                        onChange={(e) => onUpdateTask({ ...t, dueDate: e.target.value })}
-                        title="Reschedule"
-                      />
+                      <div className="timeline-date-group">
+                        <span className="timeline-date-label">Start:</span>
+                        <input
+                          type="date"
+                          className="timeline-date-input"
+                          value={normalizeDueDate(t.startDate) || ""}
+                          onChange={(e) => onUpdateTask({ ...t, startDate: e.target.value })}
+                        />
+                      </div>
                       <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>
                         Open
                       </button>
@@ -214,7 +227,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
           {timelineGroups.undated.length > 0 ? (
             <div className="timeline-group">
               <div className="timeline-group-header">
-                <div className="timeline-group-title">No due date</div>
+                <div className="timeline-group-title">No start date</div>
                 <div className="timeline-group-count">{timelineGroups.undated.length}</div>
               </div>
               <div className="timeline-list">
@@ -237,17 +250,29 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         <span className={`timeline-status-pill ${t.isComplete ? "done" : "working"}`}>
                           {t.isComplete ? "Done" : "Working on it"}
                         </span>
+                        {t.dueDate && (
+                           <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
+                              Due {new Date(t.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                           </span>
+                        )}
+                        {t.startDate && t.dueDate && t.startDate > t.dueDate && (
+                           <span className="timeline-conflict-warning" title="Start date is after due date">
+                              ⚠️ Conflict
+                           </span>
+                        )}
                       </div>
                     </div>
                     <div className="timeline-item-actions">
-                      <input
-                        type="date"
-                        className="timeline-date-input"
-                        value={normalizeDueDate(t.dueDate) || ""}
-                        onChange={(e) => onUpdateTask({ ...t, dueDate: e.target.value })}
-                        title="Reschedule"
-                      />
-                      <button type="button" className="action-button" onClick={() => onOpenTask(t)}>
+                      <div className="timeline-date-group">
+                        <span className="timeline-date-label">Start:</span>
+                        <input
+                          type="date"
+                          className="timeline-date-input"
+                          value={normalizeDueDate(t.startDate) || ""}
+                          onChange={(e) => onUpdateTask({ ...t, startDate: e.target.value })}
+                        />
+                      </div>
+                      <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>
                         Open
                       </button>
                     </div>

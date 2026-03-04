@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import "./BoardView.css";
 import {
   DndContext,
@@ -27,10 +28,11 @@ import {
   ChevronDownIcon,
   CalendarIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ClipboardDocumentListIcon
 } from "@heroicons/react/24/outline";
 
-function CustomDatePicker({ value, onChange }) {
+function CustomDatePicker({ value, onChange, placeholder = "Select Date" }) {
   const [isOpen, setIsOpen] = useState(false);
   
   // Format the date for display
@@ -38,7 +40,7 @@ function CustomDatePicker({ value, onChange }) {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
-  }) : "Select Date";
+  }) : placeholder;
 
   // Calendar logic
   const today = new Date();
@@ -150,6 +152,64 @@ function CustomDatePicker({ value, onChange }) {
   );
 }
 
+function DateRangePopup({ startDate, dueDate, onStartChange, onDueChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const formatDate = (d) => {
+    if (!d) return "";
+    return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  };
+
+  const hasDates = startDate || dueDate;
+  const label = hasDates 
+    ? `${formatDate(startDate) || 'Start'} - ${formatDate(dueDate) || 'Due'}`
+    : "Dates";
+
+  return (
+    <div className="board-date-popup-wrapper">
+      <button 
+        type="button" 
+        className={`board-date-popup-trigger ${hasDates ? 'active' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <CalendarIcon className="icon-sm" />
+        <span>{label}</span>
+      </button>
+
+      {isOpen && (
+        <>
+          <div 
+            style={{ position: "fixed", inset: 0, zIndex: 48, cursor: "default" }} 
+            onClick={() => setIsOpen(false)} 
+          />
+          <div className="board-date-popup-panel">
+            <div className="board-date-popup-row">
+              <span className="board-date-popup-label">Start Date</span>
+              <div className="board-date-popup-field">
+                <CustomDatePicker 
+                  value={startDate} 
+                  onChange={onStartChange} 
+                  placeholder="Set start date" 
+                />
+              </div>
+            </div>
+            <div className="board-date-popup-row">
+              <span className="board-date-popup-label">Due Date</span>
+              <div className="board-date-popup-field">
+                <CustomDatePicker 
+                  value={dueDate} 
+                  onChange={onDueChange} 
+                  placeholder="Set due date" 
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function CustomPriorityDropdown({ value, onChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const priorities = ["Low", "Medium", "High"];
@@ -167,7 +227,7 @@ function CustomPriorityDropdown({ value, onChange }) {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <span className={`board-priority-indicator ${value?.toLowerCase() || "medium"}`}></span>
           {value || "Medium"}
         </div>
@@ -205,6 +265,9 @@ function EditTaskModal({ todo, onClose, onSave }) {
   const [dueDate, setDueDate] = useState(
     todo.dueDate ? new Date(todo.dueDate).toISOString().split("T")[0] : ""
   );
+  const [startDate, setStartDate] = useState(
+    todo.startDate ? new Date(todo.startDate).toISOString().split("T")[0] : ""
+  );
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -222,16 +285,17 @@ function EditTaskModal({ todo, onClose, onSave }) {
       priority,
       isComplete,
       dueDate: dueDate || null,
+      startDate: startDate || null,
     });
   };
 
-  return (
+  return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title-wrap">
             <h3 className="modal-title">Edit Task</h3>
-            <div className="modal-subtitle">Update name, priority, due date, and status.</div>
+            <div className="modal-subtitle">Update name, priority, dates, and status.</div>
           </div>
           <button type="button" className="modal-close-btn" onClick={onClose} aria-label="Close">
             <XMarkIcon className="icon-sm" />
@@ -239,7 +303,7 @@ function EditTaskModal({ todo, onClose, onSave }) {
         </div>
         <form onSubmit={handleSubmit} className="edit-form">
           <div className="form-group">
-            <label>Task Name</label>
+            <label className="edit-label">Task Name</label>
             <input
               type="text"
               className="edit-input"
@@ -251,29 +315,30 @@ function EditTaskModal({ todo, onClose, onSave }) {
             />
           </div>
 
-          <div className="form-group">
-            <label>Status</label>
-            <div className="edit-status-toggle" role="group" aria-label="Status">
-              <button
-                type="button"
-                className={`edit-status-btn ${!isComplete ? "active" : ""}`}
-                onClick={() => setIsComplete(false)}
-              >
-                In progress
-              </button>
-              <button
-                type="button"
-                className={`edit-status-btn ${isComplete ? "active" : ""}`}
-                onClick={() => setIsComplete(true)}
-              >
-                Done
-              </button>
-            </div>
-          </div>
-
           <div className="form-row">
             <div className="form-group">
-              <label>Priority</label>
+              <label className="edit-label">Status</label>
+              <div className="edit-status-toggle" role="group" aria-label="Status">
+                <button
+                  type="button"
+                  className={`edit-status-btn ${!isComplete ? "active" : ""}`}
+                  onClick={() => setIsComplete(false)}
+                >
+                  <span className="status-indicator working"></span>
+                  In progress
+                </button>
+                <button
+                  type="button"
+                  className={`edit-status-btn ${isComplete ? "active" : ""}`}
+                  onClick={() => setIsComplete(true)}
+                >
+                  <span className="status-indicator done"></span>
+                  Done
+                </button>
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="edit-label">Priority</label>
               <div style={{ width: "100%" }}>
                 <CustomPriorityDropdown
                   value={priority}
@@ -281,8 +346,26 @@ function EditTaskModal({ todo, onClose, onSave }) {
                 />
               </div>
             </div>
+          </div>
+
+          <div className="form-row">
             <div className="form-group">
-              <label>Due Date</label>
+              <label className="edit-label">Start Date</label>
+              <div className="edit-date-stack">
+                <CustomDatePicker value={startDate} onChange={(val) => setStartDate(val)} />
+                {startDate ? (
+                  <button
+                    type="button"
+                    className="edit-clear-link"
+                    onClick={() => setStartDate("")}
+                  >
+                    Clear
+                  </button>
+                ) : null}
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="edit-label">Due Date</label>
               <div className="edit-date-stack">
                 <CustomDatePicker value={dueDate} onChange={(val) => setDueDate(val)} />
                 {dueDate ? (
@@ -291,14 +374,14 @@ function EditTaskModal({ todo, onClose, onSave }) {
                     className="edit-clear-link"
                     onClick={() => setDueDate("")}
                   >
-                    Clear date
+                    Clear
                   </button>
                 ) : null}
               </div>
             </div>
           </div>
           <div className="modal-actions">
-            <button type="button" className="action-button" onClick={onClose}>
+            <button type="button" className="action-button secondary" onClick={onClose}>
               Cancel
             </button>
             <button type="submit" className="action-button primary">
@@ -307,7 +390,8 @@ function EditTaskModal({ todo, onClose, onSave }) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -359,13 +443,24 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
       </div>
       <h4 className="board-kanban-card-title">{todo.name}</h4>
       <div className="board-kanban-card-footer">
-        <div className="board-card-due-date">
-          <ClockIcon className="icon-xs" />
-          <span>
-            {todo.dueDate
-              ? new Date(todo.dueDate).toLocaleDateString()
-              : "No date"}
-          </span>
+        <div className="board-card-dates">
+          {todo.startDate && (
+             <div className="board-card-date-item start-date" title="Start Date">
+               <span className="date-prefix">S:</span>
+               <span>{new Date(todo.startDate).toLocaleDateString(undefined, {month: 'numeric', day: 'numeric'})}</span>
+             </div>
+          )}
+          {todo.dueDate && (
+             <div className="board-card-date-item due-date" title="Due Date">
+               <ClockIcon className="icon-xs" />
+               <span>{new Date(todo.dueDate).toLocaleDateString(undefined, {month: 'numeric', day: 'numeric'})}</span>
+             </div>
+          )}
+          {!todo.startDate && !todo.dueDate && (
+             <div className="board-card-date-item empty">
+               <span className="date-placeholder">No dates</span>
+             </div>
+          )}
         </div>
         <button
           className={todo.isComplete ? "board-card-mark-undone-btn" : "board-card-mark-done-btn"}
@@ -388,6 +483,8 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
     </div>
   );
 }
+
+const STATUSES = ["Working on it", "Stuck", "Done", "Review"];
 
 function DroppableColumn({ id, title, count, statusClass, items, children }) {
   const { setNodeRef } = useDroppable({ id });
@@ -425,6 +522,8 @@ function BoardView({
   setNewPriority,
   newDueDate,
   setNewDueDate,
+  newStartDate,
+  setNewStartDate,
   loading,
   error,
   onAddTodo,
@@ -464,9 +563,6 @@ function BoardView({
     })
   );
 
-  const activeTasks = filteredTodos.filter((t) => !t.isComplete);
-  const completedTasks = filteredTodos.filter((t) => t.isComplete);
-
   function handleDragStart(event) {
     setActiveId(event.active.id);
   }
@@ -480,25 +576,29 @@ function BoardView({
     const activeTask = todos.find((t) => t.id === active.id);
     if (!activeTask) return;
 
-    let isOverCompleted = false;
-
-    if (over.id === "completed-column") {
-      isOverCompleted = true;
-    } else if (over.id === "active-column") {
-      isOverCompleted = false;
-    } else {
-      // Over a task
-      const overTask = todos.find((t) => t.id === over.id);
-      if (overTask) {
-        isOverCompleted = overTask.isComplete;
-      } else {
-          // Fallback if over unknown item (shouldn't happen)
-          return; 
-      }
+    // Check if dropped on a column
+    const statusColumn = STATUSES.find(s => s === over.id);
+    
+    if (statusColumn) {
+        if (activeTask.status !== statusColumn) {
+            onUpdateTodo({
+                ...activeTask,
+                status: statusColumn,
+                isComplete: statusColumn === "Done"
+            });
+        }
+        return;
     }
 
-    if (activeTask.isComplete !== isOverCompleted) {
-      onToggleComplete(activeTask);
+    // Dropped on another task? 
+    // We need to find which column that task belongs to
+    const overTask = todos.find((t) => t.id === over.id);
+    if (overTask && overTask.status !== activeTask.status) {
+         onUpdateTodo({
+            ...activeTask,
+            status: overTask.status,
+            isComplete: overTask.status === "Done"
+        });
     }
   }
 
@@ -520,14 +620,14 @@ function BoardView({
                     <button 
                         className={`board-view-btn ${viewMode === 'list' ? 'active' : ''}`}
                         onClick={() => setViewMode('list')}
-                        title="List View"
+                        data-tooltip="List View"
                     >
                         <ListBulletIcon className="icon-sm" />
                     </button>
                     <button 
                         className={`board-view-btn ${viewMode === 'kanban' ? 'active' : ''}`}
                         onClick={() => setViewMode('kanban')}
-                        title="Kanban Board"
+                        data-tooltip="Kanban Board"
                     >
                         <Squares2X2Icon className="icon-sm" />
                     </button>
@@ -550,17 +650,21 @@ function BoardView({
             onChange={(e) => setNewTodoName(e.target.value)}
             placeholder="Add a new task"
             />
-            <CustomPriorityDropdown
-              value={newPriority}
-              onChange={(val) => setNewPriority(val)}
-            />
-            <CustomDatePicker
-              value={newDueDate}
-              onChange={(val) => setNewDueDate(val)}
-            />
-            <button className="board-add-button" type="submit">
-            + Add Task
-            </button>
+            <div className="board-add-controls">
+              <CustomPriorityDropdown
+                value={newPriority}
+                onChange={(val) => setNewPriority(val)}
+              />
+              <DateRangePopup
+                startDate={newStartDate}
+                dueDate={newDueDate}
+                onStartChange={setNewStartDate}
+                onDueChange={setNewDueDate}
+              />
+              <button className="board-add-button" type="submit">
+              + Add Task
+              </button>
+            </div>
         </form>
 
         {error && <div className="error-text">{error}</div>}
@@ -571,22 +675,15 @@ function BoardView({
             <thead>
                 <tr>
                 <th className="board-checkbox-cell"></th>
-                <th>Item</th>
-                <th>Priority</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th className="board-actions-cell">Actions</th>
+                <th className="text-left">Item</th>
+                <th className="text-center">Priority</th>
+                <th className="text-center">Due Date</th>
+                <th className="text-center">Status</th>
+                <th className="board-actions-cell text-right">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {filteredTodos.length === 0 && !loading ? (
-                <tr>
-                    <td colSpan={6} className="empty-state">
-                    No tasks to show. Add one above to get started.
-                    </td>
-                </tr>
-                ) : (
-                filteredTodos.map((todo) => (
+                {filteredTodos.map((todo) => (
                     <tr key={todo.id}>
                     <td className="board-checkbox-cell">
                         <input
@@ -605,7 +702,7 @@ function BoardView({
                         {todo.name}
                         </span>
                     </td>
-                    <td>
+                    <td className="text-center">
                         <span
                         className={`board-status-pill priority-${(
                             todo.priority || "Medium"
@@ -614,12 +711,12 @@ function BoardView({
                         {todo.priority || "Medium"}
                         </span>
                     </td>
-                    <td>
+                    <td className="text-center">
                         {todo.dueDate
                         ? new Date(todo.dueDate).toLocaleDateString()
                         : "—"}
                     </td>
-                    <td>
+                    <td className="text-center">
                         <span
                         className={
                             "board-status-pill " +
@@ -629,7 +726,7 @@ function BoardView({
                         {todo.isComplete ? "Done" : "Working on it"}
                         </span>
                     </td>
-                    <td className="board-actions-cell">
+                    <td className="board-actions-cell text-right">
                         <button
                         className="action-button"
                         onClick={() => setEditingTodo(todo)}
@@ -644,10 +741,23 @@ function BoardView({
                         </button>
                     </td>
                     </tr>
-                ))
-                )}
+                ))}
             </tbody>
             </table>
+            
+            {filteredTodos.length === 0 && !loading && (
+              <div className="board-empty-state">
+                <div className="empty-state-icon-wrapper">
+                  <ClipboardDocumentListIcon className="empty-state-icon" />
+                </div>
+                <h3 className="empty-state-title">No tasks found</h3>
+                <p className="empty-state-description">
+                  {search 
+                    ? `No tasks match "${search}". Try a different keyword.` 
+                    : "Your list is empty. Add a new task above to get started."}
+                </p>
+              </div>
+            )}
         </div>
         ) : (
           <DndContext
@@ -656,79 +766,67 @@ function BoardView({
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <div className="board-kanban-board">
-              {/* Active Column */}
-              <DroppableColumn
-                id="active-column"
-                title="Active"
-                count={activeTasks.length}
-                statusClass="working"
-                items={activeTasks}
-              >
-                {activeTasks.map((todo) => (
-                  <SortableTaskCard
-                    key={todo.id}
-                    todo={todo}
-                    setPendingDeleteId={setPendingDeleteId}
-                    onToggleComplete={onToggleComplete}
-                    onEdit={setEditingTodo}
-                  />
-                ))}
-              </DroppableColumn>
+            <div className="board-kanban-scroll-container">
+              {STATUSES.map((status) => {
+                const statusItems = filteredTodos.filter(
+                  (t) => (t.status || "Working on it") === status
+                );
+                // Map status to a color class for the header dot
+                let dotClass = "working"; // default
+                if (status === "Done") dotClass = "done";
+                else if (status === "Stuck") dotClass = "stuck";
+                else if (status === "Review") dotClass = "review";
 
-              {/* Completed Column */}
-              <DroppableColumn
-                id="completed-column"
-                title="Completed"
-                count={completedTasks.length}
-                statusClass="done"
-                items={completedTasks}
-              >
-                {completedTasks.map((todo) => (
-                  <SortableTaskCard
-                    key={todo.id}
-                    todo={todo}
-                    setPendingDeleteId={setPendingDeleteId}
-                    onToggleComplete={onToggleComplete}
-                    onEdit={setEditingTodo}
-                  />
-                ))}
-              </DroppableColumn>
-              
-              <DragOverlay>
-                {activeId ? (
-                   <div className={`board-kanban-card ${activeOverlayTask?.isComplete ? "completed" : ""}`} style={{ cursor: 'grabbing' }}>
-                   <div className="board-kanban-card-header">
-                     <span className={`board-priority-tag ${activeOverlayTask?.priority?.toLowerCase() || "medium"}`}>
-                       {activeOverlayTask?.priority || "Medium"}
-                     </span>
-                     <button className="board-card-action-btn delete" title="Delete">&times;</button>
-                   </div>
-                   <h4 className="board-kanban-card-title">{activeOverlayTask?.name}</h4>
-                   <div className="board-kanban-card-footer">
-                     <div className="board-card-due-date">
-                       <ClockIcon className="icon-xs" />
-                       <span>{activeOverlayTask?.dueDate ? new Date(activeOverlayTask.dueDate).toLocaleDateString() : "No date"}</span>
-                     </div>
-                     <button className={activeOverlayTask?.isComplete ? "board-card-mark-undone-btn" : "board-card-mark-done-btn"}>
-                        {activeOverlayTask?.isComplete ? "Undo" : <><CheckCircleIcon className="icon-sm" /> Done</>}
-                     </button>
-                   </div>
-                 </div>
-                ) : null}
-              </DragOverlay>
+                return (
+                  <DroppableColumn
+                    key={status}
+                    id={status}
+                    title={status}
+                    count={statusItems.length}
+                    statusClass={dotClass}
+                    items={statusItems}
+                  >
+                    {statusItems.map((todo) => (
+                      <SortableTaskCard
+                        key={todo.id}
+                        todo={todo}
+                        setPendingDeleteId={setPendingDeleteId}
+                        onToggleComplete={onToggleComplete}
+                        onEdit={setEditingTodo}
+                      />
+                    ))}
+                  </DroppableColumn>
+                );
+              })}
             </div>
+            <DragOverlay>
+              {activeOverlayTask ? (
+                <div className="board-kanban-card dragging">
+                  <h4>{activeOverlayTask.name}</h4>
+                </div>
+              ) : null}
+            </DragOverlay>
           </DndContext>
         )}
 
-        {pendingDelete && (
+        {pendingDelete && createPortal(
             <div className="modal-overlay" onClick={() => setPendingDeleteId(null)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h3 className="modal-title">Delete Task?</h3>
-                <p>Are you sure you want to delete "{pendingDelete.name}"?</p>
+                <div className="modal-header">
+                  <div className="modal-title-wrap">
+                    <h3 className="modal-title">Delete Task?</h3>
+                    <div className="modal-subtitle">This action cannot be undone.</div>
+                  </div>
+                  <button type="button" className="modal-close-btn" onClick={() => setPendingDeleteId(null)}>
+                    <XMarkIcon className="icon-sm" />
+                  </button>
+                </div>
+                <p style={{ color: "var(--text-main)", marginBottom: "1.5rem" }}>
+                  Are you sure you want to delete <strong style={{ color: "#fff" }}>"{pendingDelete.name}"</strong>?
+                </p>
                 <div className="modal-actions">
                 <button
-                    className="action-button"
+                    className="action-button secondary"
                     onClick={() => setPendingDeleteId(null)}
                 >
                     Cancel
@@ -736,7 +834,7 @@ function BoardView({
                 <button
                     className="action-button delete"
                     onClick={() => {
-                    onDelete(pendingDelete.id);
+                    onDelete(pendingDelete);
                     setPendingDeleteId(null);
                     }}
                 >
@@ -744,7 +842,8 @@ function BoardView({
                 </button>
                 </div>
             </div>
-            </div>
+            </div>,
+            document.body
         )}
 
         {editingTodo && (

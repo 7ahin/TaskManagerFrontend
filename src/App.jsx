@@ -7,6 +7,7 @@ import CalendarView from "./components/CalendarView.jsx";
 import LandingView from "./components/LandingView.jsx";
 import TimelineView from "./components/TimelineView.jsx";
 import GoalsView from "./components/GoalsView.jsx";
+import TutorialOverlay from "./components/TutorialOverlay.jsx";
 import logoImg from "./assets/logo.png";
 import {
   Cog6ToothIcon,
@@ -21,13 +22,17 @@ function App() {
   const [newTodoName, setNewTodoName] = useState("");
   const [newPriority, setNewPriority] = useState("Medium");
   const [newDueDate, setNewDueDate] = useState("");
+  const [newStartDate, setNewStartDate] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeView, setActiveView] = useState("landing");
+  const [activeView, setActiveView] = useState(() => {
+    return localStorage.getItem("taskSenpai.activeView") || "landing";
+  });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   async function loadTodos() {
     try {
@@ -64,6 +69,8 @@ function App() {
           isComplete: false,
           priority: newPriority,
           dueDate: newDueDate || null,
+          startDate: newStartDate || null,
+          status: "Working on it"
         }),
       });
 
@@ -132,6 +139,10 @@ function App() {
     if (!term) return todos;
     return todos.filter((t) => t.name?.toLowerCase().includes(term));
   }, [todos, search]);
+
+  useEffect(() => {
+    localStorage.setItem("taskSenpai.activeView", activeView);
+  }, [activeView]);
 
   useEffect(() => {
     loadTodos();
@@ -251,8 +262,13 @@ function App() {
       </header>
 
       <main className="app-container">
+        {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
+        
         {activeView == "landing" && (
-          <LandingView onGetStarted={() => setActiveView("dashboard")} />
+          <LandingView 
+            onGetStarted={() => setActiveView("dashboard")} 
+            onStartTutorial={() => setShowTutorial(true)}
+          />
         )}
 
         {activeView == "dashboard" && (
@@ -274,6 +290,8 @@ function App() {
             setNewPriority={setNewPriority}
             newDueDate={newDueDate}
             setNewDueDate={setNewDueDate}
+            newStartDate={newStartDate}
+            setNewStartDate={setNewStartDate}
             loading={loading}
             error={error}
             onAddTodo={handleAddTodo}

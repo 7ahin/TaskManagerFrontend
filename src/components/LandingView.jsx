@@ -1,7 +1,7 @@
 import React from 'react';
 import './LandingView.css';
 
-function LandingView({ onGetStarted }) {
+function LandingView({ onGetStarted, onStartTutorial }) {
   return (
     <div className="landing-container">
       <div className="landing-hero">
@@ -17,7 +17,7 @@ function LandingView({ onGetStarted }) {
           <button className="landing-btn-primary" onClick={onGetStarted}>
             Start for free
           </button>
-          <button className="landing-btn-secondary" onClick={onGetStarted}>
+          <button className="landing-btn-secondary" onClick={onStartTutorial}>
             View Demo
           </button>
         </div>
