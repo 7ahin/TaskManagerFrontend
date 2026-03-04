@@ -29,7 +29,8 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ClipboardDocumentListIcon
+  ClipboardDocumentListIcon,
+  CheckIcon
 } from "@heroicons/react/24/outline";
 
 function CustomDatePicker({ value, onChange, placeholder = "Select Date" }) {
@@ -685,13 +686,10 @@ function BoardView({
             <tbody>
                 {filteredTodos.map((todo) => (
                     <tr key={todo.id}>
-                    <td className="board-checkbox-cell">
-                        <input
-                        className="board-checkbox-input"
-                        type="checkbox"
-                        checked={todo.isComplete}
-                        onChange={() => onToggleComplete(todo)}
-                        />
+                    <td className="board-checkbox-cell" onClick={() => onToggleComplete(todo)}>
+                        <div className={`board-checkbox-custom ${todo.isComplete ? "checked" : ""}`}>
+                            <CheckIcon className="board-checkbox-icon" strokeWidth={3} />
+                        </div>
                     </td>
                     <td>
                         <span

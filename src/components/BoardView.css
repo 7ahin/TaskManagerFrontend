@@ -639,17 +639,44 @@
 .board-checkbox-cell {
   width: 40px;
   text-align: center;
+  cursor: pointer;
 }
 
-.board-checkbox-input {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: #3b82f6;
+.board-checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #64748b; /* Slate-500 unselected */
+  border-radius: 6px; /* Soft rounded corners */
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
 }
 
-.board-checkbox-input:focus {
-  outline: none;
+.board-checkbox-custom:hover {
+  border-color: #94a3b8; /* Lighter border on hover */
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.board-checkbox-custom.checked {
+  background: #3b82f6; /* Blue-500 */
+  border-color: #3b82f6;
+}
+
+.board-checkbox-icon {
+  width: 14px;
+  height: 14px;
+  color: white;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.board-checkbox-custom.checked .board-checkbox-icon {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .board-actions-cell {
