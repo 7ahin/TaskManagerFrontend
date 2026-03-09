@@ -1,27 +1,16 @@
 import React, { useState } from 'react';
-import './LoginModal.css';
+import './LoginView.css';
 import { GoogleLogin } from '@react-oauth/google';
 import { useTranslation } from 'react-i18next';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 import logoImg from '../assets/logo.png';
 
-const LoginModal = ({ onClose, onLoginSuccess, onLoginError }) => {
+function LoginView({ onLoginSuccess, onLoginError, onBack }) {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div 
-        className="modal-content login-modal-card" 
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button 
-          className="icon-button close-button" 
-          onClick={onClose}
-        >
-          <XMarkIcon className="icon-svg" />
-        </button>
-
+    <div className="login-view-container">
+      <div className="login-card">
         <div className="login-header">
           <img src={logoImg} alt="Task Senpai" className="login-logo" />
           <h1>{t('app.title', 'Task Senpai')}</h1>
@@ -65,7 +54,7 @@ const LoginModal = ({ onClose, onLoginSuccess, onLoginError }) => {
           </div>
 
           <div className="guest-option">
-            <button className="text-btn" onClick={onClose}>
+            <button className="text-btn" onClick={onBack}>
               {t('app.login.continue_guest', 'Continue as Guest')}
             </button>
           </div>
@@ -73,6 +62,6 @@ const LoginModal = ({ onClose, onLoginSuccess, onLoginError }) => {
       </div>
     </div>
   );
-};
+}
 
-export default LoginModal;
+export default LoginView;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import toast from "react-hot-toast";
 import BoardView from "./components/BoardView.jsx";
@@ -8,6 +8,8 @@ import LandingView from "./components/LandingView.jsx";
 import TimelineView from "./components/TimelineView.jsx";
 import GoalsView from "./components/GoalsView.jsx";
 import TutorialOverlay from "./components/TutorialOverlay.jsx";
+import BackgroundMusic from "./components/BackgroundMusic.jsx";
+import ChatAssistant from "./components/ChatAssistant.jsx";
 import logoImg from "./assets/logo.png";
 import {
   Cog6ToothIcon,
@@ -35,6 +37,7 @@ const LANGUAGES = [
 ];
 
 const API_BASE_URL = "https://localhost:7076/api/TodoItems";
+const API_AUTH_URL = "https://localhost:7076/api/Auth/google";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -54,6 +57,18 @@ function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const isLoggedIn = !!user;
+
+  // Helper to generate headers with User ID
+  const generateAuthHeaders = useCallback(() => {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (user && user.id) {
+      headers["X-User-Id"] = user.id.toString();
+    }
+    return headers;
+  }, [user]);
+
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -93,17 +108,53 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = (credentialResponse) => {
+  const handleLoginSuccess = async (credentialResponse) => {
     try {
-      const decoded = jwtDecode(credentialResponse.credential);
-      console.log('Google Login Success:', decoded);
-      setUser(decoded);
-      localStorage.setItem("taskSenpai.user", JSON.stringify(decoded));
+      const googleIdToken = credentialResponse?.credential;
+      if (!googleIdToken) {
+        throw new Error("Missing Google credential");
+      }
+
+      const decoded = jwtDecode(googleIdToken);
+
+      const authResponse = await fetch(API_AUTH_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(googleIdToken),
+      });
+
+      const authText = await authResponse.text();
+      let authPayload = null;
+      try {
+        authPayload = authText ? JSON.parse(authText) : null;
+      } catch {
+        authPayload = null;
+      }
+
+      if (!authResponse.ok) {
+        const message =
+          authPayload?.message ||
+          authPayload?.error ||
+          authText ||
+          "Login failed";
+        throw new Error(message);
+      }
+
+      const backendUserId = authPayload?.userId ?? authPayload?.id ?? authPayload?.user?.id;
+      if (!backendUserId) {
+        throw new Error("Login succeeded but backend did not return a user id");
+      }
+
+      const userWithBackendId = { ...decoded, id: backendUserId };
+      setUser(userWithBackendId);
+      localStorage.setItem("taskSenpai.user", JSON.stringify(userWithBackendId));
       setShowLoginModal(false);
       setShowProfilePopup(false);
       toast.success(t('app.profile.login_success', 'Logged in successfully'));
     } catch (error) {
-      console.error('Login Failed:', error);
+      console.error("Login Failed:", error);
       toast.error(t('app.profile.login_error', 'Login failed'));
     }
   };
@@ -120,11 +171,22 @@ function App() {
     toast.success(t('app.profile.logout_success', 'Logged out successfully'));
   };
 
-  async function loadTodos() {
+  const loadTodos = useCallback(async () => {
+    // If not logged in, don't try to load tasks (or load empty/local demo tasks if you prefer)
+    // For now, we'll just require login for backend tasks
+    if (!user) {
+        setTodos([]);
+        return;
+    }
+
     try {
       setLoading(true);
       setError("");
-      const response = await fetch(API_BASE_URL);
+      
+      const response = await fetch(API_BASE_URL, {
+        headers: generateAuthHeaders()
+      });
+
       if (!response.ok) {
         throw new Error("Failed to load todos");
       }
@@ -135,7 +197,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [generateAuthHeaders, user]);
 
   async function handleAddTodo(event) {
     event.preventDefault();
@@ -147,9 +209,7 @@ function App() {
       setError("");
       const response = await fetch(API_BASE_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: generateAuthHeaders(),
         body: JSON.stringify({
           name: newTodoName,
           isComplete: false,
@@ -177,9 +237,7 @@ function App() {
       setError("");
       const response = await fetch(`${API_BASE_URL}/${updatedTodo.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: generateAuthHeaders(),
         body: JSON.stringify(updatedTodo),
       });
 
@@ -207,6 +265,7 @@ function App() {
       setError("");
       const response = await fetch(`${API_BASE_URL}/${todo.id}`, {
         method: "DELETE",
+        headers: generateAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -231,13 +290,20 @@ function App() {
   }, [activeView]);
 
   useEffect(() => {
-    loadTodos();
+    // Only load todos if we have a user
+    if (user) {
+        loadTodos();
+    } else {
+        setTodos([]);
+    }
     
     // Initialize settings
     if (settings.theme === 'light') {
       document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
     }
-  }, []);
+  }, [loadTodos, settings.theme, user]); // Re-run when user changes
 
   // Handle scroll effect for header
   useEffect(() => {
@@ -263,6 +329,13 @@ function App() {
           onLoginError={handleLoginError}
         />
       )}
+
+      <BackgroundMusic />
+      <ChatAssistant 
+        user={user} 
+        todos={todos} 
+        onNavigate={setActiveView} 
+      />
       <header className={`app-header landing-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="app-header-left">
           <button 
@@ -420,7 +493,12 @@ function App() {
               title={t('app.header.profile')}
             >
               {isLoggedIn && user?.picture ? (
-                <img src={user.picture} alt="Profile" className="profile-avatar" />
+                <img 
+                  src={user.picture} 
+                  alt="Profile" 
+                  className="profile-avatar" 
+                  referrerPolicy="no-referrer"
+                />
               ) : (
                 <UserCircleIcon className="icon-svg" />
               )}

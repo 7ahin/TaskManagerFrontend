@@ -1,0 +1,192 @@
+.music-player-container {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.music-toggle-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(30, 30, 40, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1002;
+    position: relative;
+}
+
+.music-toggle-btn:hover {
+    background: rgba(60, 60, 80, 0.9);
+    transform: scale(1.1) rotate(-10deg);
+}
+
+.music-toggle-btn.playing {
+    border-color: #646cff;
+    box-shadow: 0 0 20px rgba(100, 108, 255, 0.5);
+    animation: pulse-glow 3s infinite;
+}
+
+.music-toggle-btn .icon-svg {
+    width: 32px;
+    height: 32px;
+}
+
+.music-toggle-btn.playing .icon-svg {
+    animation: bounce-note 2s infinite ease-in-out;
+}
+
+.music-controls-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 280px;
+    background: rgba(30, 30, 40, 0.95);
+    backdrop-filter: blur(15px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 20px 20px 60px; /* Extra padding left for the icon overlap */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    
+    /* Animation initial state */
+    opacity: 0;
+    transform: scale(0.8) translate(-20px, 20px);
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: bottom left;
+    z-index: 1001;
+}
+
+.music-controls-panel.visible {
+    opacity: 1;
+    transform: scale(1) translate(0, 0);
+    pointer-events: all;
+}
+
+.music-header {
+    margin-bottom: 8px;
+}
+
+.music-header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 1);
+    letter-spacing: 0.5px;
+}
+
+.track-info {
+    margin-bottom: 12px;
+}
+
+.track-name {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.play-pause {
+    background: #646cff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(100, 108, 255, 0.4);
+}
+
+.play-pause:hover {
+    background: #7c83ff;
+    box-shadow: 0 6px 16px rgba(100, 108, 255, 0.6);
+    transform: scale(1.1);
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.volume-slider {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.1s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+}
+
+.icon-svg {
+    width: 24px;
+    height: 24px;
+}
+
+.icon-sm {
+    width: 20px;
+    height: 20px;
+}
+
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 20px rgba(100, 108, 255, 0.4); }
+    50% { box-shadow: 0 0 30px rgba(100, 108, 255, 0.7); }
+    100% { box-shadow: 0 0 20px rgba(100, 108, 255, 0.4); }
+}
+
+@keyframes bounce-note {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
