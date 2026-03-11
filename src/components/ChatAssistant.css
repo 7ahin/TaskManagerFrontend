@@ -327,13 +327,20 @@
 }
 
 /* Quick Actions */
+.quick-actions-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .quick-actions {
     display: flex;
     gap: 8px;
     overflow-x: auto;
     padding: 5px 5px 10px 5px;
     scrollbar-width: none; /* Hide scrollbar */
-    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    width: 100%;
 }
 
 .quick-actions::-webkit-scrollbar {
@@ -357,4 +364,37 @@
     background: rgba(100, 108, 255, 0.3);
     border-color: #646cff;
     color: white;
+}
+
+.scroll-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(60, 60, 80, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+
+.scroll-arrow:hover {
+    background: #646cff;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.scroll-arrow.left {
+    left: -5px;
+}
+
+.scroll-arrow.right {
+    right: -5px;
 }

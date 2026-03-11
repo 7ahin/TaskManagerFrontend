@@ -71,6 +71,8 @@ function App() {
 
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginModalTitle, setLoginModalTitle] = useState("");
+  const [loginModalMessage, setLoginModalMessage] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showLanguagePopup, setShowLanguagePopup] = useState(false);
@@ -152,6 +154,12 @@ function App() {
       localStorage.setItem("taskSenpai.user", JSON.stringify(userWithBackendId));
       setShowLoginModal(false);
       setShowProfilePopup(false);
+      
+      // Navigate to dashboard if currently on landing
+      if (activeView === "landing") {
+        setActiveView("dashboard");
+      }
+      
       toast.success(t('app.profile.login_success', 'Logged in successfully'));
     } catch (error) {
       console.error("Login Failed:", error);
@@ -168,6 +176,7 @@ function App() {
     setUser(null);
     localStorage.removeItem("taskSenpai.user");
     setShowProfilePopup(false);
+    setActiveView("landing"); // Return to landing view on logout
     toast.success(t('app.profile.logout_success', 'Logged out successfully'));
   };
 
@@ -201,6 +210,14 @@ function App() {
 
   async function handleAddTodo(event) {
     event.preventDefault();
+    
+    if (!user) {
+      setLoginModalTitle(t('app.auth_required_title', 'Sign In Required'));
+      setLoginModalMessage(t('app.auth_required_desc', 'You need to be signed in to add new tasks and sync them across devices.'));
+      setShowLoginModal(true);
+      return;
+    }
+
     if (!newTodoName.trim()) {
       return;
     }
@@ -216,11 +233,14 @@ function App() {
           priority: newPriority,
           dueDate: newDueDate || null,
           startDate: newStartDate || null,
-          status: "Working on it"
+          status: "Working on it",
         }),
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+            throw new Error("Unauthorized: Please sign in");
+        }
         throw new Error("Failed to create todo");
       }
 
@@ -229,6 +249,7 @@ function App() {
       toast.success("Task added");
     } catch (err) {
       setError(err.message || "Unknown error");
+      toast.error(err.message || "Failed to add task");
     }
   }
 
@@ -305,6 +326,13 @@ function App() {
     }
   }, [loadTodos, settings.theme, user]); // Re-run when user changes
 
+  // Force landing view if not authenticated
+  useEffect(() => {
+    if (!user && activeView !== "landing") {
+      setActiveView("landing");
+    }
+  }, [user, activeView]);
+
   // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
@@ -319,14 +347,30 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleNavigation = (view) => {
+    if (!user && view !== 'landing') {
+      setLoginModalTitle(t('app.auth_required_title', 'Sign In Required'));
+      setLoginModalMessage(t('app.auth_required_desc', 'You need to be signed in to access this feature.'));
+      setShowLoginModal(true);
+      return;
+    }
+    setActiveView(view);
+  };
+
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <div className="app-root">
       {showLoginModal && (
         <LoginModal 
-          onClose={() => setShowLoginModal(false)}
+          onClose={() => {
+            setShowLoginModal(false);
+            setLoginModalTitle("");
+            setLoginModalMessage("");
+          }}
           onLoginSuccess={handleLoginSuccess}
           onLoginError={handleLoginError}
+          customTitle={loginModalTitle}
+          customMessage={loginModalMessage}
         />
       )}
 
@@ -334,13 +378,13 @@ function App() {
       <ChatAssistant 
         user={user} 
         todos={todos} 
-        onNavigate={setActiveView} 
+        onNavigate={handleNavigation} 
       />
       <header className={`app-header landing-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="app-header-left">
           <button 
             className="logo-button" 
-            onClick={() => setActiveView('landing')}
+            onClick={() => handleNavigation('landing')}
             style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
           >
             <div className="logo-group">
@@ -355,31 +399,31 @@ function App() {
               className={
                 "app-nav-tab" + (activeView == "dashboard" ? " active" : "")
               }
-              onClick={() => setActiveView("dashboard")}
+              onClick={() => handleNavigation("dashboard")}
             >
               {t('app.nav.dashboard')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "board" ? " active" : "")}
-              onClick={() => setActiveView("board")}
+              onClick={() => handleNavigation("board")}
             >
               {t('app.nav.board')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "timeline" ? " active" : "")}
-              onClick={() => setActiveView("timeline")}
+              onClick={() => handleNavigation("timeline")}
             >
               {t('app.nav.timeline')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "calendar" ? " active" : "")}
-              onClick={() => setActiveView("calendar")}
+              onClick={() => handleNavigation("calendar")}
             >
               {t('app.nav.calendar')}
             </button>
             <button
               className={"app-nav-tab" + (activeView == "goals" ? " active" : "")}
-              onClick={() => setActiveView("goals")}
+              onClick={() => handleNavigation("goals")}
             >
               {t('app.nav.goals')}
             </button>
@@ -545,7 +589,7 @@ function App() {
         
         {activeView == "landing" && (
           <LandingView 
-            onGetStarted={() => setActiveView("dashboard")} 
+            onGetStarted={() => handleNavigation('dashboard')} 
             onStartTutorial={() => setShowTutorial(true)}
           />
         )}
@@ -553,7 +597,7 @@ function App() {
         {activeView == "dashboard" && (
           <DashboardView
             todos={todos}
-            onGoBoard={() => setActiveView("board")}
+            onGoBoard={() => handleNavigation("board")}
           />
         )}
 

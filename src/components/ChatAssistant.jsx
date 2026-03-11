@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   ChatBubbleLeftRightIcon, 
   UserCircleIcon,
-  SparklesIcon
+  SparklesIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from '@heroicons/react/24/outline';
 import './ChatAssistant.css';
 import botLogo from '../assets/bot.png';
@@ -15,6 +17,9 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const quickActionsRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -23,6 +28,56 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (quickActionsRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = quickActionsRef.current;
+        setShowLeftArrow(scrollLeft > 0);
+        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5); // 5px tolerance
+      }
+    };
+
+    const currentRef = quickActionsRef.current;
+    if (currentRef) {
+      currentRef.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
+      // Initial check
+      checkScroll();
+    }
+
+    return () => {
+      if (currentRef) {
+        currentRef.removeEventListener('scroll', checkScroll);
+      }
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [isOpen]); // Re-check when chat opens
+
+  const scrollQuickActions = (direction) => {
+    if (quickActionsRef.current) {
+      const scrollAmount = 150;
+      quickActionsRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const getMaskStyle = () => {
+    const mask = showLeftArrow && showRightArrow 
+      ? 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)'
+      : showLeftArrow 
+        ? 'linear-gradient(to right, transparent, black 20px, black)'
+        : showRightArrow 
+          ? 'linear-gradient(to right, black, black calc(100% - 20px), transparent)'
+          : 'none';
+    
+    return { 
+      WebkitMaskImage: mask,
+      maskImage: mask
+    };
+  };
 
   const generateResponse = (text) => {
     const lowerText = text.toLowerCase();
@@ -43,26 +98,31 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
     // Navigation Commands
     if (lowerText.includes('dashboard')) {
       onNavigate && onNavigate('dashboard');
+      if (!user) return "Please sign in to access the Dashboard.";
       return "Navigating to Dashboard...";
     }
 
     if (lowerText.includes('board') || lowerText.includes('kanban')) {
       onNavigate && onNavigate('board');
+      if (!user) return "Please sign in to access the Board.";
       return "Switching to Board view...";
     }
 
     if (lowerText.includes('calendar') || lowerText.includes('schedule')) {
       onNavigate && onNavigate('calendar');
+      if (!user) return "Please sign in to access the Calendar.";
       return "Opening Calendar view...";
     }
     
     if (lowerText.includes('goals') || lowerText.includes('target')) {
       onNavigate && onNavigate('goals');
+      if (!user) return "Please sign in to access Goals.";
       return "Taking you to Goals view...";
     }
 
     if (lowerText.includes('timeline') || lowerText.includes('gantt')) {
       onNavigate && onNavigate('timeline');
+      if (!user) return "Please sign in to access the Timeline.";
       return "Showing Timeline view...";
     }
 
@@ -177,22 +237,44 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
           <div ref={messagesEndRef} />
         </div>
         
-        <div className="quick-actions">
-          <button onClick={() => handleQuickAction("How many tasks do I have?")}>
-            📊 Task Count
-          </button>
-          <button onClick={() => handleQuickAction("Go to Dashboard")}>
-            🏠 Dashboard
-          </button>
-          <button onClick={() => handleQuickAction("Show Calendar")}>
-            📅 Calendar
-          </button>
-          <button onClick={() => handleQuickAction("Open Board View")}>
-            📋 Board
-          </button>
-          <button onClick={() => handleQuickAction("Check Goals")}>
-            🎯 Goals
-          </button>
+        <div className="quick-actions-container">
+          {showLeftArrow && (
+            <button 
+              className="scroll-arrow left" 
+              onClick={() => scrollQuickActions('left')}
+              aria-label="Scroll left"
+            >
+              <ChevronLeftIcon className="icon-sm" />
+            </button>
+          )}
+          
+          <div className="quick-actions" ref={quickActionsRef} style={getMaskStyle()}>
+            <button onClick={() => handleQuickAction("How many tasks do I have?")}>
+              📊 Task Count
+            </button>
+            <button onClick={() => handleQuickAction("Go to Dashboard")}>
+              🏠 Dashboard
+            </button>
+            <button onClick={() => handleQuickAction("Show Calendar")}>
+              📅 Calendar
+            </button>
+            <button onClick={() => handleQuickAction("Open Board View")}>
+              📋 Board
+            </button>
+            <button onClick={() => handleQuickAction("Check Goals")}>
+              🎯 Goals
+            </button>
+          </div>
+
+          {showRightArrow && (
+            <button 
+              className="scroll-arrow right" 
+              onClick={() => scrollQuickActions('right')}
+              aria-label="Scroll right"
+            >
+              <ChevronRightIcon className="icon-sm" />
+            </button>
+          )}
         </div>
 
         <form className="chat-input-area" onSubmit={handleSendMessage}>

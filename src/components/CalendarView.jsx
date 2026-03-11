@@ -1,6 +1,12 @@
 import { useMemo, useState } from "react";
 import "./CalendarView.css";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { 
+  ChevronLeftIcon, 
+  ChevronRightIcon, 
+  CalendarDaysIcon, 
+  ClipboardDocumentListIcon,
+  CheckCircleIcon
+} from "@heroicons/react/24/outline";
 import { toYmd, normalizeDueDate } from "../utils/dateUtils";
 
 function CalendarView({ todos, onToggleComplete, onGoBoard }) {
@@ -88,9 +94,11 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
         </div>
         <div className="calendar-view-actions">
           <button className="calendar-today-btn" type="button" onClick={jumpToToday}>
+            <CalendarDaysIcon strokeWidth={2} />
             Today
           </button>
           <button className="calendar-go-board-btn" type="button" onClick={onGoBoard}>
+            <ClipboardDocumentListIcon strokeWidth={2} />
             Open Board
           </button>
         </div>
@@ -105,7 +113,9 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
               className="calendar-nav-btn"
               aria-label="Previous month"
             >
-              <ChevronLeftIcon className="icon-xs" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
             </button>
             <span className="calendar-month-year">
               {viewDate.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
@@ -116,7 +126,9 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
               className="calendar-nav-btn"
               aria-label="Next month"
             >
-              <ChevronRightIcon className="icon-xs" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
             </button>
           </div>
 
@@ -195,7 +207,10 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
           </div>
 
           {selectedTasks.length === 0 ? (
-            <div className="calendar-sidebar-empty">No tasks due on this day.</div>
+            <div className="calendar-sidebar-empty">
+              <CheckCircleIcon className="icon-lg text-muted" style={{ width: '48px', height: '48px', opacity: 0.2 }} />
+              <div>No tasks due on this day.</div>
+            </div>
           ) : (
             <div className="calendar-sidebar-list">
               {selectedTasks.map((t) => (

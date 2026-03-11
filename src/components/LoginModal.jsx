@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import logoImg from '../assets/logo.png';
 
-const LoginModal = ({ onClose, onLoginSuccess, onLoginError }) => {
+const LoginModal = ({ onClose, onLoginSuccess, onLoginError, customTitle, customMessage }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
 
@@ -24,11 +24,11 @@ const LoginModal = ({ onClose, onLoginSuccess, onLoginError }) => {
 
         <div className="login-header">
           <img src={logoImg} alt="Task Senpai" className="login-logo" />
-          <h1>{t('app.title', 'Task Senpai')}</h1>
+          <h1>{customTitle || t('app.title', 'Task Senpai')}</h1>
           <p className="login-subtitle">
-            {isLogin 
+            {customMessage || (isLogin 
               ? t('app.login.welcome_back', 'Welcome back! Please sign in to continue.') 
-              : t('app.login.join_us', 'Join us and start organizing your life.')}
+              : t('app.login.join_us', 'Join us and start organizing your life.'))}
           </p>
         </div>
 

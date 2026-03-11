@@ -1,5 +1,8 @@
 {
   "app": {
+    "auth_required": "Please sign in to add tasks",
+    "auth_required_title": "Sign In Required",
+    "auth_required_desc": "You need to be signed in to add new tasks and sync them across devices.",
     "nav": {
       "dashboard": "Dashboard",
       "board": "Board",
