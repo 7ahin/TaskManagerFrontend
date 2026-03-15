@@ -45,5 +45,133 @@
       "notifications": "Notificaciones",
       "compact_mode": "Modo compacto"
     }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Resumen de tus tareas, prioridades y calendario.",
+    "summary": {
+      "inbox": { "title": "Bandeja de entrada", "subtitle": "Tareas pendientes que requieren atención" },
+      "today": { "title": "Hoy", "subtitle": "Tareas programadas para hoy" },
+      "thisWeek": { "title": "Esta semana", "subtitle": "Próximas en los próximos 7 días" }
+    },
+    "actions": {
+      "viewBoard": "Ver tablero",
+      "focusNow": "Enfocarse ahora",
+      "seeSchedule": "Ver agenda",
+      "openBoard": "Abrir tablero",
+      "done": "Hecho"
+    },
+    "stats": {
+      "totalTasks": "Tareas totales",
+      "completed": "Completadas",
+      "inProgress": "En progreso"
+    },
+    "charts": {
+      "taskProgress": "Progreso de tareas",
+      "tasksByPriority": "Tareas por prioridad",
+      "dueHealthPending": "Estado de vencimientos (pendientes)"
+    },
+    "sections": {
+      "nextUp": "Siguiente",
+      "thisWeekWorkload": "Carga de esta semana",
+      "needsAttention": "Requiere atención"
+    },
+    "priority": { "high": "Alta", "medium": "Media", "low": "Baja" },
+    "progress": { "completed": "Completadas", "inProgress": "En progreso" },
+    "due": {
+      "overdue": "Atrasadas",
+      "today": "Hoy",
+      "thisWeek": "Esta semana",
+      "later": "Más adelante",
+      "noDueDate": "Sin fecha"
+    },
+    "empty": {
+      "noPendingTasks": "No hay tareas pendientes.",
+      "noOverdueTasks": "No hay tareas atrasadas."
+    },
+    "misc": {
+      "tasks": "tareas",
+      "noTasks": "Sin tareas",
+      "done": "hechas",
+      "untitledTask": "Tarea sin título"
+    },
+    "aria": {
+      "tasksDuePerDayThisWeek": "Tareas con vencimiento por día esta semana"
+    }
+  },
+  "board": {
+    "title": "Resumen general",
+    "subtitle": "Inspirado en tableros estilo Monday: elementos, estado, acciones rápidas",
+    "view": { "listTooltip": "Vista de lista", "kanbanTooltip": "Tablero Kanban" },
+    "search": { "placeholder": "Buscar tareas" },
+    "filters": {
+      "ariaLabel": "Filtros del tablero",
+      "clear": "Limpiar",
+      "all": "Todas",
+      "pending": "Pendientes",
+      "completed": "Hechas",
+      "overdue": "Atrasadas",
+      "dueToday": "Vence hoy",
+      "dueWeek": "Esta semana",
+      "noDue": "Sin fecha",
+      "highPriority": "Alta prioridad"
+    },
+    "add": { "placeholder": "Agregar una nueva tarea", "button": "+ Agregar tarea" },
+    "table": {
+      "item": "Elemento",
+      "priority": "Prioridad",
+      "dueDate": "Fecha límite",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "saveChanges": "Guardar cambios",
+      "close": "Cerrar"
+    },
+    "empty": {
+      "noTasksFound": "No se encontraron tareas",
+      "noMatch": "Ninguna tarea coincide con \"{{search}}\". Prueba con otra palabra.",
+      "emptyList": "Tu lista está vacía. Agrega una nueva tarea arriba para comenzar.",
+      "dropHere": "Suelta aquí"
+    },
+    "modal": {
+      "editTask": { "title": "Editar tarea", "subtitle": "Actualiza nombre, prioridad, fechas y estado." },
+      "deleteTask": {
+        "title": "¿Eliminar tarea?",
+        "subtitle": "Esta acción no se puede deshacer.",
+        "confirmPrefix": "¿Seguro que quieres eliminar ",
+        "confirmSuffix": "?"
+      }
+    },
+    "fields": {
+      "taskName": "Nombre de la tarea",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "startDate": "Fecha de inicio",
+      "dueDate": "Fecha límite"
+    },
+    "placeholders": { "taskName": "Pon un nombre claro a tu tarea" },
+    "status": {
+      "workingOnIt": "En progreso",
+      "stuck": "Bloqueada",
+      "done": "Hecha",
+      "review": "Revisión",
+      "inProgress": "En progreso"
+    },
+    "priority": { "low": "Baja", "medium": "Media", "high": "Alta" },
+    "dates": {
+      "selectDate": "Seleccionar fecha",
+      "setStartDate": "Establecer inicio",
+      "setDueDate": "Establecer límite",
+      "dates": "Fechas",
+      "startShort": "Inicio",
+      "dueShort": "Límite",
+      "noDates": "Sin fechas",
+      "startPrefix": "I:"
+    },
+    "buttons": { "clear": "Limpiar", "done": "Hecho", "undo": "Deshacer" }
   }
 }

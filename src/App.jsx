@@ -47,6 +47,7 @@ function App() {
   const [newDueDate, setNewDueDate] = useState("");
   const [newStartDate, setNewStartDate] = useState("");
   const [search, setSearch] = useState("");
+  const [boardQuickFilter, setBoardQuickFilter] = useState("all");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeView, setActiveView] = useState(() => {
@@ -68,6 +69,71 @@ function App() {
     }
     return headers;
   }, [user]);
+
+  const todoMetaStorageKey = useMemo(() => {
+    if (!user?.id) return null;
+    return `taskSenpai.todoMeta.${user.id}`;
+  }, [user?.id]);
+
+  const readTodoMeta = useCallback(() => {
+    if (!todoMetaStorageKey) return {};
+    try {
+      const raw = localStorage.getItem(todoMetaStorageKey);
+      const parsed = raw ? JSON.parse(raw) : {};
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  }, [todoMetaStorageKey]);
+
+  const writeTodoMeta = useCallback(
+    (meta) => {
+      if (!todoMetaStorageKey) return;
+      localStorage.setItem(todoMetaStorageKey, JSON.stringify(meta || {}));
+    },
+    [todoMetaStorageKey]
+  );
+
+  const upsertTodoMeta = useCallback(
+    (todoId, patch) => {
+      if (!todoMetaStorageKey || todoId == null || !patch) return;
+      const key = String(todoId);
+      const meta = readTodoMeta();
+      meta[key] = { ...(meta[key] || {}), ...patch };
+      writeTodoMeta(meta);
+    },
+    [readTodoMeta, todoMetaStorageKey, writeTodoMeta]
+  );
+
+  const removeTodoMeta = useCallback(
+    (todoId) => {
+      if (!todoMetaStorageKey || todoId == null) return;
+      const key = String(todoId);
+      const meta = readTodoMeta();
+      if (!(key in meta)) return;
+      delete meta[key];
+      writeTodoMeta(meta);
+    },
+    [readTodoMeta, todoMetaStorageKey, writeTodoMeta]
+  );
+
+  const normalizeTodo = useCallback((todo) => {
+    const isComplete = !!todo?.isComplete;
+    const status = todo?.status ?? (isComplete ? "Done" : "Working on it");
+    return { ...todo, isComplete, status };
+  }, []);
+
+  const mergeTodoMeta = useCallback(
+    (items) => {
+      const meta = readTodoMeta();
+      return (items || []).map((todo) => {
+        const m = meta[String(todo?.id)] || null;
+        const merged = m ? { ...m, ...todo } : todo;
+        return normalizeTodo(merged);
+      });
+    },
+    [normalizeTodo, readTodoMeta]
+  );
 
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -200,13 +266,13 @@ function App() {
         throw new Error("Failed to load todos");
       }
       const data = await response.json();
-      setTodos(data);
+      setTodos(mergeTodoMeta(data));
     } catch (err) {
       setError(err.message || "Unknown error");
     } finally {
       setLoading(false);
     }
-  }, [generateAuthHeaders, user]);
+  }, [generateAuthHeaders, mergeTodoMeta, user]);
 
   async function handleAddTodo(event) {
     event.preventDefault();
@@ -244,8 +310,33 @@ function App() {
         throw new Error("Failed to create todo");
       }
 
+      const responseText = await response.text();
+      let createdTodo = null;
+      try {
+        createdTodo = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        createdTodo = null;
+      }
+
+      const createdId = createdTodo?.id ?? createdTodo?.Id ?? null;
+      const metaPatch = {
+        priority: newPriority,
+        dueDate: newDueDate || null,
+        startDate: newStartDate || null,
+        status: "Working on it",
+      };
+      if (createdId != null) {
+        upsertTodoMeta(createdId, metaPatch);
+        setTodos((prev) => {
+          const existing = (prev || []).some((t) => t.id === createdId);
+          if (existing) return prev;
+          return [...(prev || []), normalizeTodo({ ...metaPatch, ...createdTodo, id: createdId })];
+        });
+      } else {
+        await loadTodos();
+      }
+
       setNewTodoName("");
-      await loadTodos();
       toast.success("Task added");
     } catch (err) {
       setError(err.message || "Unknown error");
@@ -266,7 +357,20 @@ function App() {
         throw new Error("Failed to update todo");
       }
 
-      await loadTodos();
+      if (updatedTodo?.id != null) {
+        const patch = {};
+        if (updatedTodo.status != null) patch.status = updatedTodo.status;
+        if (updatedTodo.priority != null) patch.priority = updatedTodo.priority;
+        if (updatedTodo.dueDate !== undefined) patch.dueDate = updatedTodo.dueDate;
+        if (updatedTodo.startDate !== undefined) patch.startDate = updatedTodo.startDate;
+        if (Object.keys(patch).length > 0) upsertTodoMeta(updatedTodo.id, patch);
+      }
+
+      setTodos((prev) =>
+        (prev || []).map((t) =>
+          t.id === updatedTodo.id ? normalizeTodo({ ...t, ...updatedTodo }) : t
+        )
+      );
       toast.success("Task updated");
     } catch (err) {
       setError(err.message || "Unknown error");
@@ -278,6 +382,11 @@ function App() {
       ...todo,
       isComplete: !todo.isComplete,
     };
+    if (!todo.isComplete) {
+      updated.status = "Done";
+    } else if (todo.status === "Done") {
+      updated.status = "Working on it";
+    }
     await handleUpdateTodo(updated);
   }
 
@@ -293,7 +402,8 @@ function App() {
         throw new Error("Failed to delete todo");
       }
 
-      await loadTodos();
+      removeTodoMeta(todo.id);
+      setTodos((prev) => (prev || []).filter((t) => t.id !== todo.id));
     } catch (err) {
       setError(err.message || "Unknown error");
       toast.error("Failed to delete");
@@ -301,10 +411,39 @@ function App() {
   }
 
   const filteredTodos = useMemo(() => {
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const dayStartMs = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const isPending = (t) => !t?.isComplete;
+
+    const quickFiltered = (todos || []).filter((t) => {
+      if (boardQuickFilter === "all") return true;
+      if (boardQuickFilter === "pending") return isPending(t);
+      if (boardQuickFilter === "completed") return !!t?.isComplete;
+      if (boardQuickFilter === "high_priority") {
+        return isPending(t) && String(t?.priority || "Medium").toLowerCase() === "high";
+      }
+      if (!isPending(t)) return false;
+
+      if (boardQuickFilter === "no_due") return !t?.dueDate;
+      if (!t?.dueDate) return false;
+
+      const due = new Date(t.dueDate);
+      const dueStart = dayStartMs(due);
+
+      if (boardQuickFilter === "overdue") return dueStart < todayStart;
+      if (boardQuickFilter === "due_today") return dueStart === todayStart;
+      if (boardQuickFilter === "due_week") {
+        const diffDays = (dueStart - todayStart) / (1000 * 60 * 60 * 24);
+        return diffDays >= 0 && diffDays < 7;
+      }
+      return true;
+    });
+
     const term = search.trim().toLowerCase();
-    if (!term) return todos;
-    return todos.filter((t) => t.name?.toLowerCase().includes(term));
-  }, [todos, search]);
+    if (!term) return quickFiltered;
+    return quickFiltered.filter((t) => t.name?.toLowerCase().includes(term));
+  }, [todos, search, boardQuickFilter]);
 
   useEffect(() => {
     localStorage.setItem("taskSenpai.activeView", activeView);
@@ -586,68 +725,93 @@ function App() {
 
       <main className="app-container">
         {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
-        
-        {activeView == "landing" && (
-          <LandingView 
-            onGetStarted={() => handleNavigation('dashboard')} 
-            onStartTutorial={() => setShowTutorial(true)}
-          />
-        )}
 
-        {activeView == "dashboard" && (
-          <DashboardView
-            todos={todos}
-            onGoBoard={() => handleNavigation("board")}
-          />
-        )}
+        <div key={activeView} className="app-view-transition">
+          {activeView == "landing" && (
+            <LandingView
+              onGetStarted={() => handleNavigation('dashboard')}
+              onStartTutorial={() => setShowTutorial(true)}
+            />
+          )}
 
-        {activeView == "board" && (
-          <BoardView
-            todos={todos}
-            filteredTodos={filteredTodos}
-            search={search}
-            setSearch={setSearch}
-            newTodoName={newTodoName}
-            setNewTodoName={setNewTodoName}
-            newPriority={newPriority}
-            setNewPriority={setNewPriority}
-            newDueDate={newDueDate}
-            setNewDueDate={setNewDueDate}
-            newStartDate={newStartDate}
-            setNewStartDate={setNewStartDate}
-            loading={loading}
-            error={error}
-            onAddTodo={handleAddTodo}
-            onUpdateTodo={handleUpdateTodo}
-            onToggleComplete={handleToggleComplete}
-            onDelete={handleDelete}
-          />
-        )}
+          {activeView == "dashboard" && (
+            <DashboardView
+              todos={todos}
+              onGoBoard={(filterKey) => {
+                if (filterKey) {
+                  setSearch("");
+                  setBoardQuickFilter(filterKey);
+                }
+                handleNavigation("board");
+              }}
+              onOpenTask={(t) => {
+                setBoardQuickFilter("all");
+                setSearch(t?.name || "");
+                handleNavigation("board");
+              }}
+              onToggleComplete={handleToggleComplete}
+            />
+          )}
 
-        {activeView === "calendar" && (
-          <CalendarView
-            todos={todos}
-            onToggleComplete={handleToggleComplete}
-            onGoBoard={() => setActiveView("board")}
-          />
-        )}
+          {activeView == "board" && (
+            <BoardView
+              todos={todos}
+              filteredTodos={filteredTodos}
+              search={search}
+              setSearch={setSearch}
+              boardQuickFilter={boardQuickFilter}
+              setBoardQuickFilter={setBoardQuickFilter}
+              newTodoName={newTodoName}
+              setNewTodoName={setNewTodoName}
+              newPriority={newPriority}
+              setNewPriority={setNewPriority}
+              newDueDate={newDueDate}
+              setNewDueDate={setNewDueDate}
+              newStartDate={newStartDate}
+              setNewStartDate={setNewStartDate}
+              loading={loading}
+              error={error}
+              onAddTodo={handleAddTodo}
+              onUpdateTodo={handleUpdateTodo}
+              onToggleComplete={handleToggleComplete}
+              onDelete={handleDelete}
+            />
+          )}
 
-        {activeView === "goals" && (
-          <GoalsView todos={todos} onGoBoard={() => setActiveView("board")} />
-        )}
+          {activeView === "calendar" && (
+            <CalendarView
+              todos={todos}
+              onToggleComplete={handleToggleComplete}
+              onGoBoard={() => setActiveView("board")}
+            />
+          )}
 
-        {activeView === "timeline" && (
-          <TimelineView
-            todos={todos}
-            onToggleComplete={handleToggleComplete}
-            onUpdateTask={handleUpdateTodo}
-            onGoBoard={() => setActiveView("board")}
-            onOpenTask={(t) => {
-              setSearch(t.name || "");
-              setActiveView("board");
-            }}
-          />
-        )}
+          {activeView === "goals" && (
+            <GoalsView
+              todos={todos}
+              onGoBoard={(filterKey) => {
+                if (filterKey) {
+                  setSearch("");
+                  setBoardQuickFilter(filterKey);
+                }
+                handleNavigation("board");
+              }}
+            />
+          )}
+
+          {activeView === "timeline" && (
+            <TimelineView
+              todos={todos}
+              onToggleComplete={handleToggleComplete}
+              onUpdateTask={handleUpdateTodo}
+              onGoBoard={() => setActiveView("board")}
+              onOpenTask={(t) => {
+                setSearch(t.name || "");
+                setActiveView("board");
+              }}
+            />
+          )}
+        </div>
       </main>
     </div>
     </GoogleOAuthProvider>

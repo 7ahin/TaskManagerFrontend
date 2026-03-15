@@ -45,5 +45,133 @@
       "notifications": "通知",
       "compact_mode": "コンパクトモード"
     }
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "subtitle": "タスク・優先度・予定の概要。",
+    "summary": {
+      "inbox": { "title": "受信箱", "subtitle": "注意が必要な未完了タスク" },
+      "today": { "title": "今日", "subtitle": "今日予定されているタスク" },
+      "thisWeek": { "title": "今週", "subtitle": "今後7日以内の予定" }
+    },
+    "actions": {
+      "viewBoard": "ボードを見る",
+      "focusNow": "今すぐ集中",
+      "seeSchedule": "予定を見る",
+      "openBoard": "ボードを開く",
+      "done": "完了"
+    },
+    "stats": {
+      "totalTasks": "タスク合計",
+      "completed": "完了",
+      "inProgress": "進行中"
+    },
+    "charts": {
+      "taskProgress": "進捗",
+      "tasksByPriority": "優先度別タスク",
+      "dueHealthPending": "期限の状況（未完了）"
+    },
+    "sections": {
+      "nextUp": "次にやること",
+      "thisWeekWorkload": "今週の負荷",
+      "needsAttention": "要対応"
+    },
+    "priority": { "high": "高", "medium": "中", "low": "低" },
+    "progress": { "completed": "完了", "inProgress": "進行中" },
+    "due": {
+      "overdue": "期限超過",
+      "today": "今日",
+      "thisWeek": "今週",
+      "later": "後で",
+      "noDueDate": "期限なし"
+    },
+    "empty": {
+      "noPendingTasks": "未完了のタスクはありません。",
+      "noOverdueTasks": "期限超過のタスクはありません。"
+    },
+    "misc": {
+      "tasks": "件",
+      "noTasks": "タスクなし",
+      "done": "完了",
+      "untitledTask": "無題のタスク"
+    },
+    "aria": {
+      "tasksDuePerDayThisWeek": "今週の1日あたりの期限タスク数"
+    }
+  },
+  "board": {
+    "title": "概要ボード",
+    "subtitle": "Monday風のボード: アイテム、ステータス、クイック操作",
+    "view": { "listTooltip": "リスト表示", "kanbanTooltip": "カンバン" },
+    "search": { "placeholder": "タスクを検索" },
+    "filters": {
+      "ariaLabel": "ボードのフィルター",
+      "clear": "クリア",
+      "all": "すべて",
+      "pending": "未完了",
+      "completed": "完了",
+      "overdue": "期限超過",
+      "dueToday": "今日が期限",
+      "dueWeek": "今週",
+      "noDue": "期限なし",
+      "highPriority": "高優先度"
+    },
+    "add": { "placeholder": "新しいタスクを追加", "button": "+ タスクを追加" },
+    "table": {
+      "item": "項目",
+      "priority": "優先度",
+      "dueDate": "期限",
+      "status": "状態",
+      "actions": "操作"
+    },
+    "actions": {
+      "edit": "編集",
+      "delete": "削除",
+      "cancel": "キャンセル",
+      "saveChanges": "変更を保存",
+      "close": "閉じる"
+    },
+    "empty": {
+      "noTasksFound": "タスクが見つかりません",
+      "noMatch": "「{{search}}」に一致するタスクがありません。別のキーワードを試してください。",
+      "emptyList": "リストが空です。上で新しいタスクを追加してください。",
+      "dropHere": "ここにドロップ"
+    },
+    "modal": {
+      "editTask": { "title": "タスクを編集", "subtitle": "名前・優先度・日付・状態を更新します。" },
+      "deleteTask": {
+        "title": "タスクを削除しますか？",
+        "subtitle": "この操作は元に戻せません。",
+        "confirmPrefix": "次のタスクを削除してよろしいですか ",
+        "confirmSuffix": "？"
+      }
+    },
+    "fields": {
+      "taskName": "タスク名",
+      "status": "状態",
+      "priority": "優先度",
+      "startDate": "開始日",
+      "dueDate": "期限"
+    },
+    "placeholders": { "taskName": "わかりやすい名前を付けてください" },
+    "status": {
+      "workingOnIt": "作業中",
+      "stuck": "停滞",
+      "done": "完了",
+      "review": "レビュー",
+      "inProgress": "進行中"
+    },
+    "priority": { "low": "低", "medium": "中", "high": "高" },
+    "dates": {
+      "selectDate": "日付を選択",
+      "setStartDate": "開始日を設定",
+      "setDueDate": "期限を設定",
+      "dates": "日付",
+      "startShort": "開始",
+      "dueShort": "期限",
+      "noDates": "日付なし",
+      "startPrefix": "S:"
+    },
+    "buttons": { "clear": "クリア", "done": "完了", "undo": "元に戻す" }
   }
 }

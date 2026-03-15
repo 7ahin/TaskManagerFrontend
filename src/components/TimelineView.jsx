@@ -1,12 +1,123 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./TimelineView.css";
 import { toYmd, normalizeDueDate } from "../utils/dateUtils";
+import { CalendarDaysIcon, FlagIcon } from "@heroicons/react/24/outline";
 
 function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdateTask }) {
   const [timelineSearch, setTimelineSearch] = useState("");
   const [timelineShowDone, setTimelineShowDone] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [groupBy, setGroupBy] = useState("day");
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const groupByBtnRef = useRef(null);
+  const priorityBtnRef = useRef(null);
+  const dropdownMenuRef = useRef(null);
+
+  useEffect(() => {
+    if (!openDropdown) return;
+    const onPointerDown = (e) => {
+      const btn = openDropdown === "groupBy" ? groupByBtnRef.current : priorityBtnRef.current;
+      if (btn && btn.contains(e.target)) return;
+      if (dropdownMenuRef.current && dropdownMenuRef.current.contains(e.target)) return;
+      setOpenDropdown(null);
+    };
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setOpenDropdown(null);
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [openDropdown]);
+
+  const getStatusLabel = (t) => {
+    return t.status || (t.isComplete ? "Done" : "Working on it");
+  };
+
+  const dropdownId = openDropdown ? `timeline-dropdown-${openDropdown}` : undefined;
+
+  const groupByOptions = useMemo(
+    () => [
+      { value: "day", label: "Group by day" },
+      { value: "week", label: "Group by week" },
+    ],
+    []
+  );
+
+  const priorityOptions = useMemo(
+    () => [
+      { value: "All", label: "All Priorities" },
+      { value: "High", label: "High" },
+      { value: "Medium", label: "Medium" },
+      { value: "Low", label: "Low" },
+    ],
+    []
+  );
+
+  const getDropdownLabel = (kind) => {
+    if (kind === "groupBy") return groupByOptions.find((o) => o.value === groupBy)?.label || "Group by";
+    return priorityOptions.find((o) => o.value === priorityFilter)?.label || "All Priorities";
+  };
+
+  const onDropdownKeyDown = (e, kind) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setOpenDropdown((prev) => (prev === kind ? null : kind));
+      return;
+    }
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setOpenDropdown((prev) => (prev === kind ? prev : kind));
+      requestAnimationFrame(() => {
+        const menu = dropdownMenuRef.current;
+        if (!menu) return;
+        const first = menu.querySelector('[role="option"][aria-selected="true"]') || menu.querySelector('[role="option"]');
+        if (first && typeof first.focus === "function") first.focus();
+      });
+    }
+  };
+
+  const onOptionKeyDown = (e, kind, options) => {
+    const current = e.currentTarget;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setOpenDropdown(null);
+      const btn = kind === "groupBy" ? groupByBtnRef.current : priorityBtnRef.current;
+      if (btn) btn.focus();
+      return;
+    }
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const items = Array.from(current.parentElement?.querySelectorAll('[role="option"]') || []);
+      const idx = items.indexOf(current);
+      if (idx < 0) return;
+      const nextIdx = e.key === "ArrowDown" ? Math.min(items.length - 1, idx + 1) : Math.max(0, idx - 1);
+      items[nextIdx]?.focus();
+      return;
+    }
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      const value = current.getAttribute("data-value");
+      if (!value) return;
+      if (kind === "groupBy") setGroupBy(value);
+      else setPriorityFilter(value);
+      setOpenDropdown(null);
+      const btn = kind === "groupBy" ? groupByBtnRef.current : priorityBtnRef.current;
+      if (btn) btn.focus();
+      return;
+    }
+    const key = String(e.key || "").toLowerCase();
+    if (key.length === 1 && /[a-z0-9]/.test(key)) {
+      const menu = current.parentElement;
+      if (!menu) return;
+      const match = options.find((o) => String(o.label).toLowerCase().startsWith(key));
+      if (!match) return;
+      const el = menu.querySelector(`[role="option"][data-value="${CSS.escape(match.value)}"]`);
+      if (el && typeof el.focus === "function") el.focus();
+    }
+  };
 
   const timelineGroups = useMemo(() => {
     const term = timelineSearch.trim().toLowerCase();
@@ -134,31 +245,112 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
           value={timelineSearch}
           onChange={(e) => setTimelineSearch(e.target.value)}
         />
-        <select
-          className="timeline-filter-select"
-          value={groupBy}
-          onChange={(e) => setGroupBy(e.target.value)}
-        >
-          <option value="day">Group by day</option>
-          <option value="week">Group by week</option>
-        </select>
-        <select
-          className="timeline-filter-select"
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
-        >
-          <option value="All">All Priorities</option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
+        <div className="timeline-dropdown">
+          <button
+            ref={groupByBtnRef}
+            type="button"
+            className={`timeline-filter-select timeline-dropdown-trigger ${openDropdown === "groupBy" ? "is-open" : ""}`}
+            aria-haspopup="listbox"
+            aria-expanded={openDropdown === "groupBy"}
+            aria-controls={openDropdown === "groupBy" ? dropdownId : undefined}
+            onClick={() => setOpenDropdown((prev) => (prev === "groupBy" ? null : "groupBy"))}
+            onKeyDown={(e) => onDropdownKeyDown(e, "groupBy")}
+          >
+            <CalendarDaysIcon className="timeline-dropdown-icon" aria-hidden="true" />
+            {getDropdownLabel("groupBy")}
+          </button>
+          {openDropdown === "groupBy" ? (
+            <div
+              ref={dropdownMenuRef}
+              id={dropdownId}
+              className="timeline-dropdown-menu"
+              role="listbox"
+              aria-label="Group by"
+            >
+              {groupByOptions.map((o) => {
+                const selected = o.value === groupBy;
+                return (
+                  <button
+                    key={o.value}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    data-value={o.value}
+                    className={`timeline-dropdown-option ${selected ? "is-selected" : ""}`}
+                    onClick={() => {
+                      setGroupBy(o.value);
+                      setOpenDropdown(null);
+                      groupByBtnRef.current?.focus();
+                    }}
+                    onKeyDown={(e) => onOptionKeyDown(e, "groupBy", groupByOptions)}
+                  >
+                    <span className="timeline-dropdown-option-label">{o.label}</span>
+                    {selected ? <span className="timeline-dropdown-check" aria-hidden="true" /> : null}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="timeline-dropdown">
+          <button
+            ref={priorityBtnRef}
+            type="button"
+            className={`timeline-filter-select timeline-dropdown-trigger ${openDropdown === "priority" ? "is-open" : ""}`}
+            aria-haspopup="listbox"
+            aria-expanded={openDropdown === "priority"}
+            aria-controls={openDropdown === "priority" ? dropdownId : undefined}
+            onClick={() => setOpenDropdown((prev) => (prev === "priority" ? null : "priority"))}
+            onKeyDown={(e) => onDropdownKeyDown(e, "priority")}
+          >
+            <FlagIcon className="timeline-dropdown-icon" aria-hidden="true" />
+            {getDropdownLabel("priority")}
+          </button>
+          {openDropdown === "priority" ? (
+            <div
+              ref={dropdownMenuRef}
+              id={dropdownId}
+              className="timeline-dropdown-menu"
+              role="listbox"
+              aria-label="Priority"
+            >
+              {priorityOptions.map((o) => {
+                const selected = o.value === priorityFilter;
+                return (
+                  <button
+                    key={o.value}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    data-value={o.value}
+                    className={`timeline-dropdown-option ${selected ? "is-selected" : ""}`}
+                    onClick={() => {
+                      setPriorityFilter(o.value);
+                      setOpenDropdown(null);
+                      priorityBtnRef.current?.focus();
+                    }}
+                    onKeyDown={(e) => onOptionKeyDown(e, "priority", priorityOptions)}
+                  >
+                    <span className="timeline-dropdown-option-label">{o.label}</span>
+                    {selected ? <span className="timeline-dropdown-check" aria-hidden="true" /> : null}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
         <label className="timeline-toggle">
           <input
+            className="timeline-toggle-input"
             type="checkbox"
             checked={timelineShowDone}
             onChange={(e) => setTimelineShowDone(e.target.checked)}
           />
-          <span>Show done</span>
+          <span className="timeline-toggle-ui" aria-hidden="true">
+            <span className="timeline-toggle-knob" />
+          </span>
+          <span className="timeline-toggle-text">Show done</span>
         </label>
       </div>
 
@@ -174,37 +366,51 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
               </div>
               <div className="timeline-list">
                 {g.tasks.map((t) => (
-                  <div key={t.id} className={`timeline-item ${t.isComplete ? "done" : ""}`}>
-                    <div className="timeline-item-left">
-                      <input
-                        className="timeline-checkbox"
-                        type="checkbox"
-                        checked={!!t.isComplete}
-                        onChange={() => onToggleComplete(t)}
-                      />
-                    </div>
-                    <div className="timeline-item-main">
-                      <div className="timeline-item-title">{t.name}</div>
-                      <div className="timeline-item-meta">
-                        <span className={`timeline-status-pill priority-${(t.priority || "Medium").toLowerCase()}`}>
-                          {t.priority || "Medium"}
-                        </span>
-                        <span className={`timeline-status-pill ${t.isComplete ? "done" : "working"}`}>
-                          {t.isComplete ? "Done" : "Working on it"}
-                        </span>
-                        {t.dueDate && (
-                           <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
+                  <div
+                    key={t.id}
+                    className={`timeline-item ${t.isComplete ? "done" : ""}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onOpenTask(t)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") onOpenTask(t);
+                    }}
+                  >
+                    <div className="timeline-item-row">
+                      <div className="timeline-item-left">
+                        <label className="timeline-checkbox-wrap" onClick={(e) => e.stopPropagation()}>
+                          <input
+                            className="timeline-checkbox"
+                            type="checkbox"
+                            checked={!!t.isComplete}
+                            onChange={() => onToggleComplete(t)}
+                          />
+                          <span className="timeline-checkbox-box" aria-hidden="true" />
+                        </label>
+                      </div>
+                      <div className="timeline-item-main">
+                        <div className="timeline-item-title">{t.name}</div>
+                        <div className="timeline-item-meta">
+                          <span className={`timeline-status-pill priority-${(t.priority || "Medium").toLowerCase()}`}>
+                            {t.priority || "Medium"}
+                          </span>
+                          <span className={`timeline-status-pill status-${String(getStatusLabel(t)).toLowerCase().replace(/\s+/g, "-")}`}>
+                            {getStatusLabel(t)}
+                          </span>
+                          {t.dueDate && (
+                            <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
                               Due {new Date(t.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                           </span>
-                        )}
-                        {t.startDate && t.dueDate && t.startDate > t.dueDate && (
-                           <span className="timeline-conflict-warning" title="Start date is after due date">
+                            </span>
+                          )}
+                          {t.startDate && t.dueDate && t.startDate > t.dueDate && (
+                            <span className="timeline-conflict-warning" title="Start date is after due date">
                               ⚠️ Conflict
-                           </span>
-                        )}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="timeline-item-actions">
+                    <div className="timeline-item-actions" onClick={(e) => e.stopPropagation()}>
                       <div className="timeline-date-group">
                         <span className="timeline-date-label">Start:</span>
                         <input
@@ -212,6 +418,17 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                           className="timeline-date-input"
                           value={normalizeDueDate(t.startDate) || ""}
                           onChange={(e) => onUpdateTask({ ...t, startDate: e.target.value })}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      <div className="timeline-date-group">
+                        <span className="timeline-date-label">Due:</span>
+                        <input
+                          type="date"
+                          className="timeline-date-input"
+                          value={normalizeDueDate(t.dueDate) || ""}
+                          onChange={(e) => onUpdateTask({ ...t, dueDate: e.target.value })}
+                          onClick={(e) => e.stopPropagation()}
                         />
                       </div>
                       <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>
@@ -227,42 +444,56 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
           {timelineGroups.undated.length > 0 ? (
             <div className="timeline-group">
               <div className="timeline-group-header">
-                <div className="timeline-group-title">No start date</div>
+                <div className="timeline-group-title">No dates</div>
                 <div className="timeline-group-count">{timelineGroups.undated.length}</div>
               </div>
               <div className="timeline-list">
                 {timelineGroups.undated.map((t) => (
-                  <div key={t.id} className={`timeline-item ${t.isComplete ? "done" : ""}`}>
-                    <div className="timeline-item-left">
-                      <input
-                        className="timeline-checkbox"
-                        type="checkbox"
-                        checked={!!t.isComplete}
-                        onChange={() => onToggleComplete(t)}
-                      />
-                    </div>
-                    <div className="timeline-item-main">
-                      <div className="timeline-item-title">{t.name}</div>
-                      <div className="timeline-item-meta">
-                        <span className={`timeline-status-pill priority-${(t.priority || "Medium").toLowerCase()}`}>
-                          {t.priority || "Medium"}
-                        </span>
-                        <span className={`timeline-status-pill ${t.isComplete ? "done" : "working"}`}>
-                          {t.isComplete ? "Done" : "Working on it"}
-                        </span>
-                        {t.dueDate && (
-                           <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
+                  <div
+                    key={t.id}
+                    className={`timeline-item ${t.isComplete ? "done" : ""}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onOpenTask(t)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") onOpenTask(t);
+                    }}
+                  >
+                    <div className="timeline-item-row">
+                      <div className="timeline-item-left">
+                        <label className="timeline-checkbox-wrap" onClick={(e) => e.stopPropagation()}>
+                          <input
+                            className="timeline-checkbox"
+                            type="checkbox"
+                            checked={!!t.isComplete}
+                            onChange={() => onToggleComplete(t)}
+                          />
+                          <span className="timeline-checkbox-box" aria-hidden="true" />
+                        </label>
+                      </div>
+                      <div className="timeline-item-main">
+                        <div className="timeline-item-title">{t.name}</div>
+                        <div className="timeline-item-meta">
+                          <span className={`timeline-status-pill priority-${(t.priority || "Medium").toLowerCase()}`}>
+                            {t.priority || "Medium"}
+                          </span>
+                          <span className={`timeline-status-pill status-${String(getStatusLabel(t)).toLowerCase().replace(/\s+/g, "-")}`}>
+                            {getStatusLabel(t)}
+                          </span>
+                          {t.dueDate && (
+                            <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
                               Due {new Date(t.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                           </span>
-                        )}
-                        {t.startDate && t.dueDate && t.startDate > t.dueDate && (
-                           <span className="timeline-conflict-warning" title="Start date is after due date">
+                            </span>
+                          )}
+                          {t.startDate && t.dueDate && t.startDate > t.dueDate && (
+                            <span className="timeline-conflict-warning" title="Start date is after due date">
                               ⚠️ Conflict
-                           </span>
-                        )}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="timeline-item-actions">
+                    <div className="timeline-item-actions" onClick={(e) => e.stopPropagation()}>
                       <div className="timeline-date-group">
                         <span className="timeline-date-label">Start:</span>
                         <input
@@ -270,6 +501,17 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                           className="timeline-date-input"
                           value={normalizeDueDate(t.startDate) || ""}
                           onChange={(e) => onUpdateTask({ ...t, startDate: e.target.value })}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      <div className="timeline-date-group">
+                        <span className="timeline-date-label">Due:</span>
+                        <input
+                          type="date"
+                          className="timeline-date-input"
+                          value={normalizeDueDate(t.dueDate) || ""}
+                          onChange={(e) => onUpdateTask({ ...t, dueDate: e.target.value })}
+                          onClick={(e) => e.stopPropagation()}
                         />
                       </div>
                       <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>

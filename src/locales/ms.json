@@ -45,5 +45,133 @@
       "notifications": "Pemberitahuan",
       "compact_mode": "Mod Padat"
     }
+  },
+  "dashboard": {
+    "title": "Papan Pemuka",
+    "subtitle": "Gambaran keseluruhan tugasan, keutamaan, dan jadual anda.",
+    "summary": {
+      "inbox": { "title": "Peti Masuk", "subtitle": "Tugasan belum selesai yang perlukan perhatian" },
+      "today": { "title": "Hari Ini", "subtitle": "Tugasan dijadualkan untuk hari ini" },
+      "thisWeek": { "title": "Minggu Ini", "subtitle": "Akan datang dalam 7 hari seterusnya" }
+    },
+    "actions": {
+      "viewBoard": "Lihat Papan",
+      "focusNow": "Fokus Sekarang",
+      "seeSchedule": "Lihat Jadual",
+      "openBoard": "Buka Papan",
+      "done": "Selesai"
+    },
+    "stats": {
+      "totalTasks": "Jumlah Tugasan",
+      "completed": "Selesai",
+      "inProgress": "Sedang dibuat"
+    },
+    "charts": {
+      "taskProgress": "Kemajuan Tugasan",
+      "tasksByPriority": "Tugasan mengikut keutamaan",
+      "dueHealthPending": "Status tarikh akhir (belum selesai)"
+    },
+    "sections": {
+      "nextUp": "Seterusnya",
+      "thisWeekWorkload": "Beban Minggu Ini",
+      "needsAttention": "Perlu Perhatian"
+    },
+    "priority": { "high": "Tinggi", "medium": "Sederhana", "low": "Rendah" },
+    "progress": { "completed": "Selesai", "inProgress": "Sedang dibuat" },
+    "due": {
+      "overdue": "Lewat",
+      "today": "Hari Ini",
+      "thisWeek": "Minggu ini",
+      "later": "Kemudian",
+      "noDueDate": "Tiada tarikh akhir"
+    },
+    "empty": {
+      "noPendingTasks": "Tiada tugasan belum selesai.",
+      "noOverdueTasks": "Tiada tugasan lewat."
+    },
+    "misc": {
+      "tasks": "tugasan",
+      "noTasks": "Tiada tugasan",
+      "done": "selesai",
+      "untitledTask": "Tugasan tanpa tajuk"
+    },
+    "aria": {
+      "tasksDuePerDayThisWeek": "Tugasan tarikh akhir per hari minggu ini"
+    }
+  },
+  "board": {
+    "title": "Gambaran keseluruhan",
+    "subtitle": "Diilhamkan oleh papan gaya Monday: item, status, tindakan pantas",
+    "view": { "listTooltip": "Paparan senarai", "kanbanTooltip": "Papan Kanban" },
+    "search": { "placeholder": "Cari tugasan" },
+    "filters": {
+      "ariaLabel": "Penapis papan",
+      "clear": "Kosongkan",
+      "all": "Semua",
+      "pending": "Belum selesai",
+      "completed": "Selesai",
+      "overdue": "Lewat",
+      "dueToday": "Tarikh akhir hari ini",
+      "dueWeek": "Minggu ini",
+      "noDue": "Tiada tarikh akhir",
+      "highPriority": "Keutamaan tinggi"
+    },
+    "add": { "placeholder": "Tambah tugasan baharu", "button": "+ Tambah tugasan" },
+    "table": {
+      "item": "Item",
+      "priority": "Keutamaan",
+      "dueDate": "Tarikh akhir",
+      "status": "Status",
+      "actions": "Tindakan"
+    },
+    "actions": {
+      "edit": "Sunting",
+      "delete": "Padam",
+      "cancel": "Batal",
+      "saveChanges": "Simpan perubahan",
+      "close": "Tutup"
+    },
+    "empty": {
+      "noTasksFound": "Tiada tugasan ditemui",
+      "noMatch": "Tiada tugasan sepadan dengan \"{{search}}\". Cuba kata kunci lain.",
+      "emptyList": "Senarai anda kosong. Tambah tugasan baharu di atas untuk mula.",
+      "dropHere": "Lepaskan di sini"
+    },
+    "modal": {
+      "editTask": { "title": "Sunting tugasan", "subtitle": "Kemas kini nama, keutamaan, tarikh, dan status." },
+      "deleteTask": {
+        "title": "Padam tugasan?",
+        "subtitle": "Tindakan ini tidak boleh dibuat asal.",
+        "confirmPrefix": "Adakah anda pasti mahu memadam ",
+        "confirmSuffix": "?"
+      }
+    },
+    "fields": {
+      "taskName": "Nama tugasan",
+      "status": "Status",
+      "priority": "Keutamaan",
+      "startDate": "Tarikh mula",
+      "dueDate": "Tarikh akhir"
+    },
+    "placeholders": { "taskName": "Berikan nama tugasan yang jelas" },
+    "status": {
+      "workingOnIt": "Sedang dibuat",
+      "stuck": "Tersekat",
+      "done": "Selesai",
+      "review": "Semakan",
+      "inProgress": "Sedang dibuat"
+    },
+    "priority": { "low": "Rendah", "medium": "Sederhana", "high": "Tinggi" },
+    "dates": {
+      "selectDate": "Pilih tarikh",
+      "setStartDate": "Tetapkan tarikh mula",
+      "setDueDate": "Tetapkan tarikh akhir",
+      "dates": "Tarikh",
+      "startShort": "Mula",
+      "dueShort": "Akhir",
+      "noDates": "Tiada tarikh",
+      "startPrefix": "M:"
+    },
+    "buttons": { "clear": "Kosongkan", "done": "Selesai", "undo": "Buat asal" }
   }
 }

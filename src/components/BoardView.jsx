@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import "./BoardView.css";
 import {
   DndContext,
   closestCorners,
+  pointerWithin,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
@@ -33,15 +35,16 @@ import {
   CheckIcon
 } from "@heroicons/react/24/outline";
 
-function CustomDatePicker({ value, onChange, placeholder = "Select Date" }) {
+function CustomDatePicker({ value, onChange, placeholder }) {
+  const { t: translate, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   
   // Format the date for display
-  const displayDate = value ? new Date(value).toLocaleDateString(undefined, {
+  const displayDate = value ? new Date(value).toLocaleDateString(i18n.language, {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
-  }) : placeholder;
+  }) : (placeholder ?? translate("board.dates.selectDate"));
 
   // Calendar logic
   const today = new Date();
@@ -66,6 +69,10 @@ function CustomDatePicker({ value, onChange, placeholder = "Select Date" }) {
   for (let i = 0; i < firstDayOfMonth; i++) {
     paddingDays.push(i);
   }
+
+  const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
+    new Date(2021, 7, 1 + i).toLocaleDateString(i18n.language, { weekday: "narrow" })
+  );
 
   const changeMonth = (increment) => {
     const newDate = new Date(viewDate);
@@ -109,14 +116,14 @@ function CustomDatePicker({ value, onChange, placeholder = "Select Date" }) {
                 <ChevronLeftIcon className="icon-xs" />
               </button>
               <span className="board-calendar-month-year">
-                {viewDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                {viewDate.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}
               </span>
               <button type="button" onClick={() => changeMonth(1)} className="board-calendar-nav-btn">
                 <ChevronRightIcon className="icon-xs" />
               </button>
             </div>
             <div className="board-calendar-grid-header">
-              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+              {daysOfWeek.map((d, i) => (
                 <div key={`${d}-${i}`} className="board-calendar-day-name">{d}</div>
               ))}
             </div>
@@ -154,17 +161,18 @@ function CustomDatePicker({ value, onChange, placeholder = "Select Date" }) {
 }
 
 function DateRangePopup({ startDate, dueDate, onStartChange, onDueChange }) {
+  const { t: translate, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   const formatDate = (d) => {
     if (!d) return "";
-    return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return new Date(d).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
   };
 
   const hasDates = startDate || dueDate;
   const label = hasDates 
-    ? `${formatDate(startDate) || 'Start'} - ${formatDate(dueDate) || 'Due'}`
-    : "Dates";
+    ? `${formatDate(startDate) || translate("board.dates.startShort")} - ${formatDate(dueDate) || translate("board.dates.dueShort")}`
+    : translate("board.dates.dates");
 
   return (
     <div className="board-date-popup-wrapper">
@@ -185,22 +193,22 @@ function DateRangePopup({ startDate, dueDate, onStartChange, onDueChange }) {
           />
           <div className="board-date-popup-panel">
             <div className="board-date-popup-row">
-              <span className="board-date-popup-label">Start Date</span>
+              <span className="board-date-popup-label">{translate("board.fields.startDate")}</span>
               <div className="board-date-popup-field">
                 <CustomDatePicker 
                   value={startDate} 
                   onChange={onStartChange} 
-                  placeholder="Set start date" 
+                  placeholder={translate("board.dates.setStartDate")} 
                 />
               </div>
             </div>
             <div className="board-date-popup-row">
-              <span className="board-date-popup-label">Due Date</span>
+              <span className="board-date-popup-label">{translate("board.fields.dueDate")}</span>
               <div className="board-date-popup-field">
                 <CustomDatePicker 
                   value={dueDate} 
                   onChange={onDueChange} 
-                  placeholder="Set due date" 
+                  placeholder={translate("board.dates.setDueDate")} 
                 />
               </div>
             </div>
@@ -212,6 +220,7 @@ function DateRangePopup({ startDate, dueDate, onStartChange, onDueChange }) {
 }
 
 function CustomPriorityDropdown({ value, onChange }) {
+  const { t: translate } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const priorities = ["Low", "Medium", "High"];
 
@@ -230,7 +239,7 @@ function CustomPriorityDropdown({ value, onChange }) {
       >
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <span className={`board-priority-indicator ${value?.toLowerCase() || "medium"}`}></span>
-          {value || "Medium"}
+          {translate(`board.priority.${String(value || "Medium").toLowerCase()}`)}
         </div>
         <ChevronDownIcon className="board-dropdown-chevron" />
       </button>
@@ -249,7 +258,7 @@ function CustomPriorityDropdown({ value, onChange }) {
                 onClick={() => handleSelect(p)}
               >
                 <span className={`board-priority-indicator ${p.toLowerCase()}`}></span>
-                {p}
+                {translate(`board.priority.${p.toLowerCase()}`)}
               </div>
             ))}
           </div>
@@ -260,6 +269,7 @@ function CustomPriorityDropdown({ value, onChange }) {
 }
 
 function EditTaskModal({ todo, onClose, onSave }) {
+  const { t: translate } = useTranslation();
   const [name, setName] = useState(todo.name);
   const [priority, setPriority] = useState(todo.priority || "Medium");
   const [isComplete, setIsComplete] = useState(!!todo.isComplete);
@@ -292,25 +302,30 @@ function EditTaskModal({ todo, onClose, onSave }) {
 
   return createPortal(
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content edit-task-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title-wrap">
-            <h3 className="modal-title">Edit Task</h3>
-            <div className="modal-subtitle">Update name, priority, dates, and status.</div>
+            <h3 className="modal-title">{translate("board.modal.editTask.title")}</h3>
+            <div className="modal-subtitle">{translate("board.modal.editTask.subtitle")}</div>
           </div>
-          <button type="button" className="modal-close-btn" onClick={onClose} aria-label="Close">
+          <button
+            type="button"
+            className="modal-close-btn"
+            onClick={onClose}
+            aria-label={translate("board.actions.close")}
+          >
             <XMarkIcon className="icon-sm" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="edit-form">
           <div className="form-group">
-            <label className="edit-label">Task Name</label>
+            <label className="edit-label">{translate("board.fields.taskName")}</label>
             <input
               type="text"
               className="edit-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Give your task a clear name"
+              placeholder={translate("board.placeholders.taskName")}
               autoFocus
               required
             />
@@ -318,15 +333,15 @@ function EditTaskModal({ todo, onClose, onSave }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label className="edit-label">Status</label>
-              <div className="edit-status-toggle" role="group" aria-label="Status">
+              <label className="edit-label">{translate("board.fields.status")}</label>
+              <div className="edit-status-toggle" role="group" aria-label={translate("board.fields.status")}>
                 <button
                   type="button"
                   className={`edit-status-btn ${!isComplete ? "active" : ""}`}
                   onClick={() => setIsComplete(false)}
                 >
                   <span className="status-indicator working"></span>
-                  In progress
+                  {translate("board.status.inProgress")}
                 </button>
                 <button
                   type="button"
@@ -334,24 +349,22 @@ function EditTaskModal({ todo, onClose, onSave }) {
                   onClick={() => setIsComplete(true)}
                 >
                   <span className="status-indicator done"></span>
-                  Done
+                  {translate("board.status.done")}
                 </button>
               </div>
             </div>
             <div className="form-group">
-              <label className="edit-label">Priority</label>
-              <div style={{ width: "100%" }}>
-                <CustomPriorityDropdown
-                  value={priority}
-                  onChange={(val) => setPriority(val)}
-                />
-              </div>
+              <label className="edit-label">{translate("board.fields.priority")}</label>
+              <CustomPriorityDropdown
+                value={priority}
+                onChange={(val) => setPriority(val)}
+              />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label className="edit-label">Start Date</label>
+              <label className="edit-label">{translate("board.fields.startDate")}</label>
               <div className="edit-date-stack">
                 <CustomDatePicker value={startDate} onChange={(val) => setStartDate(val)} />
                 {startDate ? (
@@ -360,13 +373,13 @@ function EditTaskModal({ todo, onClose, onSave }) {
                     className="edit-clear-link"
                     onClick={() => setStartDate("")}
                   >
-                    Clear
+                    {translate("board.buttons.clear")}
                   </button>
                 ) : null}
               </div>
             </div>
-            <div className="form-group">
-              <label className="edit-label">Due Date</label>
+            <div className="form-group edit-date-align-right">
+              <label className="edit-label">{translate("board.fields.dueDate")}</label>
               <div className="edit-date-stack">
                 <CustomDatePicker value={dueDate} onChange={(val) => setDueDate(val)} />
                 {dueDate ? (
@@ -375,7 +388,7 @@ function EditTaskModal({ todo, onClose, onSave }) {
                     className="edit-clear-link"
                     onClick={() => setDueDate("")}
                   >
-                    Clear
+                    {translate("board.buttons.clear")}
                   </button>
                 ) : null}
               </div>
@@ -383,10 +396,10 @@ function EditTaskModal({ todo, onClose, onSave }) {
           </div>
           <div className="modal-actions">
             <button type="button" className="action-button secondary" onClick={onClose}>
-              Cancel
+              {translate("board.actions.cancel")}
             </button>
             <button type="submit" className="action-button primary">
-              Save Changes
+              {translate("board.actions.saveChanges")}
             </button>
           </div>
         </form>
@@ -397,6 +410,7 @@ function EditTaskModal({ todo, onClose, onSave }) {
 }
 
 function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }) {
+  const { t: translate, i18n } = useTranslation();
   const {
     attributes,
     listeners,
@@ -428,7 +442,7 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
             todo.priority?.toLowerCase() || "medium"
           }`}
         >
-          {todo.priority || "Medium"}
+          {translate(`board.priority.${String(todo.priority || "Medium").toLowerCase()}`)}
         </span>
         <button
           className="board-card-action-btn delete"
@@ -437,7 +451,7 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
             e.stopPropagation();
             setPendingDeleteId(todo.id);
           }}
-          title="Delete"
+          title={translate("board.actions.delete")}
         >
           &times;
         </button>
@@ -446,20 +460,20 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
       <div className="board-kanban-card-footer">
         <div className="board-card-dates">
           {todo.startDate && (
-             <div className="board-card-date-item start-date" title="Start Date">
-               <span className="date-prefix">S:</span>
-               <span>{new Date(todo.startDate).toLocaleDateString(undefined, {month: 'numeric', day: 'numeric'})}</span>
+             <div className="board-card-date-item start-date" title={translate("board.fields.startDate")}>
+               <span className="date-prefix">{translate("board.dates.startPrefix")}</span>
+               <span>{new Date(todo.startDate).toLocaleDateString(i18n.language, {month: 'numeric', day: 'numeric'})}</span>
              </div>
           )}
           {todo.dueDate && (
-             <div className="board-card-date-item due-date" title="Due Date">
+             <div className="board-card-date-item due-date" title={translate("board.fields.dueDate")}>
                <ClockIcon className="icon-xs" />
-               <span>{new Date(todo.dueDate).toLocaleDateString(undefined, {month: 'numeric', day: 'numeric'})}</span>
+               <span>{new Date(todo.dueDate).toLocaleDateString(i18n.language, {month: 'numeric', day: 'numeric'})}</span>
              </div>
           )}
           {!todo.startDate && !todo.dueDate && (
              <div className="board-card-date-item empty">
-               <span className="date-placeholder">No dates</span>
+               <span className="date-placeholder">{translate("board.dates.noDates")}</span>
              </div>
           )}
         </div>
@@ -472,11 +486,11 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
           }}
         >
           {todo.isComplete ? (
-            "Undo"
+            translate("board.buttons.undo")
           ) : (
             <>
               <CheckCircleIcon className="icon-sm" />
-              Done
+              {translate("board.buttons.done")}
             </>
           )}
         </button>
@@ -488,10 +502,11 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
 const STATUSES = ["Working on it", "Stuck", "Done", "Review"];
 
 function DroppableColumn({ id, title, count, statusClass, items, children }) {
-  const { setNodeRef } = useDroppable({ id });
+  const { t: translate } = useTranslation();
+  const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
-    <div ref={setNodeRef} className="board-kanban-column">
+    <div ref={setNodeRef} className={`board-kanban-column ${isOver ? "is-over" : ""}`}>
       <div className="board-kanban-header">
         <span className={`board-status-dot ${statusClass}`}></span>
         <h3>{title}</h3>
@@ -505,7 +520,7 @@ function DroppableColumn({ id, title, count, statusClass, items, children }) {
           {children}
         </SortableContext>
         {items.length === 0 && (
-          <div className="board-empty-kanban">Drop items here</div>
+          <div className="board-empty-kanban">{translate("board.empty.dropHere")}</div>
         )}
       </div>
     </div>
@@ -517,6 +532,8 @@ function BoardView({
   filteredTodos,
   search,
   setSearch,
+  boardQuickFilter,
+  setBoardQuickFilter,
   newTodoName,
   setNewTodoName,
   newPriority,
@@ -532,10 +549,29 @@ function BoardView({
   onToggleComplete,
   onDelete,
 }) {
+  const { t: translate, i18n } = useTranslation();
   const [viewMode, setViewMode] = useState("kanban"); // 'list' or 'kanban'
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [editingTodo, setEditingTodo] = useState(null);
   const [activeId, setActiveId] = useState(null); // For DragOverlay
+
+  const statusKeyOf = (status) => {
+    if (status === "Working on it") return "workingOnIt";
+    if (status === "Stuck") return "stuck";
+    if (status === "Done") return "done";
+    return "review";
+  };
+
+  const quickFilters = [
+    { key: "all", label: translate("board.filters.all") },
+    { key: "pending", label: translate("board.filters.pending") },
+    { key: "completed", label: translate("board.filters.completed") },
+    { key: "overdue", label: translate("board.filters.overdue") },
+    { key: "due_today", label: translate("board.filters.dueToday") },
+    { key: "due_week", label: translate("board.filters.dueWeek") },
+    { key: "no_due", label: translate("board.filters.noDue") },
+    { key: "high_priority", label: translate("board.filters.highPriority") },
+  ];
 
   const pendingDelete =
     pendingDeleteId != null
@@ -563,6 +599,12 @@ function BoardView({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  const collisionDetectionStrategy = (args) => {
+    const pointerCollisions = pointerWithin(args);
+    if (pointerCollisions.length > 0) return pointerCollisions;
+    return closestCorners(args);
+  };
 
   function handleDragStart(event) {
     setActiveId(event.active.id);
@@ -610,9 +652,9 @@ function BoardView({
     <section className="board-view-container">
         <div className="board-view-header">
             <div>
-            <div className="board-view-title">High Level Overview</div>
+            <div className="board-view-title">{translate("board.title")}</div>
             <div className="board-view-subtitle">
-                Inspired by Monday-style boards: items, status, quick actions
+                {translate("board.subtitle")}
             </div>
             </div>
             
@@ -621,14 +663,14 @@ function BoardView({
                     <button 
                         className={`board-view-btn ${viewMode === 'list' ? 'active' : ''}`}
                         onClick={() => setViewMode('list')}
-                        data-tooltip="List View"
+                        data-tooltip={translate("board.view.listTooltip")}
                     >
                         <ListBulletIcon className="icon-sm" />
                     </button>
                     <button 
                         className={`board-view-btn ${viewMode === 'kanban' ? 'active' : ''}`}
                         onClick={() => setViewMode('kanban')}
-                        data-tooltip="Kanban Board"
+                        data-tooltip={translate("board.view.kanbanTooltip")}
                     >
                         <Squares2X2Icon className="icon-sm" />
                     </button>
@@ -636,11 +678,38 @@ function BoardView({
                 <input
                 className="board-search-input"
                 type="search"
-                placeholder="Search tasks"
+                placeholder={translate("board.search.placeholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
+        </div>
+
+        <div className="board-filter-row" role="toolbar" aria-label={translate("board.filters.ariaLabel")}>
+          {quickFilters.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              className={`board-filter-chip ${boardQuickFilter === f.key ? "active" : ""}`}
+              onClick={() => {
+                if (setBoardQuickFilter) setBoardQuickFilter(f.key);
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+          {boardQuickFilter !== "all" || (search && search.trim()) ? (
+            <button
+              type="button"
+              className="board-filter-clear"
+              onClick={() => {
+                if (setBoardQuickFilter) setBoardQuickFilter("all");
+                setSearch("");
+              }}
+            >
+              {translate("board.filters.clear")}
+            </button>
+          ) : null}
         </div>
 
         <form className="board-add-row" onSubmit={onAddTodo}>
@@ -649,7 +718,7 @@ function BoardView({
             type="text"
             value={newTodoName}
             onChange={(e) => setNewTodoName(e.target.value)}
-            placeholder="Add a new task"
+            placeholder={translate("board.add.placeholder")}
             />
             <div className="board-add-controls">
               <CustomPriorityDropdown
@@ -663,7 +732,7 @@ function BoardView({
                 onDueChange={setNewDueDate}
               />
               <button className="board-add-button" type="submit">
-              + Add Task
+              {translate("board.add.button")}
               </button>
             </div>
         </form>
@@ -676,11 +745,11 @@ function BoardView({
             <thead>
                 <tr>
                 <th className="board-checkbox-cell"></th>
-                <th className="text-left">Item</th>
-                <th className="text-center">Priority</th>
-                <th className="text-center">Due Date</th>
-                <th className="text-center">Status</th>
-                <th className="board-actions-cell text-right">Actions</th>
+                <th className="text-left">{translate("board.table.item")}</th>
+                <th className="text-center">{translate("board.table.priority")}</th>
+                <th className="text-center">{translate("board.table.dueDate")}</th>
+                <th className="text-center">{translate("board.table.status")}</th>
+                <th className="board-actions-cell text-right">{translate("board.table.actions")}</th>
                 </tr>
             </thead>
             <tbody>
@@ -706,12 +775,12 @@ function BoardView({
                             todo.priority || "Medium"
                         ).toLowerCase()}`}
                         >
-                        {todo.priority || "Medium"}
+                        {translate(`board.priority.${String(todo.priority || "Medium").toLowerCase()}`)}
                         </span>
                     </td>
                     <td className="text-center">
                         {todo.dueDate
-                        ? new Date(todo.dueDate).toLocaleDateString()
+                        ? new Date(todo.dueDate).toLocaleDateString(i18n.language)
                         : "—"}
                     </td>
                     <td className="text-center">
@@ -721,7 +790,7 @@ function BoardView({
                             (todo.isComplete ? "done" : "working")
                         }
                         >
-                        {todo.isComplete ? "Done" : "Working on it"}
+                        {todo.isComplete ? translate("board.status.done") : translate("board.status.workingOnIt")}
                         </span>
                     </td>
                     <td className="board-actions-cell text-right">
@@ -729,13 +798,13 @@ function BoardView({
                         className="action-button"
                         onClick={() => setEditingTodo(todo)}
                         >
-                        Edit
+                        {translate("board.actions.edit")}
                         </button>
                         <button
                         className="action-button delete"
                         onClick={() => setPendingDeleteId(todo.id)}
                         >
-                        Delete
+                        {translate("board.actions.delete")}
                         </button>
                     </td>
                     </tr>
@@ -748,11 +817,11 @@ function BoardView({
                 <div className="empty-state-icon-wrapper">
                   <ClipboardDocumentListIcon className="empty-state-icon" />
                 </div>
-                <h3 className="empty-state-title">No tasks found</h3>
+                <h3 className="empty-state-title">{translate("board.empty.noTasksFound")}</h3>
                 <p className="empty-state-description">
                   {search 
-                    ? `No tasks match "${search}". Try a different keyword.` 
-                    : "Your list is empty. Add a new task above to get started."}
+                    ? translate("board.empty.noMatch", { search }) 
+                    : translate("board.empty.emptyList")}
                 </p>
               </div>
             )}
@@ -760,7 +829,7 @@ function BoardView({
         ) : (
           <DndContext
             sensors={sensors}
-            collisionDetection={closestCorners}
+            collisionDetection={collisionDetectionStrategy}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
@@ -779,7 +848,7 @@ function BoardView({
                   <DroppableColumn
                     key={status}
                     id={status}
-                    title={status}
+                    title={translate(`board.status.${statusKeyOf(status)}`)}
                     count={statusItems.length}
                     statusClass={dotClass}
                     items={statusItems}
@@ -812,22 +881,24 @@ function BoardView({
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                   <div className="modal-title-wrap">
-                    <h3 className="modal-title">Delete Task?</h3>
-                    <div className="modal-subtitle">This action cannot be undone.</div>
+                    <h3 className="modal-title">{translate("board.modal.deleteTask.title")}</h3>
+                    <div className="modal-subtitle">{translate("board.modal.deleteTask.subtitle")}</div>
                   </div>
                   <button type="button" className="modal-close-btn" onClick={() => setPendingDeleteId(null)}>
                     <XMarkIcon className="icon-sm" />
                   </button>
                 </div>
                 <p style={{ color: "var(--text-main)", marginBottom: "1.5rem" }}>
-                  Are you sure you want to delete <strong style={{ color: "#fff" }}>"{pendingDelete.name}"</strong>?
+                  {translate("board.modal.deleteTask.confirmPrefix")}
+                  <strong style={{ color: "#fff" }}>"{pendingDelete.name}"</strong>
+                  {translate("board.modal.deleteTask.confirmSuffix")}
                 </p>
                 <div className="modal-actions">
                 <button
                     className="action-button secondary"
                     onClick={() => setPendingDeleteId(null)}
                 >
-                    Cancel
+                    {translate("board.actions.cancel")}
                 </button>
                 <button
                     className="action-button delete"
@@ -836,7 +907,7 @@ function BoardView({
                     setPendingDeleteId(null);
                     }}
                 >
-                    Delete
+                    {translate("board.actions.delete")}
                 </button>
                 </div>
             </div>

@@ -45,5 +45,133 @@
       "notifications": "Benachrichtigungen",
       "compact_mode": "Kompaktmodus"
     }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Übersicht über deine Aufgaben, Prioritäten und Planung.",
+    "summary": {
+      "inbox": { "title": "Posteingang", "subtitle": "Offene Aufgaben, die Aufmerksamkeit brauchen" },
+      "today": { "title": "Heute", "subtitle": "Für heute geplante Aufgaben" },
+      "thisWeek": { "title": "Diese Woche", "subtitle": "In den nächsten 7 Tagen fällig" }
+    },
+    "actions": {
+      "viewBoard": "Board anzeigen",
+      "focusNow": "Jetzt fokussieren",
+      "seeSchedule": "Zeitplan ansehen",
+      "openBoard": "Board öffnen",
+      "done": "Erledigt"
+    },
+    "stats": {
+      "totalTasks": "Aufgaben gesamt",
+      "completed": "Erledigt",
+      "inProgress": "In Bearbeitung"
+    },
+    "charts": {
+      "taskProgress": "Aufgabenfortschritt",
+      "tasksByPriority": "Aufgaben nach Priorität",
+      "dueHealthPending": "Fälligkeiten (offen)"
+    },
+    "sections": {
+      "nextUp": "Als Nächstes",
+      "thisWeekWorkload": "Wochenpensum",
+      "needsAttention": "Benötigt Aufmerksamkeit"
+    },
+    "priority": { "high": "Hoch", "medium": "Mittel", "low": "Niedrig" },
+    "progress": { "completed": "Erledigt", "inProgress": "In Bearbeitung" },
+    "due": {
+      "overdue": "Überfällig",
+      "today": "Heute",
+      "thisWeek": "Diese Woche",
+      "later": "Später",
+      "noDueDate": "Ohne Datum"
+    },
+    "empty": {
+      "noPendingTasks": "Keine offenen Aufgaben.",
+      "noOverdueTasks": "Keine überfälligen Aufgaben."
+    },
+    "misc": {
+      "tasks": "Aufgaben",
+      "noTasks": "Keine Aufgaben",
+      "done": "erledigt",
+      "untitledTask": "Unbenannte Aufgabe"
+    },
+    "aria": {
+      "tasksDuePerDayThisWeek": "Fällige Aufgaben pro Tag in dieser Woche"
+    }
+  },
+  "board": {
+    "title": "Übersicht",
+    "subtitle": "Inspiriert von Monday-Boards: Items, Status, Schnellaktionen",
+    "view": { "listTooltip": "Listenansicht", "kanbanTooltip": "Kanban-Board" },
+    "search": { "placeholder": "Aufgaben suchen" },
+    "filters": {
+      "ariaLabel": "Board-Filter",
+      "clear": "Zurücksetzen",
+      "all": "Alle",
+      "pending": "Offen",
+      "completed": "Erledigt",
+      "overdue": "Überfällig",
+      "dueToday": "Heute fällig",
+      "dueWeek": "Diese Woche",
+      "noDue": "Ohne Datum",
+      "highPriority": "Hohe Priorität"
+    },
+    "add": { "placeholder": "Neue Aufgabe hinzufügen", "button": "+ Aufgabe hinzufügen" },
+    "table": {
+      "item": "Eintrag",
+      "priority": "Priorität",
+      "dueDate": "Fällig",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "cancel": "Abbrechen",
+      "saveChanges": "Speichern",
+      "close": "Schließen"
+    },
+    "empty": {
+      "noTasksFound": "Keine Aufgaben gefunden",
+      "noMatch": "Keine Aufgaben passen zu \"{{search}}\". Versuche ein anderes Stichwort.",
+      "emptyList": "Deine Liste ist leer. Füge oben eine neue Aufgabe hinzu, um zu starten.",
+      "dropHere": "Hier ablegen"
+    },
+    "modal": {
+      "editTask": { "title": "Aufgabe bearbeiten", "subtitle": "Name, Priorität, Daten und Status aktualisieren." },
+      "deleteTask": {
+        "title": "Aufgabe löschen?",
+        "subtitle": "Diese Aktion kann nicht rückgängig gemacht werden.",
+        "confirmPrefix": "Möchtest du wirklich löschen ",
+        "confirmSuffix": "?"
+      }
+    },
+    "fields": {
+      "taskName": "Aufgabenname",
+      "status": "Status",
+      "priority": "Priorität",
+      "startDate": "Startdatum",
+      "dueDate": "Fälligkeitsdatum"
+    },
+    "placeholders": { "taskName": "Gib deiner Aufgabe einen klaren Namen" },
+    "status": {
+      "workingOnIt": "In Arbeit",
+      "stuck": "Blockiert",
+      "done": "Erledigt",
+      "review": "Review",
+      "inProgress": "In Bearbeitung"
+    },
+    "priority": { "low": "Niedrig", "medium": "Mittel", "high": "Hoch" },
+    "dates": {
+      "selectDate": "Datum wählen",
+      "setStartDate": "Startdatum setzen",
+      "setDueDate": "Fälligkeitsdatum setzen",
+      "dates": "Daten",
+      "startShort": "Start",
+      "dueShort": "Fällig",
+      "noDates": "Keine Daten",
+      "startPrefix": "S:"
+    },
+    "buttons": { "clear": "Zurücksetzen", "done": "Erledigt", "undo": "Rückgängig" }
   }
 }

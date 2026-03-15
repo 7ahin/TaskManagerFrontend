@@ -45,5 +45,133 @@
       "notifications": "Notifications",
       "compact_mode": "Mode compact"
     }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Aperçu de vos tâches, priorités et planning.",
+    "summary": {
+      "inbox": { "title": "Boîte de réception", "subtitle": "Tâches en attente nécessitant votre attention" },
+      "today": { "title": "Aujourd'hui", "subtitle": "Tâches prévues pour aujourd'hui" },
+      "thisWeek": { "title": "Cette semaine", "subtitle": "À venir dans les 7 prochains jours" }
+    },
+    "actions": {
+      "viewBoard": "Voir le board",
+      "focusNow": "Se concentrer",
+      "seeSchedule": "Voir le planning",
+      "openBoard": "Ouvrir le board",
+      "done": "Fait"
+    },
+    "stats": {
+      "totalTasks": "Total des tâches",
+      "completed": "Terminées",
+      "inProgress": "En cours"
+    },
+    "charts": {
+      "taskProgress": "Progression",
+      "tasksByPriority": "Tâches par priorité",
+      "dueHealthPending": "État des échéances (en attente)"
+    },
+    "sections": {
+      "nextUp": "À suivre",
+      "thisWeekWorkload": "Charge de la semaine",
+      "needsAttention": "À surveiller"
+    },
+    "priority": { "high": "Haute", "medium": "Moyenne", "low": "Basse" },
+    "progress": { "completed": "Terminées", "inProgress": "En cours" },
+    "due": {
+      "overdue": "En retard",
+      "today": "Aujourd'hui",
+      "thisWeek": "Cette semaine",
+      "later": "Plus tard",
+      "noDueDate": "Sans date"
+    },
+    "empty": {
+      "noPendingTasks": "Aucune tâche en attente.",
+      "noOverdueTasks": "Aucune tâche en retard."
+    },
+    "misc": {
+      "tasks": "tâches",
+      "noTasks": "Aucune tâche",
+      "done": "faites",
+      "untitledTask": "Tâche sans titre"
+    },
+    "aria": {
+      "tasksDuePerDayThisWeek": "Tâches à échéance par jour cette semaine"
+    }
+  },
+  "board": {
+    "title": "Vue d’ensemble",
+    "subtitle": "Inspiré des boards type Monday : éléments, statut, actions rapides",
+    "view": { "listTooltip": "Vue liste", "kanbanTooltip": "Board Kanban" },
+    "search": { "placeholder": "Rechercher des tâches" },
+    "filters": {
+      "ariaLabel": "Filtres du board",
+      "clear": "Effacer",
+      "all": "Tout",
+      "pending": "En attente",
+      "completed": "Fait",
+      "overdue": "En retard",
+      "dueToday": "Pour aujourd’hui",
+      "dueWeek": "Cette semaine",
+      "noDue": "Sans date",
+      "highPriority": "Haute priorité"
+    },
+    "add": { "placeholder": "Ajouter une nouvelle tâche", "button": "+ Ajouter une tâche" },
+    "table": {
+      "item": "Élément",
+      "priority": "Priorité",
+      "dueDate": "Échéance",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "saveChanges": "Enregistrer",
+      "close": "Fermer"
+    },
+    "empty": {
+      "noTasksFound": "Aucune tâche trouvée",
+      "noMatch": "Aucune tâche ne correspond à \"{{search}}\". Essayez un autre mot-clé.",
+      "emptyList": "Votre liste est vide. Ajoutez une nouvelle tâche ci-dessus pour commencer.",
+      "dropHere": "Déposez ici"
+    },
+    "modal": {
+      "editTask": { "title": "Modifier la tâche", "subtitle": "Mettez à jour le nom, la priorité, les dates et le statut." },
+      "deleteTask": {
+        "title": "Supprimer la tâche ?",
+        "subtitle": "Cette action est irréversible.",
+        "confirmPrefix": "Voulez-vous vraiment supprimer ",
+        "confirmSuffix": " ?"
+      }
+    },
+    "fields": {
+      "taskName": "Nom de la tâche",
+      "status": "Statut",
+      "priority": "Priorité",
+      "startDate": "Date de début",
+      "dueDate": "Date d’échéance"
+    },
+    "placeholders": { "taskName": "Donnez un nom clair à votre tâche" },
+    "status": {
+      "workingOnIt": "En cours",
+      "stuck": "Bloquée",
+      "done": "Fait",
+      "review": "Revue",
+      "inProgress": "En cours"
+    },
+    "priority": { "low": "Basse", "medium": "Moyenne", "high": "Haute" },
+    "dates": {
+      "selectDate": "Sélectionner une date",
+      "setStartDate": "Définir le début",
+      "setDueDate": "Définir l’échéance",
+      "dates": "Dates",
+      "startShort": "Début",
+      "dueShort": "Échéance",
+      "noDates": "Aucune date",
+      "startPrefix": "D:"
+    },
+    "buttons": { "clear": "Effacer", "done": "Fait", "undo": "Annuler" }
   }
 }

@@ -49,6 +49,51 @@ body {
   flex-direction: column;
 }
 
+.app-view-transition {
+  animation: appViewIn 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.app-nav-tab:active,
+.icon-button:active,
+.action-button:active,
+.timeline-go-board-btn:active,
+.timeline-action-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.app-nav-tab:focus-visible,
+.icon-button:focus-visible,
+.action-button:focus-visible,
+.timeline-go-board-btn:focus-visible,
+.timeline-action-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+}
+
+@keyframes appViewIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-view-transition {
+    animation: none;
+  }
+  .app-nav-tab,
+  .icon-button,
+  .action-button,
+  .timeline-go-board-btn,
+  .timeline-action-button {
+    transition: none;
+  }
+}
+
 /* Light Mode Text Overrides */
 body.light-mode .app-nav-tab.active {
   color: #3b82f6;
@@ -378,9 +423,15 @@ body.light-mode .app-header.scrolled {
   width: 90%;
   max-width: 480px;
   max-height: 90vh;
+  overflow-x: hidden;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother spring-like pop */
+}
+
+.edit-task-modal {
+  overflow: visible;
+  max-height: none;
 }
 
 /* Language Popup Styles */
@@ -615,6 +666,8 @@ body.light-mode .app-header.scrolled {
   color: #f1f5f9;
   font-size: 0.95rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  min-height: 48px;
 }
 
 .edit-input:focus {
@@ -691,6 +744,33 @@ body.light-mode .app-header.scrolled {
   gap: 0.25rem;
 }
 
+.edit-form .board-dropdown-container,
+.edit-form .board-date-container {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  box-sizing: border-box;
+}
+
+.edit-form .board-dropdown-btn,
+.edit-form .board-date-btn {
+  width: 100%;
+  height: 48px;
+  min-height: 0;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.edit-form .board-date-display-text span {
+  line-height: 1.2;
+}
+
+.edit-form .board-date-placeholder {
+  color: var(--text-muted);
+}
+
 .edit-clear-link {
   background: transparent;
   border: none;
@@ -720,6 +800,39 @@ body.light-mode .app-header.scrolled {
   transition: all 0.2s;
   cursor: pointer;
   appearance: none; /* Custom arrow if needed, but default is okay for now */
+  box-sizing: border-box;
+  min-height: 48px;
+}
+
+.edit-task-modal .board-calendar-popup {
+  width: 220px;
+  padding: 0.85rem;
+}
+
+.edit-task-modal .board-calendar-day {
+  font-size: 0.78rem;
+  border-radius: 6px;
+}
+
+.edit-task-modal .board-calendar-grid {
+  gap: 2px;
+}
+
+.edit-task-modal .board-calendar-month-year {
+  font-size: 0.85rem;
+}
+
+.edit-task-modal .edit-date-align-right .board-calendar-popup {
+  left: auto;
+  right: 0;
+}
+
+@media (max-height: 720px) {
+  .edit-task-modal {
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
 .edit-select:focus {

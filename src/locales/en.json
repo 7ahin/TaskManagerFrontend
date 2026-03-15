@@ -48,5 +48,133 @@
       "notifications": "Notifications",
       "compact_mode": "Compact Mode"
     }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your tasks, priorities, and schedule.",
+    "summary": {
+      "inbox": { "title": "Inbox", "subtitle": "Pending tasks needing attention" },
+      "today": { "title": "Today", "subtitle": "Tasks scheduled for today" },
+      "thisWeek": { "title": "This Week", "subtitle": "Upcoming in next 7 days" }
+    },
+    "actions": {
+      "viewBoard": "View Board",
+      "focusNow": "Focus Now",
+      "seeSchedule": "See Schedule",
+      "openBoard": "Open Board",
+      "done": "Done"
+    },
+    "stats": {
+      "totalTasks": "Total Tasks",
+      "completed": "Completed",
+      "inProgress": "In Progress"
+    },
+    "charts": {
+      "taskProgress": "Task Progress",
+      "tasksByPriority": "Tasks by Priority",
+      "dueHealthPending": "Due Health (pending)"
+    },
+    "sections": {
+      "nextUp": "Next Up",
+      "thisWeekWorkload": "This Week Workload",
+      "needsAttention": "Needs Attention"
+    },
+    "priority": { "high": "High", "medium": "Medium", "low": "Low" },
+    "progress": { "completed": "Completed", "inProgress": "In progress" },
+    "due": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "thisWeek": "This week",
+      "later": "Later",
+      "noDueDate": "No due date"
+    },
+    "empty": {
+      "noPendingTasks": "No pending tasks.",
+      "noOverdueTasks": "No overdue tasks."
+    },
+    "misc": {
+      "tasks": "tasks",
+      "noTasks": "No tasks",
+      "done": "done",
+      "untitledTask": "Untitled task"
+    },
+    "aria": {
+      "tasksDuePerDayThisWeek": "Tasks due per day this week"
+    }
+  },
+  "board": {
+    "title": "High Level Overview",
+    "subtitle": "Inspired by Monday-style boards: items, status, quick actions",
+    "view": { "listTooltip": "List View", "kanbanTooltip": "Kanban Board" },
+    "search": { "placeholder": "Search tasks" },
+    "filters": {
+      "ariaLabel": "Board filters",
+      "clear": "Clear",
+      "all": "All",
+      "pending": "Pending",
+      "completed": "Done",
+      "overdue": "Overdue",
+      "dueToday": "Due Today",
+      "dueWeek": "This Week",
+      "noDue": "No Due",
+      "highPriority": "High Priority"
+    },
+    "add": { "placeholder": "Add a new task", "button": "+ Add Task" },
+    "table": {
+      "item": "Item",
+      "priority": "Priority",
+      "dueDate": "Due Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "close": "Close"
+    },
+    "empty": {
+      "noTasksFound": "No tasks found",
+      "noMatch": "No tasks match \"{{search}}\". Try a different keyword.",
+      "emptyList": "Your list is empty. Add a new task above to get started.",
+      "dropHere": "Drop items here"
+    },
+    "modal": {
+      "editTask": { "title": "Edit Task", "subtitle": "Update name, priority, dates, and status." },
+      "deleteTask": {
+        "title": "Delete Task?",
+        "subtitle": "This action cannot be undone.",
+        "confirmPrefix": "Are you sure you want to delete ",
+        "confirmSuffix": "?"
+      }
+    },
+    "fields": {
+      "taskName": "Task Name",
+      "status": "Status",
+      "priority": "Priority",
+      "startDate": "Start Date",
+      "dueDate": "Due Date"
+    },
+    "placeholders": { "taskName": "Give your task a clear name" },
+    "status": {
+      "workingOnIt": "Working on it",
+      "stuck": "Stuck",
+      "done": "Done",
+      "review": "Review",
+      "inProgress": "In progress"
+    },
+    "priority": { "low": "Low", "medium": "Medium", "high": "High" },
+    "dates": {
+      "selectDate": "Select Date",
+      "setStartDate": "Set start date",
+      "setDueDate": "Set due date",
+      "dates": "Dates",
+      "startShort": "Start",
+      "dueShort": "Due",
+      "noDates": "No dates",
+      "startPrefix": "S:"
+    },
+    "buttons": { "clear": "Clear", "done": "Done", "undo": "Undo" }
   }
 }
