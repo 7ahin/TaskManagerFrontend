@@ -173,5 +173,128 @@
       "startPrefix": "D:"
     },
     "buttons": { "clear": "Effacer", "done": "Fait", "undo": "Annuler" }
+  },
+  "timeline": {
+    "title": "Chronologie",
+    "subtitle": {
+      "week": "Tâches regroupées par semaine d’échéance (en retard → à venir).",
+      "day": "Tâches regroupées par date d’échéance (en retard → à venir)."
+    },
+    "actions": { "openBoard": "Ouvrir le board", "open": "Ouvrir" },
+    "search": { "placeholder": "Rechercher des tâches dans la chronologie" },
+    "groupBy": { "label": "Regrouper", "day": "Regrouper par jour", "week": "Regrouper par semaine" },
+    "priority": { "label": "Priorité", "all": "Toutes les priorités" },
+    "toggle": { "showDone": "Afficher fait" },
+    "empty": { "noMatch": "Aucune tâche ne correspond aux filtres de la chronologie." },
+    "group": {
+      "prefix": { "overdue": "En retard", "today": "Aujourd’hui", "thisWeek": "Cette semaine", "upcoming": "À venir" },
+      "day": { "label": "{{prefix}} — {{date}}" },
+      "week": { "label": "{{prefix}} — {{start}} – {{end}}" },
+      "noDates": "Aucune date"
+    },
+    "due": { "label": "Échéance {{date}}" },
+    "conflict": { "title": "La date de début est après la date d’échéance", "label": "Conflit" },
+    "dates": { "startLabel": "Début :", "dueLabel": "Échéance :" }
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "subtitle": "Planifiez vos échéances sur le mois.",
+    "actions": { "today": "Aujourd’hui", "openBoard": "Ouvrir le board" },
+    "aria": { "previousMonth": "Mois précédent", "nextMonth": "Mois suivant" },
+    "weekdays": {
+      "short": { "su": "D", "mo": "L", "tu": "M", "we": "M", "th": "J", "fr": "V", "sa": "S" }
+    },
+    "more": { "label": "+{{count}} de plus" },
+    "sidebar": { "subtitle": "{{count}} tâches à échéance" },
+    "empty": { "noTasksDue": "Aucune tâche à échéance ce jour-là." },
+    "status": { "completed": "Terminée", "pending": "En attente" },
+    "ariaTasks": {
+      "markComplete": "Marquer comme terminée",
+      "markNotComplete": "Marquer comme non terminée"
+    }
+  },
+  "goals": {
+    "title": "Objectifs",
+    "subtitle": "Fixez des cibles et suivez votre progression depuis vos tâches.",
+    "types": { "completedAll": "Tâches terminées", "completedHigh": "Haute priorité terminée" },
+    "templates": {
+      "heading": "Démarrage rapide",
+      "productiveWeek": { "title": "Semaine productive (20 tâches)" },
+      "clearHigh": { "title": "Clore 5 hautes priorités" },
+      "dailyGrind": { "title": "Rythme quotidien (5 tâches)" },
+      "pill": { "highPriority": "Haute priorité", "allTasks": "Toutes les tâches", "target": "Objectif {{count}}" }
+    },
+    "summary": {
+      "completionRate": "Taux d’achèvement",
+      "done": "faites",
+      "active": "actives",
+      "doneActive": "{{done}} {{doneLabel}} • {{active}} {{activeLabel}}",
+      "overdue": "En retard",
+      "overdueSub": "Tâches incomplètes au-delà de l’échéance",
+      "highPriorityDone": "Haute priorité faite",
+      "highPriorityDoneSub": "Tâches terminées marquées Haute"
+    },
+    "panels": { "createGoal": "Créer un objectif", "yourGoals": "Vos objectifs" },
+    "toggle": { "showAchieved": "Afficher atteints" },
+    "loading": "Chargement des objectifs...",
+    "empty": {
+      "allAchieved": "Tous les objectifs sont atteints. Activez « Afficher atteints » pour les voir.",
+      "none": "Aucun objectif pour l’instant. Créez-en un pour commencer."
+    },
+    "form": {
+      "labels": {
+        "goalTitle": "Titre de l’objectif",
+        "type": "Type",
+        "target": "Cible",
+        "dueDateOptional": "Échéance (optionnel)"
+      },
+      "placeholders": { "goalTitle": "ex. Terminer 20 tâches" },
+      "buttons": { "add": "Ajouter un objectif", "adding": "Ajout..." },
+      "aria": { "decreaseTarget": "Diminuer la cible", "increaseTarget": "Augmenter la cible" }
+    },
+    "card": {
+      "achieved": "Atteint",
+      "meta": { "highPriority": "Haute priorité", "allTasks": "Toutes les tâches", "due": "Échéance {{date}}" },
+      "insights": {
+        "remaining": "Restant",
+        "due": "Échéance",
+        "pace": "Rythme",
+        "neededPerDay": "Nécessaire/jour",
+        "none": "—"
+      }
+    },
+    "due": {
+      "set": "Définir une échéance",
+      "today": "Échéance aujourd’hui",
+      "inDays": "Échéance dans {{count}} jour(s)",
+      "overdueBy": "En retard de {{count}} jour(s)"
+    },
+    "modal": {
+      "editTitle": "Modifier l’objectif",
+      "buttons": { "cancel": "Annuler", "saveChanges": "Enregistrer", "saving": "Enregistrement..." }
+    },
+    "date": {
+      "noDueDate": "Sans échéance",
+      "weekdays": { "su": "D", "mo": "L", "tu": "M", "we": "M", "th": "J", "fr": "V", "sa": "S" },
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant",
+      "today": "Aujourd’hui",
+      "tomorrow": "Demain",
+      "endOfWeek": "Fin de semaine",
+      "nextWeek": "Semaine prochaine",
+      "clear": "Effacer"
+    },
+    "actions": { "openBoard": "Ouvrir le board", "edit": "Modifier", "viewTasks": "Voir les tâches", "delete": "Supprimer" },
+    "toast": {
+      "added": "Objectif ajouté",
+      "addFailed": "Échec de l’ajout de l’objectif",
+      "removed": "Objectif supprimé",
+      "deleteFailed": "Échec de la suppression de l’objectif",
+      "updated": "Objectif mis à jour",
+      "updateFailed": "Échec de la mise à jour de l’objectif",
+      "couldNotLoad": "Impossible de charger les objectifs",
+      "undoSuccessful": "Annulation réussie",
+      "undoFailed": "Échec de l’annulation"
+    }
   }
 }

@@ -173,5 +173,128 @@
       "startPrefix": "S:"
     },
     "buttons": { "clear": "クリア", "done": "完了", "undo": "元に戻す" }
+  },
+  "timeline": {
+    "title": "タイムライン",
+    "subtitle": {
+      "week": "期限の週ごとにタスクをグループ化します（期限超過 → 今後）。",
+      "day": "期限の日付ごとにタスクをグループ化します（期限超過 → 今後）。"
+    },
+    "actions": { "openBoard": "ボードを開く", "open": "開く" },
+    "search": { "placeholder": "タイムラインでタスクを検索" },
+    "groupBy": { "label": "グループ", "day": "日ごとにグループ", "week": "週ごとにグループ" },
+    "priority": { "label": "優先度", "all": "すべての優先度" },
+    "toggle": { "showDone": "完了を表示" },
+    "empty": { "noMatch": "タイムラインのフィルターに一致するタスクがありません。" },
+    "group": {
+      "prefix": { "overdue": "期限超過", "today": "今日", "thisWeek": "今週", "upcoming": "今後" },
+      "day": { "label": "{{prefix}} — {{date}}" },
+      "week": { "label": "{{prefix}} — {{start}} – {{end}}" },
+      "noDates": "日付なし"
+    },
+    "due": { "label": "期限 {{date}}" },
+    "conflict": { "title": "開始日が期限より後です", "label": "矛盾" },
+    "dates": { "startLabel": "開始:", "dueLabel": "期限:" }
+  },
+  "calendar": {
+    "title": "カレンダー",
+    "subtitle": "月全体で期限を計画します。",
+    "actions": { "today": "今日", "openBoard": "ボードを開く" },
+    "aria": { "previousMonth": "前の月", "nextMonth": "次の月" },
+    "weekdays": {
+      "short": { "su": "日", "mo": "月", "tu": "火", "we": "水", "th": "木", "fr": "金", "sa": "土" }
+    },
+    "more": { "label": "+{{count}} 件" },
+    "sidebar": { "subtitle": "期限のタスク {{count}} 件" },
+    "empty": { "noTasksDue": "この日に期限のタスクはありません。" },
+    "status": { "completed": "完了", "pending": "未完了" },
+    "ariaTasks": {
+      "markComplete": "完了にする",
+      "markNotComplete": "未完了に戻す"
+    }
+  },
+  "goals": {
+    "title": "目標",
+    "subtitle": "タスクから目標を設定し、進捗を追跡します。",
+    "types": { "completedAll": "完了タスク", "completedHigh": "高優先度の完了" },
+    "templates": {
+      "heading": "クイック開始",
+      "productiveWeek": { "title": "生産的な週（20件）" },
+      "clearHigh": { "title": "高優先度を5件クリア" },
+      "dailyGrind": { "title": "毎日の積み上げ（5件）" },
+      "pill": { "highPriority": "高優先度", "allTasks": "全タスク", "target": "目標 {{count}}" }
+    },
+    "summary": {
+      "completionRate": "完了率",
+      "done": "完了",
+      "active": "未完了",
+      "doneActive": "{{done}} {{doneLabel}} • {{active}} {{activeLabel}}",
+      "overdue": "期限超過",
+      "overdueSub": "期限を過ぎた未完了タスク",
+      "highPriorityDone": "高優先度の完了",
+      "highPriorityDoneSub": "高優先度として完了したタスク"
+    },
+    "panels": { "createGoal": "目標を作成", "yourGoals": "あなたの目標" },
+    "toggle": { "showAchieved": "達成済みを表示" },
+    "loading": "目標を読み込み中...",
+    "empty": {
+      "allAchieved": "すべての目標を達成しました。「達成済みを表示」を切り替えて確認できます。",
+      "none": "まだ目標がありません。作成して追跡を始めましょう。"
+    },
+    "form": {
+      "labels": {
+        "goalTitle": "目標タイトル",
+        "type": "種類",
+        "target": "目標",
+        "dueDateOptional": "期限（任意）"
+      },
+      "placeholders": { "goalTitle": "例: 20件のタスクを完了" },
+      "buttons": { "add": "目標を追加", "adding": "追加中..." },
+      "aria": { "decreaseTarget": "目標を減らす", "increaseTarget": "目標を増やす" }
+    },
+    "card": {
+      "achieved": "達成",
+      "meta": { "highPriority": "高優先度", "allTasks": "全タスク", "due": "期限 {{date}}" },
+      "insights": {
+        "remaining": "残り",
+        "due": "期限",
+        "pace": "ペース",
+        "neededPerDay": "1日あたり必要",
+        "none": "—"
+      }
+    },
+    "due": {
+      "set": "期限を設定",
+      "today": "今日が期限",
+      "inDays": "あと{{count}}日",
+      "overdueBy": "{{count}}日遅れ"
+    },
+    "modal": {
+      "editTitle": "目標を編集",
+      "buttons": { "cancel": "キャンセル", "saveChanges": "変更を保存", "saving": "保存中..." }
+    },
+    "date": {
+      "noDueDate": "期限なし",
+      "weekdays": { "su": "日", "mo": "月", "tu": "火", "we": "水", "th": "木", "fr": "金", "sa": "土" },
+      "previousMonth": "前の月",
+      "nextMonth": "次の月",
+      "today": "今日",
+      "tomorrow": "明日",
+      "endOfWeek": "週末",
+      "nextWeek": "来週",
+      "clear": "クリア"
+    },
+    "actions": { "openBoard": "ボードを開く", "edit": "編集", "viewTasks": "タスクを見る", "delete": "削除" },
+    "toast": {
+      "added": "目標を追加しました",
+      "addFailed": "目標の追加に失敗しました",
+      "removed": "目標を削除しました",
+      "deleteFailed": "目標の削除に失敗しました",
+      "updated": "目標を更新しました",
+      "updateFailed": "目標の更新に失敗しました",
+      "couldNotLoad": "目標を読み込めませんでした",
+      "undoSuccessful": "元に戻しました",
+      "undoFailed": "元に戻せませんでした"
+    }
   }
 }

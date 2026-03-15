@@ -176,5 +176,128 @@
       "startPrefix": "S:"
     },
     "buttons": { "clear": "Clear", "done": "Done", "undo": "Undo" }
+  },
+  "timeline": {
+    "title": "Timeline",
+    "subtitle": {
+      "week": "Tasks grouped by due week (overdue → upcoming).",
+      "day": "Tasks grouped by due date (overdue → upcoming)."
+    },
+    "actions": { "openBoard": "Open Board", "open": "Open" },
+    "search": { "placeholder": "Search tasks in timeline" },
+    "groupBy": { "label": "Group by", "day": "Group by day", "week": "Group by week" },
+    "priority": { "label": "Priority", "all": "All Priorities" },
+    "toggle": { "showDone": "Show done" },
+    "empty": { "noMatch": "No tasks match your timeline filters." },
+    "group": {
+      "prefix": { "overdue": "Overdue", "today": "Today", "thisWeek": "This week", "upcoming": "Upcoming" },
+      "day": { "label": "{{prefix}} — {{date}}" },
+      "week": { "label": "{{prefix}} — {{start}} – {{end}}" },
+      "noDates": "No dates"
+    },
+    "due": { "label": "Due {{date}}" },
+    "conflict": { "title": "Start date is after due date", "label": "Conflict" },
+    "dates": { "startLabel": "Start:", "dueLabel": "Due:" }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "Plan your deadlines across the month.",
+    "actions": { "today": "Today", "openBoard": "Open Board" },
+    "aria": { "previousMonth": "Previous month", "nextMonth": "Next month" },
+    "weekdays": {
+      "short": { "su": "S", "mo": "M", "tu": "T", "we": "W", "th": "T", "fr": "F", "sa": "S" }
+    },
+    "more": { "label": "+{{count}} more" },
+    "sidebar": { "subtitle": "{{count}} tasks due" },
+    "empty": { "noTasksDue": "No tasks due on this day." },
+    "status": { "completed": "Completed", "pending": "Pending" },
+    "ariaTasks": {
+      "markComplete": "Mark as complete",
+      "markNotComplete": "Mark as not complete"
+    }
+  },
+  "goals": {
+    "title": "Goals",
+    "subtitle": "Set targets and track progress from your tasks.",
+    "types": { "completedAll": "Completed tasks", "completedHigh": "Completed high priority" },
+    "templates": {
+      "heading": "Quick start",
+      "productiveWeek": { "title": "Productive Week (20 tasks)" },
+      "clearHigh": { "title": "Clear 5 High Priority" },
+      "dailyGrind": { "title": "Daily Grind (5 tasks)" },
+      "pill": { "highPriority": "High priority", "allTasks": "All tasks", "target": "{{count}} target" }
+    },
+    "summary": {
+      "completionRate": "Completion rate",
+      "done": "done",
+      "active": "active",
+      "doneActive": "{{done}} {{doneLabel}} • {{active}} {{activeLabel}}",
+      "overdue": "Overdue",
+      "overdueSub": "Incomplete tasks past due date",
+      "highPriorityDone": "High priority done",
+      "highPriorityDoneSub": "Completed tasks marked High"
+    },
+    "panels": { "createGoal": "Create goal", "yourGoals": "Your goals" },
+    "toggle": { "showAchieved": "Show achieved" },
+    "loading": "Loading goals...",
+    "empty": {
+      "allAchieved": "All goals achieved. Toggle “Show achieved” to see them.",
+      "none": "No goals yet. Create one to start tracking."
+    },
+    "form": {
+      "labels": {
+        "goalTitle": "Goal title",
+        "type": "Type",
+        "target": "Target",
+        "dueDateOptional": "Due date (optional)"
+      },
+      "placeholders": { "goalTitle": "e.g. Finish 20 tasks" },
+      "buttons": { "add": "Add Goal", "adding": "Adding..." },
+      "aria": { "decreaseTarget": "Decrease target", "increaseTarget": "Increase target" }
+    },
+    "card": {
+      "achieved": "Achieved",
+      "meta": { "highPriority": "High priority", "allTasks": "All tasks", "due": "Due {{date}}" },
+      "insights": {
+        "remaining": "Remaining",
+        "due": "Due",
+        "pace": "Pace",
+        "neededPerDay": "Needed/day",
+        "none": "—"
+      }
+    },
+    "due": {
+      "set": "Set a due date",
+      "today": "Due today",
+      "inDays": "Due in {{count}} day(s)",
+      "overdueBy": "Overdue by {{count}} day(s)"
+    },
+    "modal": {
+      "editTitle": "Edit Goal",
+      "buttons": { "cancel": "Cancel", "saveChanges": "Save Changes", "saving": "Saving..." }
+    },
+    "date": {
+      "noDueDate": "No due date",
+      "weekdays": { "su": "S", "mo": "M", "tu": "T", "we": "W", "th": "T", "fr": "F", "sa": "S" },
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "endOfWeek": "End of week",
+      "nextWeek": "Next week",
+      "clear": "Clear"
+    },
+    "actions": { "openBoard": "Open Board", "edit": "Edit", "viewTasks": "View Tasks", "delete": "Delete" },
+    "toast": {
+      "added": "Goal added",
+      "addFailed": "Failed to add goal",
+      "removed": "Goal removed",
+      "deleteFailed": "Failed to delete goal",
+      "updated": "Goal updated",
+      "updateFailed": "Failed to update goal",
+      "couldNotLoad": "Could not load goals",
+      "undoSuccessful": "Undo successful",
+      "undoFailed": "Undo failed"
+    }
   }
 }

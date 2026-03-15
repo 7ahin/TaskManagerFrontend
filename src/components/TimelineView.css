@@ -3,12 +3,12 @@
   width: 100%;             
   max-width: 1400px;       
   margin: 0 auto;         
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--card-bg);
   backdrop-filter: blur(12px);
   border-radius: 12px;
   padding: 1.25rem 1.5rem 1.75rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -43,18 +43,19 @@
 }
 
 .timeline-go-board-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
   color: var(--text-main);
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
 }
 
 .timeline-go-board-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   transform: translateY(-1px);
 }
 
@@ -73,8 +74,8 @@
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
+  background: var(--input-bg);
+  color: var(--text-main);
   width: 250px;
   font-size: 0.9rem;
   transition: all 0.2s;
@@ -84,15 +85,15 @@
 .timeline-search:focus {
   outline: none;
   border-color: var(--primary);
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--input-bg);
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .timeline-filter-select {
-  padding: 0.55rem 2.25rem 0.55rem 0.85rem;
+  padding: 0.55rem 0.85rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(2, 6, 23, 0.45);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-main);
   cursor: pointer;
   font-size: 0.9rem;
@@ -101,18 +102,12 @@
   min-height: 38px;
   min-width: 170px;
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1.25em 1.25em;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
-  color-scheme: dark;
 }
 
 .timeline-filter-select:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background-color: rgba(2, 6, 23, 0.6);
+  border-color: var(--border);
+  background-color: rgba(255, 255, 255, 0.1);
   transform: translateY(-1px);
 }
 
@@ -127,19 +122,13 @@
   cursor: not-allowed;
 }
 
-.timeline-filter-select option {
-  background: #0b1220;
-  color: #e2e8f0;
-}
-
 .timeline-dropdown {
   position: relative;
   display: inline-flex;
 }
 
 .timeline-dropdown-trigger {
-  background-image: none;
-  padding-right: 2.25rem;
+  padding-right: 0.75rem;
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -164,17 +153,26 @@
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
 }
 
-.timeline-dropdown-trigger::after {
-  content: "";
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  transform: translateY(-50%);
-  opacity: 0.8;
-  background: no-repeat center/contain
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+.timeline-dropdown-label {
+  min-width: 0;
+}
+
+.timeline-dropdown-chevron {
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  color: var(--text-muted);
+  opacity: 0.95;
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.timeline-dropdown-trigger:hover .timeline-dropdown-chevron,
+.timeline-dropdown-trigger.is-open .timeline-dropdown-chevron {
+  color: var(--text-main);
+}
+
+.timeline-dropdown-chevron.is-open {
+  transform: rotate(180deg);
 }
 
 .timeline-dropdown-menu {
@@ -182,8 +180,8 @@
   top: calc(100% + 8px);
   left: 0;
   min-width: 100%;
-  background: rgba(2, 6, 23, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 0.35rem;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.42);
@@ -250,21 +248,22 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border);
   color: var(--text-muted);
   padding: 0.4rem 0.75rem;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
   min-height: 38px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
 }
 
 .timeline-toggle:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-main);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--border);
 }
 
 .timeline-toggle-input {
@@ -283,24 +282,25 @@
   width: 38px;
   height: 22px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--toggle-bg);
+  border: 1px solid var(--border);
   position: relative;
   flex: 0 0 auto;
   transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 .timeline-toggle-knob {
   width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--toggle-knob);
   position: absolute;
   top: 50%;
   left: 2px;
   transform: translateY(-50%);
   transition: left 160ms ease, transform 160ms ease;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
 
 .timeline-toggle-text {
@@ -308,9 +308,9 @@
 }
 
 .timeline-toggle-input:checked + .timeline-toggle-ui {
-  background: rgba(59, 130, 246, 0.35);
-  border-color: rgba(59, 130, 246, 0.45);
-  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.12);
+  background: rgba(59, 130, 246, 0.55);
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 10px 20px rgba(59, 130, 246, 0.14);
 }
 
 .timeline-toggle-input:checked + .timeline-toggle-ui .timeline-toggle-knob {
@@ -320,6 +320,10 @@
 .timeline-toggle-input:focus-visible + .timeline-toggle-ui {
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
   border-color: rgba(59, 130, 246, 0.55);
+}
+
+.timeline-toggle-input:checked ~ .timeline-toggle-text {
+  color: var(--text-main);
 }
 
 /* Timeline Groups */
@@ -333,8 +337,8 @@
 }
 
 .timeline-group {
-  background: rgba(2, 6, 23, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 0.9rem 0.9rem 0.75rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
@@ -388,8 +392,8 @@
   align-items: center;
   padding: 0.35rem 0.65rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(10px);
   font-size: 0.85rem;
   font-weight: 700;
@@ -402,8 +406,8 @@
 .timeline-group-count {
   position: relative;
   margin-left: auto;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
   font-size: 0.75rem;
@@ -443,8 +447,8 @@
   flex-direction: column;
   gap: 0.65rem;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
   border-radius: 8px;
   transition: all 0.2s;
   cursor: pointer;
@@ -460,7 +464,7 @@
 }
 
 .timeline-item-row::before {
-  content: "";
+  content: none;
   position: absolute;
   left: 12px;
   top: 11px;
@@ -468,10 +472,11 @@
   height: 10px;
   transform: translateX(-50%);
   border-radius: 999px;
-  background: rgba(2, 6, 23, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid var(--border);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
   opacity: 0.9;
+  z-index: 0;
 }
 
 .timeline-item.done .timeline-item-row::before {
@@ -479,8 +484,8 @@
 }
 
 .timeline-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.08);
+  border-color: var(--border);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -493,13 +498,15 @@
 
 .timeline-item.done {
   opacity: 0.6;
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .timeline-item-left {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .timeline-checkbox-wrap {
@@ -528,9 +535,9 @@
   width: 20px;
   height: 20px;
   border-radius: 7px;
-  background: rgba(2, 6, 23, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
   display: grid;
   place-items: center;
   transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
@@ -546,9 +553,179 @@
   transition: border-color 160ms ease;
 }
 
+.timeline-item-main {
+  position: relative;
+  z-index: 1;
+}
+
+body.light-mode .timeline-go-board-btn {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .timeline-go-board-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .timeline-controls {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .timeline-filter-select {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-main);
+}
+
+body.light-mode .timeline-filter-select:hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+body.light-mode .timeline-dropdown-chevron {
+  color: rgba(71, 85, 105, 0.95);
+}
+
+body.light-mode .timeline-dropdown-menu {
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.14);
+}
+
+body.light-mode .timeline-dropdown-option:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .timeline-toggle {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-muted);
+}
+
+body.light-mode .timeline-toggle:hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.16);
+  color: var(--text-main);
+}
+
+body.light-mode .timeline-toggle-ui {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .timeline-toggle-input:checked + .timeline-toggle-ui {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 10px 20px rgba(59, 130, 246, 0.18);
+}
+
+body.light-mode .timeline-date-group {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .timeline-date-input:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-main);
+}
+
+body.light-mode .timeline-date-input:focus {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .timeline-action-button {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .timeline-action-button:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+body.light-mode .timeline-dropdown-check {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231e293b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
+}
+
+body.light-mode .timeline-groups::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .timeline-groups::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .timeline-groups::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+body.light-mode .timeline-group {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .timeline-group-header::before {
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0) 0%,
+    rgba(59, 130, 246, 0.25) 18%,
+    rgba(0, 0, 0, 0.08) 50%,
+    rgba(59, 130, 246, 0.25) 82%,
+    rgba(59, 130, 246, 0) 100%
+  );
+  opacity: 0.8;
+}
+
+body.light-mode .timeline-group-title {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .timeline-group-count {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .timeline-list::before {
+  background: linear-gradient(
+    180deg,
+    rgba(59, 130, 246, 0.45) 0%,
+    rgba(0, 0, 0, 0.1) 38%,
+    rgba(0, 0, 0, 0.08) 62%,
+    rgba(59, 130, 246, 0.22) 100%
+  );
+  opacity: 0.55;
+}
+
+body.light-mode .timeline-item {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .timeline-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .timeline-item-row::before {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .timeline-checkbox-box {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .timeline-item-row::before {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}
+
 .timeline-checkbox:hover + .timeline-checkbox-box {
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.26);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.22);
   transform: translateY(-1px);
 }
 
@@ -637,10 +814,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
   padding: 2px 8px;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
 }
 
 .timeline-date-label {
@@ -726,7 +903,7 @@
   opacity: 1;
   max-height: 120px;
   transform: translateY(0);
-  border-top-color: rgba(255, 255, 255, 0.06);
+  border-top-color: var(--border);
   padding-top: 0.6rem;
 }
 
@@ -743,24 +920,25 @@
 }
 
 .timeline-date-input:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border);
   color: var(--text-main);
 }
 
 .timeline-date-input:focus {
   outline: none;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.06);
   border-color: var(--primary);
   color: var(--text-main);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.18);
 }
 
 /* Action Button */
 .timeline-action-button {
   padding: 0.3rem 0.7rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--text-muted);
   font-size: 0.75rem;
   cursor: pointer;
@@ -769,9 +947,9 @@
 }
 
 .timeline-action-button:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border-color: var(--border);
   transform: translateY(-1px);
 }
 

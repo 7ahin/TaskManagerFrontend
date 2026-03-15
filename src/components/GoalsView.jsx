@@ -5,21 +5,23 @@ import toast from "react-hot-toast";
 import { normalizeDueDate } from "../utils/dateUtils";
 import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { ChevronUpIcon as ChevronUpSolid, ChevronDownIcon as ChevronDownSolid } from "@heroicons/react/20/solid";
+import { useTranslation } from "react-i18next";
 
 const API_URL = "https://localhost:7076/api/Goals";
 
 const GOAL_TEMPLATES = [
-  { title: "Productive Week (20 tasks)", target: 20, type: "completed_all" },
-  { title: "Clear 5 High Priority", target: 5, type: "completed_high" },
-  { title: "Daily Grind (5 tasks)", target: 5, type: "completed_all" },
+  { key: "productiveWeek", titleKey: "goals.templates.productiveWeek.title", target: 20, type: "completed_all" },
+  { key: "clearHigh", titleKey: "goals.templates.clearHigh.title", target: 5, type: "completed_high" },
+  { key: "dailyGrind", titleKey: "goals.templates.dailyGrind.title", target: 5, type: "completed_all" },
 ];
 
 const GOAL_TYPES = [
-  { value: "completed_all", label: "Completed tasks" },
-  { value: "completed_high", label: "Completed high priority" },
+  { value: "completed_all", labelKey: "goals.types.completedAll" },
+  { value: "completed_high", labelKey: "goals.types.completedHigh" },
 ];
 
 function GoalTypeDropdown({ value, onChange, id }) {
+  const { t: translate } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const selected = GOAL_TYPES.find((t) => t.value === value) || GOAL_TYPES[0];
 
@@ -33,7 +35,7 @@ function GoalTypeDropdown({ value, onChange, id }) {
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className="goals-dropdown-text">{selected.label}</span>
+        <span className="goals-dropdown-text">{translate(selected.labelKey)}</span>
         <ChevronDownIcon className={`goals-dropdown-chevron ${isOpen ? "open" : ""}`} />
       </button>
 
@@ -53,7 +55,7 @@ function GoalTypeDropdown({ value, onChange, id }) {
                   setIsOpen(false);
                 }}
               >
-                {t.label}
+                {translate(t.labelKey)}
               </button>
             ))}
           </div>
@@ -63,13 +65,15 @@ function GoalTypeDropdown({ value, onChange, id }) {
   );
 }
 
-function GoalDatePicker({ value, onChange, id, placeholder = "No due date" }) {
+function GoalDatePicker({ value, onChange, id, placeholder }) {
+  const { t: translate, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedDate = value ? new Date(value) : null;
+  const fallbackPlaceholder = placeholder ?? translate("goals.date.noDueDate");
   const display = selectedDate
-    ? selectedDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
-    : placeholder;
+    ? selectedDate.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" })
+    : fallbackPlaceholder;
 
   const [viewYear, setViewYear] = useState(() => (selectedDate ? selectedDate.getFullYear() : new Date().getFullYear()));
   const [viewMonth, setViewMonth] = useState(() => (selectedDate ? selectedDate.getMonth() : new Date().getMonth()));
@@ -149,140 +153,147 @@ function GoalDatePicker({ value, onChange, id, placeholder = "No due date" }) {
         <ChevronDownIcon className={`goals-date-chevron ${isOpen ? "open" : ""}`} />
       </button>
 
-      {isOpen ? (
-        <>
-          <div className="goals-dropdown-backdrop" onClick={() => setIsOpen(false)} aria-hidden="true" />
-          <div className="goals-calendar-modal" role="dialog" aria-modal="true" aria-labelledby={id}>
-            <div className="goals-calendar-panel" onClick={(e) => e.stopPropagation()}>
-              <div className="goals-calendar-header">
-                <button
-                  type="button"
-                  className="goals-calendar-nav"
-                  onClick={() => moveMonth(-1)}
-                  aria-label="Previous month"
-                  title="Previous month"
-                >
-                  <ChevronLeftIcon className="goals-calendar-nav-icon" />
-                </button>
-                <div className="goals-calendar-title">
-                  {new Date(viewYear, viewMonth, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
-                </div>
-                <button
-                  type="button"
-                  className="goals-calendar-nav"
-                  onClick={() => moveMonth(1)}
-                  aria-label="Next month"
-                  title="Next month"
-                >
-                  <ChevronRightIcon className="goals-calendar-nav-icon" />
-                </button>
-              </div>
-
-              <div className="goals-calendar-weekdays">
-                {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
-                  <div key={d} className="goals-calendar-weekday">
-                    {d}
-                  </div>
-                ))}
-              </div>
-
-              <div className="goals-calendar-grid">
-                {Array.from({ length: startDay }).map((_, i) => (
-                  <div key={`e-${i}`} className="goals-calendar-empty" />
-                ))}
-                {Array.from({ length: daysInMonth }).map((_, i) => {
-                  const dayNum = i + 1;
-                  const k = `${viewYear}-${viewMonth}-${dayNum}`;
-                  const isSelected = selectedKey === k;
-                  const isToday = todayKey === k;
-                  return (
+      {isOpen
+        ? createPortal(
+            <>
+              <div className="goals-dropdown-backdrop" onClick={() => setIsOpen(false)} aria-hidden="true" />
+              <div className="goals-calendar-modal" role="dialog" aria-modal="true" aria-labelledby={id}>
+                <div className="goals-calendar-panel" onClick={(e) => e.stopPropagation()}>
+                  <div className="goals-calendar-header">
                     <button
-                      key={k}
                       type="button"
-                      className={`goals-calendar-day ${isSelected ? "selected" : ""} ${isToday ? "today" : ""}`}
+                      className="goals-calendar-nav"
+                      onClick={() => moveMonth(-1)}
+                      aria-label={translate("goals.date.previousMonth")}
+                      title={translate("goals.date.previousMonth")}
+                    >
+                      <ChevronLeftIcon className="goals-calendar-nav-icon" />
+                    </button>
+                    <div className="goals-calendar-title">
+                      {new Date(viewYear, viewMonth, 1).toLocaleDateString(i18n.language, {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </div>
+                    <button
+                      type="button"
+                      className="goals-calendar-nav"
+                      onClick={() => moveMonth(1)}
+                      aria-label={translate("goals.date.nextMonth")}
+                      title={translate("goals.date.nextMonth")}
+                    >
+                      <ChevronRightIcon className="goals-calendar-nav-icon" />
+                    </button>
+                  </div>
+
+                  <div className="goals-calendar-weekdays">
+                    {["su", "mo", "tu", "we", "th", "fr", "sa"].map((d) => (
+                      <div key={d} className="goals-calendar-weekday">
+                        {translate(`goals.date.weekdays.${d}`)}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="goals-calendar-grid">
+                    {Array.from({ length: startDay }).map((_, i) => (
+                      <div key={`e-${i}`} className="goals-calendar-empty" />
+                    ))}
+                    {Array.from({ length: daysInMonth }).map((_, i) => {
+                      const dayNum = i + 1;
+                      const k = `${viewYear}-${viewMonth}-${dayNum}`;
+                      const isSelected = selectedKey === k;
+                      const isToday = todayKey === k;
+                      return (
+                        <button
+                          key={k}
+                          type="button"
+                          className={`goals-calendar-day ${isSelected ? "selected" : ""} ${isToday ? "today" : ""}`}
+                          onClick={() => {
+                            setYmd(new Date(viewYear, viewMonth, dayNum));
+                            setIsOpen(false);
+                          }}
+                        >
+                          {dayNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="goals-calendar-actions">
+                    <button
+                      type="button"
+                      className="goals-calendar-link"
                       onClick={() => {
-                        setYmd(new Date(viewYear, viewMonth, dayNum));
+                        setYmd(new Date());
                         setIsOpen(false);
                       }}
                     >
-                      {dayNum}
+                      {translate("goals.date.today")}
                     </button>
-                  );
-                })}
+                    <button
+                      type="button"
+                      className="goals-calendar-link"
+                      onClick={() => {
+                        const d = new Date();
+                        d.setDate(d.getDate() + 1);
+                        setYmd(d);
+                        setIsOpen(false);
+                      }}
+                    >
+                      {translate("goals.date.tomorrow")}
+                    </button>
+                    <button
+                      type="button"
+                      className="goals-calendar-link"
+                      onClick={() => {
+                        const d = new Date();
+                        const day = d.getDay(); // 0 Sun ... 6 Sat
+                        const daysToEndOfWeek = 6 - day; // Saturday as end
+                        d.setDate(d.getDate() + Math.max(0, daysToEndOfWeek));
+                        setYmd(d);
+                        setIsOpen(false);
+                      }}
+                    >
+                      {translate("goals.date.endOfWeek")}
+                    </button>
+                    <button
+                      type="button"
+                      className="goals-calendar-link"
+                      onClick={() => {
+                        const d = new Date();
+                        const day = d.getDay();
+                        // Move to next Monday
+                        const delta = ((8 - day) % 7) || 7;
+                        d.setDate(d.getDate() + delta);
+                        setYmd(d);
+                        setIsOpen(false);
+                      }}
+                    >
+                      {translate("goals.date.nextWeek")}
+                    </button>
+                    <button
+                      type="button"
+                      className="goals-calendar-link danger"
+                      onClick={() => {
+                        onChange("");
+                        setIsOpen(false);
+                      }}
+                    >
+                      {translate("goals.date.clear")}
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              <div className="goals-calendar-actions">
-                <button
-                  type="button"
-                  className="goals-calendar-link"
-                  onClick={() => {
-                    setYmd(new Date());
-                    setIsOpen(false);
-                  }}
-                >
-                  Today
-                </button>
-                <button
-                  type="button"
-                  className="goals-calendar-link"
-                  onClick={() => {
-                    const d = new Date();
-                    d.setDate(d.getDate() + 1);
-                    setYmd(d);
-                    setIsOpen(false);
-                  }}
-                >
-                  Tomorrow
-                </button>
-                <button
-                  type="button"
-                  className="goals-calendar-link"
-                  onClick={() => {
-                    const d = new Date();
-                    const day = d.getDay(); // 0 Sun ... 6 Sat
-                    const daysToEndOfWeek = 6 - day; // Saturday as end
-                    d.setDate(d.getDate() + Math.max(0, daysToEndOfWeek));
-                    setYmd(d);
-                    setIsOpen(false);
-                  }}
-                >
-                  End of week
-                </button>
-                <button
-                  type="button"
-                  className="goals-calendar-link"
-                  onClick={() => {
-                    const d = new Date();
-                    const day = d.getDay();
-                    // Move to next Monday
-                    const delta = ((8 - day) % 7) || 7;
-                    d.setDate(d.getDate() + delta);
-                    setYmd(d);
-                    setIsOpen(false);
-                  }}
-                >
-                  Next week
-                </button>
-                <button
-                  type="button"
-                  className="goals-calendar-link danger"
-                  onClick={() => {
-                    onChange("");
-                    setIsOpen(false);
-                  }}
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : null}
+            </>,
+            document.body
+          )
+        : null}
     </div>
   );
 }
 
 function GoalsView({ todos, onGoBoard }) {
+  const { t: translate, i18n } = useTranslation();
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState("");
@@ -336,7 +347,7 @@ function GoalsView({ todos, onGoBoard }) {
       setGoals(data);
     } catch (error) {
       console.error("Error loading goals:", error);
-      toast.error("Could not load goals");
+      toast.error(translate("goals.toast.couldNotLoad"));
     } finally {
       setLoading(false);
     }
@@ -399,10 +410,10 @@ function GoalsView({ todos, onGoBoard }) {
       setNewGoalTitle("");
       setNewGoalTarget(10);
       setNewGoalDueDate("");
-      toast.success("Goal added");
+      toast.success(translate("goals.toast.added"));
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add goal");
+      toast.error(translate("goals.toast.addFailed"));
     } finally {
       setAddSaving(false);
     }
@@ -422,7 +433,7 @@ function GoalsView({ todos, onGoBoard }) {
         lastDeletedRef.current = toDelete;
         toast((t) => (
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span>Goal removed</span>
+            <span>{translate("goals.toast.removed")}</span>
             <button
               className="action-button"
               onClick={async () => {
@@ -437,27 +448,27 @@ function GoalsView({ todos, onGoBoard }) {
                   if (resp.ok) {
                     const back = await resp.json();
                     setGoals((prev) => [back, ...prev]);
-                    toast.success("Undo successful");
+                    toast.success(translate("goals.toast.undoSuccessful"));
                   } else {
-                    toast.error("Undo failed");
+                    toast.error(translate("goals.toast.undoFailed"));
                   }
                 } catch {
-                  toast.error("Undo failed");
+                  toast.error(translate("goals.toast.undoFailed"));
                 } finally {
                   toast.dismiss(t.id);
                 }
               }}
             >
-              Undo
+              {translate("board.buttons.undo")}
             </button>
           </div>
         ));
       } else {
-        toast.success("Goal removed");
+        toast.success(translate("goals.toast.removed"));
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete goal");
+      toast.error(translate("goals.toast.deleteFailed"));
     }
   };
 
@@ -474,10 +485,10 @@ function GoalsView({ todos, onGoBoard }) {
 
       setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
       setEditingGoal(null);
-      toast.success("Goal updated");
+      toast.success(translate("goals.toast.updated"));
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update goal");
+      toast.error(translate("goals.toast.updateFailed"));
     } finally {
       setEditSaving(false);
     }
@@ -532,57 +543,66 @@ function GoalsView({ todos, onGoBoard }) {
     <section className="board-card">
       <div className="board-header">
         <div>
-          <div className="board-title">Goals</div>
-          <div className="board-subtitle">Set targets and track progress from your tasks.</div>
+          <div className="board-title">{translate("goals.title")}</div>
+          <div className="board-subtitle">{translate("goals.subtitle")}</div>
         </div>
         <div className="calendar-view-actions">
           <button className="calendar-go-board-btn" type="button" onClick={onGoBoard}>
-            Open Board
+            {translate("goals.actions.openBoard")}
           </button>
         </div>
       </div>
 
       <div className="goals-summary-grid">
         <div className="goals-summary-card">
-          <div className="goals-summary-label">Completion rate</div>
+          <div className="goals-summary-label">{translate("goals.summary.completionRate")}</div>
           <div className="goals-summary-value">{goalStats.completionRate}%</div>
           <div className="goals-summary-sub">
-            {goalStats.completed} done • {goalStats.active} active
+            {translate("goals.summary.doneActive", {
+              done: goalStats.completed,
+              active: goalStats.active,
+              doneLabel: translate("goals.summary.done"),
+              activeLabel: translate("goals.summary.active"),
+            })}
           </div>
         </div>
         <div className="goals-summary-card">
-          <div className="goals-summary-label">Overdue</div>
+          <div className="goals-summary-label">{translate("goals.summary.overdue")}</div>
           <div className="goals-summary-value">{goalStats.overdue}</div>
-          <div className="goals-summary-sub">Incomplete tasks past due date</div>
+          <div className="goals-summary-sub">{translate("goals.summary.overdueSub")}</div>
         </div>
         <div className="goals-summary-card">
-          <div className="goals-summary-label">High priority done</div>
+          <div className="goals-summary-label">{translate("goals.summary.highPriorityDone")}</div>
           <div className="goals-summary-value">{goalStats.completedHigh}</div>
-          <div className="goals-summary-sub">Completed tasks marked High</div>
+          <div className="goals-summary-sub">{translate("goals.summary.highPriorityDoneSub")}</div>
         </div>
       </div>
 
       <div className="goals-layout">
         <div className="goals-panel">
-          <div className="goals-panel-title">Create goal</div>
+          <div className="goals-panel-title">{translate("goals.panels.createGoal")}</div>
           <div className="goal-templates">
-            <div className="template-label">Quick start</div>
+            <div className="template-label">{translate("goals.templates.heading")}</div>
             <div className="goal-template-grid">
               {GOAL_TEMPLATES.map((t) => (
                 <button
-                  key={t.title}
+                  key={t.key}
                   type="button"
                   className="goal-template-card"
                   onClick={() => {
-                    setNewGoalTitle(t.title);
+                    setNewGoalTitle(translate(t.titleKey));
                     setNewGoalType(t.type);
                     setNewGoalTarget(t.target);
                   }}
                 >
-                  <div className="goal-template-title">{t.title}</div>
+                  <div className="goal-template-title">{translate(t.titleKey)}</div>
                   <div className="goal-template-meta">
-                    <span className="goal-template-pill">{t.type === "completed_high" ? "High priority" : "All tasks"}</span>
-                    <span className="goal-template-pill">{t.target} target</span>
+                    <span className="goal-template-pill">
+                      {t.type === "completed_high"
+                        ? translate("goals.templates.pill.highPriority")
+                        : translate("goals.templates.pill.allTasks")}
+                    </span>
+                    <span className="goal-template-pill">{translate("goals.templates.pill.target", { count: t.target })}</span>
                   </div>
                 </button>
               ))}
@@ -600,28 +620,28 @@ function GoalsView({ todos, onGoBoard }) {
           >
             <div className="form-row">
               <div className="form-group">
-                <label>Goal title</label>
+                <label>{translate("goals.form.labels.goalTitle")}</label>
                 <input
                   className="edit-input"
                   value={newGoalTitle}
                   onChange={(e) => setNewGoalTitle(e.target.value)}
-                  placeholder="e.g. Finish 20 tasks"
+                  placeholder={translate("goals.form.placeholders.goalTitle")}
                   required
                 />
               </div>
               <div className="form-group">
-                <label>Type</label>
+                <label>{translate("goals.form.labels.type")}</label>
                 <GoalTypeDropdown id="goal-type-create" value={newGoalType} onChange={setNewGoalType} />
               </div>
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Target</label>
+                <label>{translate("goals.form.labels.target")}</label>
                 <div className="qty-input">
                   <button
                     type="button"
                     className="qty-btn"
-                    aria-label="Decrease target"
+                    aria-label={translate("goals.form.aria.decreaseTarget")}
                     disabled={Number(newGoalTarget || 1) <= 1}
                     onClick={() =>
                       setNewGoalTarget((v) => {
@@ -669,7 +689,7 @@ function GoalsView({ todos, onGoBoard }) {
                   <button
                     type="button"
                     className="qty-btn"
-                    aria-label="Increase target"
+                    aria-label={translate("goals.form.aria.increaseTarget")}
                     onClick={() =>
                       setNewGoalTarget((v) => {
                         const n = Math.max(1, Math.floor(Number(v || 0)) + 1);
@@ -706,13 +726,13 @@ function GoalsView({ todos, onGoBoard }) {
                 </div>
               </div>
               <div className="form-group">
-                <label>Due date (optional)</label>
+                <label>{translate("goals.form.labels.dueDateOptional")}</label>
                 <GoalDatePicker id="goal-due-create" value={newGoalDueDate} onChange={setNewGoalDueDate} />
               </div>
             </div>
             <div className="goals-form-actions">
               <button className="action-button primary" type="submit" disabled={addSaving || !newGoalTitle.trim()}>
-                {addSaving ? "Adding..." : "Add Goal"}
+                {addSaving ? translate("goals.form.buttons.adding") : translate("goals.form.buttons.add")}
               </button>
             </div>
           </form>
@@ -720,23 +740,24 @@ function GoalsView({ todos, onGoBoard }) {
 
         <div className="goals-panel">
           <div className="goals-panel-header">
-            <div className="goals-panel-title">Your goals</div>
+            <div className="goals-panel-title">{translate("goals.panels.yourGoals")}</div>
             <button
               type="button"
               className={`goals-toggle ${showAchieved ? "active" : ""}`}
               onClick={() => setShowAchieved((v) => !v)}
               disabled={goalRows.achievedCount === 0}
             >
-              Show achieved {goalRows.achievedCount > 0 ? `(${goalRows.achievedCount})` : ""}
+              {translate("goals.toggle.showAchieved")}{" "}
+              {goalRows.achievedCount > 0 ? `(${goalRows.achievedCount})` : ""}
             </button>
           </div>
           {loading ? (
-             <div className="empty-state">Loading goals...</div>
+             <div className="empty-state">{translate("goals.loading")}</div>
           ) : goalRows.rows.length === 0 ? (
             <div className="empty-state">
               {goalRows.achievedCount > 0
-                ? "All goals achieved. Toggle “Show achieved” to see them."
-                : "No goals yet. Create one to start tracking."}
+                ? translate("goals.empty.allAchieved")
+                : translate("goals.empty.none")}
             </div>
           ) : (
             <div className="goals-list">
@@ -750,48 +771,50 @@ function GoalsView({ todos, onGoBoard }) {
                 const hasDue = row.dueStart != null;
                 const dueLabel =
                   !hasDue
-                    ? "Set a due date"
+                    ? translate("goals.due.set")
                     : daysLeft < 0
-                      ? `Overdue by ${Math.abs(daysLeft)} day${Math.abs(daysLeft) === 1 ? "" : "s"}`
+                      ? translate("goals.due.overdueBy", { count: Math.abs(daysLeft) })
                       : daysLeft === 0
-                        ? "Due today"
-                        : `Due in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+                        ? translate("goals.due.today")
+                        : translate("goals.due.inDays", { count: daysLeft });
                 return (
                   <div key={g.id} className="goal-card">
                     <div className="goal-card-top">
                       <div className="goal-card-title">{g.title}</div>
                       <div className="goal-card-actions">
-                        {pct >= 100 ? <span className="goal-meta-pill achieved">Achieved</span> : null}
+                        {pct >= 100 ? <span className="goal-meta-pill achieved">{translate("goals.card.achieved")}</span> : null}
                         <button
                           type="button"
                           className="action-button"
                           onClick={() => setEditingGoal(g)}
                         >
-                          Edit
+                          {translate("goals.actions.edit")}
                         </button>
                         <button
                           type="button"
                           className="action-button"
                           onClick={() => onGoBoard(g.type === "completed_high" ? "high_priority" : "pending")}
                         >
-                          View Tasks
+                          {translate("goals.actions.viewTasks")}
                         </button>
                         <button
                           type="button"
                           className="action-button delete"
                           onClick={() => handleDeleteGoal(g.id)}
                         >
-                          Delete
+                          {translate("goals.actions.delete")}
                         </button>
                       </div>
                     </div>
                     <div className="goal-card-meta">
                       <span className="goal-meta-pill">
-                        {g.type === "completed_high" ? "High priority" : "All tasks"}
+                        {g.type === "completed_high"
+                          ? translate("goals.card.meta.highPriority")
+                          : translate("goals.card.meta.allTasks")}
                       </span>
                       {g.dueDate ? (
                         <span className="goal-meta-pill">
-                          Due {new Date(g.dueDate).toLocaleDateString()}
+                          {translate("goals.card.meta.due", { date: new Date(g.dueDate).toLocaleDateString(i18n.language) })}
                         </span>
                       ) : null}
                       <span className="goal-meta-pill">
@@ -800,19 +823,21 @@ function GoalsView({ todos, onGoBoard }) {
                     </div>
                     <div className="goal-insights">
                       <div className="goal-insight">
-                        <div className="goal-insight-label">Remaining</div>
+                        <div className="goal-insight-label">{translate("goals.card.insights.remaining")}</div>
                         <div className="goal-insight-value">{remaining}</div>
                       </div>
                       <div className="goal-insight">
-                        <div className="goal-insight-label">{hasDue ? "Due" : "Pace"}</div>
+                        <div className="goal-insight-label">
+                          {hasDue ? translate("goals.card.insights.due") : translate("goals.card.insights.pace")}
+                        </div>
                         <div className={`goal-insight-value ${daysLeft != null && daysLeft < 0 ? "danger" : ""}`}>
                           {hasDue ? dueLabel : dueLabel}
                         </div>
                       </div>
                       <div className="goal-insight">
-                        <div className="goal-insight-label">Needed/day</div>
+                        <div className="goal-insight-label">{translate("goals.card.insights.neededPerDay")}</div>
                         <div className="goal-insight-value">
-                          {needPerDay != null ? needPerDay.toFixed(1) : "—"}
+                          {needPerDay != null ? needPerDay.toFixed(1) : translate("goals.card.insights.none")}
                         </div>
                       </div>
                     </div>
@@ -840,7 +865,7 @@ function GoalsView({ todos, onGoBoard }) {
                 tabIndex={-1}
               >
                 <div className="modal-header">
-                  <div className="modal-title">Edit Goal</div>
+                  <div className="modal-title">{translate("goals.modal.editTitle")}</div>
                 </div>
                 <div className="modal-body">
                   <form
@@ -865,11 +890,11 @@ function GoalsView({ todos, onGoBoard }) {
                     <input type="hidden" name="dueDate" value={editingGoalDueDate} />
                     <div className="form-row">
                       <div className="form-group">
-                        <label>Goal title</label>
+                        <label>{translate("goals.form.labels.goalTitle")}</label>
                         <input className="edit-input" name="title" defaultValue={editingGoal.title} required />
                       </div>
                       <div className="form-group">
-                        <label>Type</label>
+                        <label>{translate("goals.form.labels.type")}</label>
                         <GoalTypeDropdown
                           id="goal-type-edit"
                           value={editingGoalType}
@@ -879,7 +904,7 @@ function GoalsView({ todos, onGoBoard }) {
                     </div>
                     <div className="form-row">
                       <div className="form-group">
-                        <label>Target</label>
+                        <label>{translate("goals.form.labels.target")}</label>
                         <div className="qty-input">
                           <button
                             type="button"
@@ -916,7 +941,7 @@ function GoalsView({ todos, onGoBoard }) {
                         </div>
                       </div>
                       <div className="form-group">
-                        <label>Due date (optional)</label>
+                        <label>{translate("goals.form.labels.dueDateOptional")}</label>
                         <GoalDatePicker
                           id="goal-due-edit"
                           value={editingGoalDueDate}
@@ -926,10 +951,10 @@ function GoalsView({ todos, onGoBoard }) {
                     </div>
                     <div className="modal-actions">
                       <button type="button" className="action-button" onClick={() => setEditingGoal(null)}>
-                        Cancel
+                        {translate("goals.modal.buttons.cancel")}
                       </button>
                       <button type="submit" className="action-button primary" disabled={editSaving}>
-                        {editSaving ? "Saving..." : "Save Changes"}
+                        {editSaving ? translate("goals.modal.buttons.saving") : translate("goals.modal.buttons.saveChanges")}
                       </button>
                     </div>
                   </form>

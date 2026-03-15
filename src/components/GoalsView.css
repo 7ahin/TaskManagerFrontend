@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--card-bg);
   backdrop-filter: blur(12px);
   border-radius: 12px;
   padding: 1.25rem 1.5rem 1.75rem;
@@ -96,7 +96,7 @@
 
 .goals-panel {
   flex: 1;
-  background: rgba(15, 23, 42, 0.3);
+  background: var(--card-bg);
   border-radius: 12px;
   border: 1px solid var(--border);
   padding: 1.5rem;
@@ -173,7 +173,7 @@
 .goal-template-title {
   font-weight: 800;
   font-size: 0.95rem;
-  color: #e2e8f0;
+  color: var(--text-main);
 }
 
 .goal-template-meta {
@@ -187,7 +187,7 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
-  color: #94a3b8;
+  color: var(--text-muted);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -266,7 +266,7 @@
 
 .edit-input,
 .edit-select {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.6rem;
@@ -296,7 +296,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.35rem 0.5rem;
@@ -383,7 +383,7 @@
 
 .goals-dropdown-btn {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.6rem 0.75rem;
@@ -419,14 +419,14 @@
 .goals-dropdown-chevron {
   width: 18px;
   height: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
   flex: 0 0 auto;
   transition: transform 0.2s, color 0.2s;
 }
 
 .goals-dropdown-chevron.open {
   transform: rotate(180deg);
-  color: #cbd5e1;
+  color: var(--text-main);
 }
 
 .goals-dropdown-backdrop {
@@ -451,7 +451,7 @@
   width: 100%;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.98);
+  background: var(--modal-bg);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
   overflow: hidden;
   z-index: 50;
@@ -464,7 +464,7 @@
   width: 100%;
   background: transparent;
   border: none;
-  color: #e2e8f0;
+  color: var(--text-main);
   font-size: 0.9rem;
   font-weight: 600;
   padding: 0.65rem 0.75rem;
@@ -494,7 +494,7 @@
 
 .goals-date-btn {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.6rem 0.75rem;
@@ -531,7 +531,7 @@
 .goals-date-icon {
   width: 18px;
   height: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
   flex: 0 0 auto;
 }
 
@@ -542,20 +542,20 @@
 }
 
 .goals-date-text.muted {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .goals-date-chevron {
   width: 18px;
   height: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
   flex: 0 0 auto;
   transition: transform 0.2s, color 0.2s;
 }
 
 .goals-date-chevron.open {
   transform: rotate(180deg);
-  color: #cbd5e1;
+  color: var(--text-main);
 }
 
 .goals-calendar-modal {
@@ -575,8 +575,8 @@
   max-width: calc(100vw - 2.5rem);
   max-height: calc(100vh - 2.5rem);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #1e293b;
+  border: 1px solid var(--border);
+  background: var(--modal-bg);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
   padding: 1rem;
   box-sizing: border-box;
@@ -621,7 +621,7 @@
 
 .goals-calendar-nav:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  color: var(--text-main);
 }
 
 .goals-calendar-nav:focus-visible {
@@ -748,7 +748,7 @@
 .goals-calendar-link {
   background: transparent;
   border: none;
-  color: #93c5fd;
+  color: var(--primary);
   font-weight: 800;
   font-size: 0.7rem;
   cursor: pointer;
@@ -757,7 +757,7 @@
 }
 
 .goals-calendar-link:hover {
-  color: #bfdbfe;
+  color: var(--primary-dark);
 }
 
 .goals-calendar-link.danger {
@@ -806,7 +806,7 @@
 .goals-toggle {
   background: rgba(2, 6, 23, 0.22);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
+  color: var(--text-main);
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   cursor: pointer;
@@ -820,7 +820,7 @@
   background: rgba(2, 6, 23, 0.32);
   border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-1px);
-  color: #fff;
+  color: var(--text-main);
 }
 
 .goals-toggle.active {
@@ -925,7 +925,7 @@
 }
 
 .goal-insight-label {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 800;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -933,9 +933,91 @@
 }
 
 .goal-insight-value {
-  color: #e2e8f0;
+  color: var(--text-main);
   font-weight: 900;
   font-size: 0.95rem;
+}
+
+body.light-mode .goal-template-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .goal-template-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .goal-template-pill,
+body.light-mode .goal-meta-pill {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .goals-summary-card,
+body.light-mode .goal-card,
+body.light-mode .goal-insight {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .goals-summary-card:hover,
+body.light-mode .goal-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .goals-toggle {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-muted);
+}
+
+body.light-mode .goals-toggle:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.16);
+  color: var(--text-main);
+}
+
+body.light-mode .goals-toggle.active {
+  color: var(--primary);
+}
+
+body.light-mode .goals-dropdown-btn:hover,
+body.light-mode .goals-date-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+body.light-mode .goals-dropdown-menu {
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .goals-dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .goals-dropdown-item.selected {
+  color: var(--primary);
+}
+
+body.light-mode .goals-calendar-nav:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .goals-calendar-day:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .goals-calendar-actions {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .empty-state {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .goal-insight-value.danger {

@@ -8,8 +8,10 @@ import {
   CheckCircleIcon
 } from "@heroicons/react/24/outline";
 import { toYmd, normalizeDueDate } from "../utils/dateUtils";
+import { useTranslation } from "react-i18next";
 
 function CalendarView({ todos, onToggleComplete, onGoBoard }) {
+  const { t: translate, i18n } = useTranslation();
   const today = useMemo(() => new Date(), []);
   const [viewDate, setViewDate] = useState(() => new Date());
   const [selectedYmd, setSelectedYmd] = useState(() => toYmd(new Date()));
@@ -52,13 +54,13 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
   const selectedDateLabel = useMemo(() => {
     const [y, m, d] = selectedYmd.split("-").map((n) => Number(n));
     const date = new Date(y, m - 1, d);
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleDateString(i18n.language, {
       weekday: "long",
       month: "long",
       day: "numeric",
       year: "numeric",
     });
-  }, [selectedYmd]);
+  }, [i18n.language, selectedYmd]);
 
   const selectedTasks = useMemo(() => {
     const list = tasksByDay.get(selectedYmd) || [];
@@ -89,17 +91,17 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
     <section className="calendar-view-container">
       <div className="calendar-page-header">
         <div>
-          <div className="calendar-page-title">Calendar</div>
-          <div className="calendar-page-subtitle">Plan your deadlines across the month.</div>
+          <div className="calendar-page-title">{translate("calendar.title")}</div>
+          <div className="calendar-page-subtitle">{translate("calendar.subtitle")}</div>
         </div>
         <div className="calendar-view-actions">
           <button className="calendar-today-btn" type="button" onClick={jumpToToday}>
             <CalendarDaysIcon strokeWidth={2} />
-            Today
+            {translate("calendar.actions.today")}
           </button>
           <button className="calendar-go-board-btn" type="button" onClick={onGoBoard}>
             <ClipboardDocumentListIcon strokeWidth={2} />
-            Open Board
+            {translate("calendar.actions.openBoard")}
           </button>
         </div>
       </div>
@@ -111,20 +113,20 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
               type="button"
               onClick={() => changeMonth(-1)}
               className="calendar-nav-btn"
-              aria-label="Previous month"
+              aria-label={translate("calendar.aria.previousMonth")}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
               </svg>
             </button>
             <span className="calendar-month-year">
-              {viewDate.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+              {viewDate.toLocaleDateString(i18n.language, { month: "long", year: "numeric" })}
             </span>
             <button
               type="button"
               onClick={() => changeMonth(1)}
               className="calendar-nav-btn"
-              aria-label="Next month"
+              aria-label={translate("calendar.aria.nextMonth")}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -133,9 +135,9 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
           </div>
 
           <div className="calendar-grid-header calendar-view-grid-header">
-            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-              <div key={`${d}-${i}`} className="calendar-day-name">
-                {d}
+            {["su", "mo", "tu", "we", "th", "fr", "sa"].map((d) => (
+              <div key={d} className="calendar-day-name">
+                {translate(`calendar.weekdays.short.${d}`)}
               </div>
             ))}
           </div>
@@ -189,7 +191,7 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
                       </div>
                     ))}
                     {remaining > 0 ? (
-                      <div className="calendar-task-more">+{remaining} more</div>
+                      <div className="calendar-task-more">{translate("calendar.more.label", { count: remaining })}</div>
                     ) : null}
                   </div>
                 </button>
@@ -202,14 +204,14 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
           <div className="calendar-sidebar-header">
             <div className="calendar-sidebar-title">{selectedDateLabel}</div>
             <div className="calendar-sidebar-subtitle">
-              {selectedTasks.length} task{selectedTasks.length === 1 ? "" : "s"} due
+              {translate("calendar.sidebar.subtitle", { count: selectedTasks.length })}
             </div>
           </div>
 
           {selectedTasks.length === 0 ? (
             <div className="calendar-sidebar-empty">
               <CheckCircleIcon className="icon-lg text-muted" style={{ width: '48px', height: '48px', opacity: 0.2 }} />
-              <div>No tasks due on this day.</div>
+              <div>{translate("calendar.empty.noTasksDue")}</div>
             </div>
           ) : (
             <div className="calendar-sidebar-list">
@@ -219,7 +221,11 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
                     type="button"
                     className="calendar-sidebar-check"
                     onClick={() => onToggleComplete(t)}
-                    aria-label={t.isComplete ? "Mark as not complete" : "Mark as complete"}
+                    aria-label={
+                      t.isComplete
+                        ? translate("calendar.ariaTasks.markNotComplete")
+                        : translate("calendar.ariaTasks.markComplete")
+                    }
                   >
                     <span className={t.isComplete ? "check-dot checked" : "check-dot"} />
                   </button>
@@ -231,14 +237,14 @@ function CalendarView({ todos, onToggleComplete, onGoBoard }) {
                           `priority-${(t.priority || "Medium").toLowerCase()}`,
                         ].join(" ")}
                       >
-                        {t.priority || "Medium"}
+                        {translate(`board.priority.${String(t.priority || "Medium").toLowerCase()}`)}
                       </span>
                       <span className={t.isComplete ? "calendar-sidebar-name done" : "calendar-sidebar-name"}>
                         {t.name}
                       </span>
                     </div>
                     <div className="calendar-sidebar-meta">
-                      {t.isComplete ? "Completed" : "Pending"}
+                      {t.isComplete ? translate("calendar.status.completed") : translate("calendar.status.pending")}
                     </div>
                   </div>
                 </div>

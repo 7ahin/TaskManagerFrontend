@@ -173,5 +173,128 @@
       "startPrefix": "I:"
     },
     "buttons": { "clear": "Limpiar", "done": "Hecho", "undo": "Deshacer" }
+  },
+  "timeline": {
+    "title": "Cronología",
+    "subtitle": {
+      "week": "Tareas agrupadas por semana de vencimiento (atrasadas → próximas).",
+      "day": "Tareas agrupadas por fecha de vencimiento (atrasadas → próximas)."
+    },
+    "actions": { "openBoard": "Abrir tablero", "open": "Abrir" },
+    "search": { "placeholder": "Buscar tareas en la cronología" },
+    "groupBy": { "label": "Agrupar", "day": "Agrupar por día", "week": "Agrupar por semana" },
+    "priority": { "label": "Prioridad", "all": "Todas las prioridades" },
+    "toggle": { "showDone": "Mostrar hechas" },
+    "empty": { "noMatch": "Ninguna tarea coincide con los filtros de la cronología." },
+    "group": {
+      "prefix": { "overdue": "Atrasadas", "today": "Hoy", "thisWeek": "Esta semana", "upcoming": "Próximas" },
+      "day": { "label": "{{prefix}} — {{date}}" },
+      "week": { "label": "{{prefix}} — {{start}} – {{end}}" },
+      "noDates": "Sin fechas"
+    },
+    "due": { "label": "Vence {{date}}" },
+    "conflict": { "title": "La fecha de inicio es posterior a la fecha límite", "label": "Conflicto" },
+    "dates": { "startLabel": "Inicio:", "dueLabel": "Límite:" }
+  },
+  "calendar": {
+    "title": "Calendario",
+    "subtitle": "Planifica tus fechas límite a lo largo del mes.",
+    "actions": { "today": "Hoy", "openBoard": "Abrir tablero" },
+    "aria": { "previousMonth": "Mes anterior", "nextMonth": "Mes siguiente" },
+    "weekdays": {
+      "short": { "su": "D", "mo": "L", "tu": "M", "we": "X", "th": "J", "fr": "V", "sa": "S" }
+    },
+    "more": { "label": "+{{count}} más" },
+    "sidebar": { "subtitle": "{{count}} tareas con vencimiento" },
+    "empty": { "noTasksDue": "No hay tareas con vencimiento este día." },
+    "status": { "completed": "Completada", "pending": "Pendiente" },
+    "ariaTasks": {
+      "markComplete": "Marcar como completada",
+      "markNotComplete": "Marcar como pendiente"
+    }
+  },
+  "goals": {
+    "title": "Metas",
+    "subtitle": "Establece objetivos y sigue el progreso desde tus tareas.",
+    "types": { "completedAll": "Tareas completadas", "completedHigh": "Alta prioridad completada" },
+    "templates": {
+      "heading": "Inicio rápido",
+      "productiveWeek": { "title": "Semana productiva (20 tareas)" },
+      "clearHigh": { "title": "Completar 5 de alta prioridad" },
+      "dailyGrind": { "title": "Racha diaria (5 tareas)" },
+      "pill": { "highPriority": "Alta prioridad", "allTasks": "Todas las tareas", "target": "Objetivo {{count}}" }
+    },
+    "summary": {
+      "completionRate": "Tasa de completado",
+      "done": "hechas",
+      "active": "activas",
+      "doneActive": "{{done}} {{doneLabel}} • {{active}} {{activeLabel}}",
+      "overdue": "Atrasadas",
+      "overdueSub": "Tareas incompletas con fecha vencida",
+      "highPriorityDone": "Alta prioridad hecha",
+      "highPriorityDoneSub": "Tareas completadas marcadas como Alta"
+    },
+    "panels": { "createGoal": "Crear meta", "yourGoals": "Tus metas" },
+    "toggle": { "showAchieved": "Mostrar logradas" },
+    "loading": "Cargando metas...",
+    "empty": {
+      "allAchieved": "Todas las metas se lograron. Activa “Mostrar logradas” para verlas.",
+      "none": "Aún no hay metas. Crea una para empezar a seguir el progreso."
+    },
+    "form": {
+      "labels": {
+        "goalTitle": "Título de la meta",
+        "type": "Tipo",
+        "target": "Objetivo",
+        "dueDateOptional": "Fecha límite (opcional)"
+      },
+      "placeholders": { "goalTitle": "p. ej. Terminar 20 tareas" },
+      "buttons": { "add": "Agregar meta", "adding": "Agregando..." },
+      "aria": { "decreaseTarget": "Disminuir objetivo", "increaseTarget": "Aumentar objetivo" }
+    },
+    "card": {
+      "achieved": "Lograda",
+      "meta": { "highPriority": "Alta prioridad", "allTasks": "Todas las tareas", "due": "Vence {{date}}" },
+      "insights": {
+        "remaining": "Restantes",
+        "due": "Vence",
+        "pace": "Ritmo",
+        "neededPerDay": "Necesarias/día",
+        "none": "—"
+      }
+    },
+    "due": {
+      "set": "Establecer fecha límite",
+      "today": "Vence hoy",
+      "inDays": "Vence en {{count}} día(s)",
+      "overdueBy": "Atrasada por {{count}} día(s)"
+    },
+    "modal": {
+      "editTitle": "Editar meta",
+      "buttons": { "cancel": "Cancelar", "saveChanges": "Guardar cambios", "saving": "Guardando..." }
+    },
+    "date": {
+      "noDueDate": "Sin fecha",
+      "weekdays": { "su": "D", "mo": "L", "tu": "M", "we": "X", "th": "J", "fr": "V", "sa": "S" },
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "endOfWeek": "Fin de semana",
+      "nextWeek": "Próxima semana",
+      "clear": "Limpiar"
+    },
+    "actions": { "openBoard": "Abrir tablero", "edit": "Editar", "viewTasks": "Ver tareas", "delete": "Eliminar" },
+    "toast": {
+      "added": "Meta agregada",
+      "addFailed": "No se pudo agregar la meta",
+      "removed": "Meta eliminada",
+      "deleteFailed": "No se pudo eliminar la meta",
+      "updated": "Meta actualizada",
+      "updateFailed": "No se pudo actualizar la meta",
+      "couldNotLoad": "No se pudieron cargar las metas",
+      "undoSuccessful": "Deshacer exitoso",
+      "undoFailed": "No se pudo deshacer"
+    }
   }
 }

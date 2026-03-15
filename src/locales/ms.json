@@ -173,5 +173,128 @@
       "startPrefix": "M:"
     },
     "buttons": { "clear": "Kosongkan", "done": "Selesai", "undo": "Buat asal" }
+  },
+  "timeline": {
+    "title": "Garis masa",
+    "subtitle": {
+      "week": "Tugasan dikelompokkan mengikut minggu tarikh akhir (lewat → akan datang).",
+      "day": "Tugasan dikelompokkan mengikut tarikh akhir (lewat → akan datang)."
+    },
+    "actions": { "openBoard": "Buka papan", "open": "Buka" },
+    "search": { "placeholder": "Cari tugasan dalam garis masa" },
+    "groupBy": { "label": "Kumpulkan", "day": "Kumpulkan mengikut hari", "week": "Kumpulkan mengikut minggu" },
+    "priority": { "label": "Keutamaan", "all": "Semua keutamaan" },
+    "toggle": { "showDone": "Tunjuk selesai" },
+    "empty": { "noMatch": "Tiada tugasan sepadan dengan penapis garis masa anda." },
+    "group": {
+      "prefix": { "overdue": "Lewat", "today": "Hari ini", "thisWeek": "Minggu ini", "upcoming": "Akan datang" },
+      "day": { "label": "{{prefix}} — {{date}}" },
+      "week": { "label": "{{prefix}} — {{start}} – {{end}}" },
+      "noDates": "Tiada tarikh"
+    },
+    "due": { "label": "Tarikh akhir {{date}}" },
+    "conflict": { "title": "Tarikh mula selepas tarikh akhir", "label": "Konflik" },
+    "dates": { "startLabel": "Mula:", "dueLabel": "Akhir:" }
+  },
+  "calendar": {
+    "title": "Kalendar",
+    "subtitle": "Rancang tarikh akhir anda sepanjang bulan.",
+    "actions": { "today": "Hari ini", "openBoard": "Buka papan" },
+    "aria": { "previousMonth": "Bulan sebelumnya", "nextMonth": "Bulan seterusnya" },
+    "weekdays": {
+      "short": { "su": "A", "mo": "I", "tu": "S", "we": "R", "th": "K", "fr": "J", "sa": "S" }
+    },
+    "more": { "label": "+{{count}} lagi" },
+    "sidebar": { "subtitle": "{{count}} tugasan tarikh akhir" },
+    "empty": { "noTasksDue": "Tiada tugasan tarikh akhir pada hari ini." },
+    "status": { "completed": "Selesai", "pending": "Belum selesai" },
+    "ariaTasks": {
+      "markComplete": "Tanda sebagai selesai",
+      "markNotComplete": "Tanda sebagai belum selesai"
+    }
+  },
+  "goals": {
+    "title": "Matlamat",
+    "subtitle": "Tetapkan sasaran dan jejak kemajuan daripada tugasan anda.",
+    "types": { "completedAll": "Tugasan selesai", "completedHigh": "Keutamaan tinggi selesai" },
+    "templates": {
+      "heading": "Mula cepat",
+      "productiveWeek": { "title": "Minggu produktif (20 tugasan)" },
+      "clearHigh": { "title": "Selesaikan 5 keutamaan tinggi" },
+      "dailyGrind": { "title": "Rutin harian (5 tugasan)" },
+      "pill": { "highPriority": "Keutamaan tinggi", "allTasks": "Semua tugasan", "target": "Sasaran {{count}}" }
+    },
+    "summary": {
+      "completionRate": "Kadar siap",
+      "done": "selesai",
+      "active": "aktif",
+      "doneActive": "{{done}} {{doneLabel}} • {{active}} {{activeLabel}}",
+      "overdue": "Lewat",
+      "overdueSub": "Tugasan belum siap melepasi tarikh akhir",
+      "highPriorityDone": "Keutamaan tinggi selesai",
+      "highPriorityDoneSub": "Tugasan selesai ditanda Tinggi"
+    },
+    "panels": { "createGoal": "Cipta matlamat", "yourGoals": "Matlamat anda" },
+    "toggle": { "showAchieved": "Tunjuk tercapai" },
+    "loading": "Memuatkan matlamat...",
+    "empty": {
+      "allAchieved": "Semua matlamat telah tercapai. Togol “Tunjuk tercapai” untuk melihatnya.",
+      "none": "Belum ada matlamat. Cipta satu untuk mula menjejak."
+    },
+    "form": {
+      "labels": {
+        "goalTitle": "Tajuk matlamat",
+        "type": "Jenis",
+        "target": "Sasaran",
+        "dueDateOptional": "Tarikh akhir (pilihan)"
+      },
+      "placeholders": { "goalTitle": "cth. Selesaikan 20 tugasan" },
+      "buttons": { "add": "Tambah matlamat", "adding": "Menambah..." },
+      "aria": { "decreaseTarget": "Kurangkan sasaran", "increaseTarget": "Tambah sasaran" }
+    },
+    "card": {
+      "achieved": "Tercapai",
+      "meta": { "highPriority": "Keutamaan tinggi", "allTasks": "Semua tugasan", "due": "Tarikh akhir {{date}}" },
+      "insights": {
+        "remaining": "Baki",
+        "due": "Tarikh akhir",
+        "pace": "Kadar",
+        "neededPerDay": "Perlu/hari",
+        "none": "—"
+      }
+    },
+    "due": {
+      "set": "Tetapkan tarikh akhir",
+      "today": "Tarikh akhir hari ini",
+      "inDays": "Tarikh akhir dalam {{count}} hari",
+      "overdueBy": "Lewat {{count}} hari"
+    },
+    "modal": {
+      "editTitle": "Sunting matlamat",
+      "buttons": { "cancel": "Batal", "saveChanges": "Simpan perubahan", "saving": "Menyimpan..." }
+    },
+    "date": {
+      "noDueDate": "Tiada tarikh akhir",
+      "weekdays": { "su": "A", "mo": "I", "tu": "S", "we": "R", "th": "K", "fr": "J", "sa": "S" },
+      "previousMonth": "Bulan sebelumnya",
+      "nextMonth": "Bulan seterusnya",
+      "today": "Hari ini",
+      "tomorrow": "Esok",
+      "endOfWeek": "Hujung minggu",
+      "nextWeek": "Minggu depan",
+      "clear": "Kosongkan"
+    },
+    "actions": { "openBoard": "Buka papan", "edit": "Sunting", "viewTasks": "Lihat tugasan", "delete": "Padam" },
+    "toast": {
+      "added": "Matlamat ditambah",
+      "addFailed": "Gagal menambah matlamat",
+      "removed": "Matlamat dipadam",
+      "deleteFailed": "Gagal memadam matlamat",
+      "updated": "Matlamat dikemas kini",
+      "updateFailed": "Gagal mengemas kini matlamat",
+      "couldNotLoad": "Tidak dapat memuatkan matlamat",
+      "undoSuccessful": "Buat asal berjaya",
+      "undoFailed": "Buat asal gagal"
+    }
   }
 }

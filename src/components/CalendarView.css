@@ -3,13 +3,13 @@
   width: 100%;
   max-width: 95%; /* Increased from 1400px to fill more screen */
   margin: 0 auto;
-  background: rgba(30, 41, 59, 0.4);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -46,8 +46,8 @@
 
 .calendar-today-btn,
 .calendar-go-board-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
   color: var(--text-main);
   padding: 0.5rem 1rem;
   border-radius: 10px;
@@ -59,6 +59,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem; /* Better spacing between icon and text */
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
 }
 
 .calendar-today-btn svg,
@@ -92,9 +93,9 @@
 .calendar-view-panel {
   display: flex;
   flex-direction: column;
-  background: rgba(15, 23, 42, 0.3);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
   overflow: hidden;
   height: 100%;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
@@ -106,7 +107,7 @@
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
   background: transparent;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
 }
 
 .calendar-month-year {
@@ -118,8 +119,8 @@
 
 .calendar-nav-btn {
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  border: 2px solid var(--border);
+  color: var(--text-main);
   width: 40px;
   height: 40px;
   padding: 0; /* Reset global button padding */
@@ -133,8 +134,8 @@
 }
 
 .calendar-nav-btn:hover {
-  border-color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.08);
   transform: scale(1.05);
 }
 
@@ -148,9 +149,9 @@
 .calendar-view-grid-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.16);
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
 }
 
 .calendar-day-name {
@@ -168,13 +169,13 @@
   grid-auto-rows: 1fr;
   flex: 1;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.08);
   gap: 1px; /* Grid lines effect */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
 }
 
 .calendar-view-cell {
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(0, 0, 0, 0.12);
   border: none;
   min-height: 0;
   padding: 0.75rem;
@@ -189,7 +190,7 @@
 }
 
 .calendar-view-cell:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .calendar-view-cell.selected {
@@ -236,7 +237,7 @@
 
 .calendar-view-count {
   font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
   color: var(--text-muted);
@@ -257,7 +258,7 @@
   font-size: 0.75rem;
   padding: 0.3rem 0.5rem;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-main);
   overflow: hidden;
   white-space: nowrap;
@@ -274,7 +275,7 @@
 .calendar-task-chip.done {
   opacity: 0.5;
   text-decoration: line-through;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.22);
 }
 
 .calendar-task-chip.p-high { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
@@ -293,9 +294,9 @@
 }
 
 .calendar-view-sidebar {
-  background: rgba(15, 23, 42, 0.3);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -305,8 +306,8 @@
 
 .calendar-sidebar-header {
   padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.16);
 }
 
 .calendar-sidebar-title {
@@ -347,14 +348,14 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
   transition: all 0.2s;
 }
 
 .calendar-sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -451,13 +452,93 @@
   top: calc(100% + 4px);
   left: 0;
   width: 260px;
-  background: #1e293b;
+  background: var(--modal-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
   z-index: 50;
   animation: fadeInUp 0.1s ease-out;
+}
+
+body.light-mode .calendar-view-container {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .calendar-today-btn,
+body.light-mode .calendar-go-board-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .calendar-today-btn:hover,
+body.light-mode .calendar-go-board-btn:hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.16);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .calendar-view-panel,
+body.light-mode .calendar-view-sidebar {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .calendar-view-grid-header,
+body.light-mode .calendar-sidebar-header {
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .calendar-view-grid {
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .calendar-view-cell {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+body.light-mode .calendar-view-cell:hover {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+body.light-mode .calendar-view-count {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-muted);
+}
+
+body.light-mode .calendar-task-chip {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .calendar-task-chip:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .calendar-task-chip.done {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .calendar-sidebar-item {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .calendar-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .check-dot {
+  border-color: rgba(100, 116, 139, 0.9);
+}
+
+body.light-mode .custom-calendar-popup {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
 }
 
 .calendar-header {

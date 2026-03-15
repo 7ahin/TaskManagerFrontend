@@ -402,12 +402,12 @@ body.light-mode .app-header.scrolled {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.75); /* Darker backdrop */
-  backdrop-filter: blur(8px); /* Stronger blur */
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999; /* Ensure on top of everything */
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.12s ease-out;
 }
 
 @keyframes fadeIn {
@@ -416,8 +416,8 @@ body.light-mode .app-header.scrolled {
 }
 
 .modal-content {
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 2rem;
   width: 90%;
@@ -427,6 +427,7 @@ body.light-mode .app-header.scrolled {
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother spring-like pop */
+  color: var(--text-main);
 }
 
 .edit-task-modal {
@@ -651,7 +652,7 @@ body.light-mode .app-header.scrolled {
   display: block;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 0.4rem;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -660,10 +661,10 @@ body.light-mode .app-header.scrolled {
 .edit-input {
   width: 100%;
   padding: 0.85rem 1rem;
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: #f1f5f9;
+  color: var(--text-main);
   font-size: 0.95rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
@@ -673,17 +674,17 @@ body.light-mode .app-header.scrolled {
 .edit-input:focus {
   outline: none;
   border-color: #3b82f6;
-  background: #0f172a;
+  background: var(--input-bg);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 /* Edit Status Toggle (Used in BoardView, maybe useful elsewhere) */
 .edit-status-toggle {
   display: flex;
-  background: #0f172a;
+  background: var(--input-bg);
   padding: 4px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   gap: 4px;
 }
 
@@ -691,7 +692,7 @@ body.light-mode .app-header.scrolled {
   flex: 1;
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--text-muted);
   padding: 0.6rem;
   border-radius: 8px;
   cursor: pointer;
@@ -705,15 +706,15 @@ body.light-mode .app-header.scrolled {
 }
 
 .edit-status-btn:hover {
-  color: #94a3b8;
+  color: var(--text-main);
   background: rgba(255, 255, 255, 0.03);
 }
 
 .edit-status-btn.active {
-  background: #1e293b;
-  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
 }
 
 .edit-status-btn.active:first-child {
@@ -774,7 +775,7 @@ body.light-mode .app-header.scrolled {
 .edit-clear-link {
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.75rem;
   text-align: right;
   cursor: pointer;
@@ -792,10 +793,10 @@ body.light-mode .app-header.scrolled {
 .edit-select {
   width: 100%;
   padding: 0.85rem 1rem;
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: #f1f5f9;
+  color: var(--text-main);
   font-size: 0.95rem;
   transition: all 0.2s;
   cursor: pointer;
@@ -838,17 +839,46 @@ body.light-mode .app-header.scrolled {
 .edit-select:focus {
   outline: none;
   border-color: #3b82f6;
-  background: #0f172a;
+  background: var(--input-bg);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+body.light-mode .modal-overlay {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+body.light-mode .modal-content {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .edit-status-toggle {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .edit-status-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .edit-status-btn.active:first-child {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+body.light-mode .edit-status-btn.active:last-child {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
 }
 
 /* Shared Action Buttons */
 .action-button {
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #e2e8f0;
+  border: 1px solid var(--border);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
   font-size: 0.75rem;
   cursor: pointer;
   margin-right: 0.25rem;
@@ -856,9 +886,31 @@ body.light-mode .app-header.scrolled {
 }
 
 .action-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
   transform: translateY(-1px);
+}
+
+.action-button.primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.action-button.primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: #ffffff;
+}
+
+.action-button.secondary {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+.action-button.secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .action-button.delete {
@@ -870,6 +922,18 @@ body.light-mode .app-header.scrolled {
   background-color: rgba(239, 68, 68, 0.1);
   color: #ef4444;
   border-color: rgba(239, 68, 68, 0.5);
+}
+
+body.light-mode .action-button:not(.primary):not(.delete) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .action-button:not(.primary):not(.delete):hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .action-button.secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Login Modal Specific Styles */

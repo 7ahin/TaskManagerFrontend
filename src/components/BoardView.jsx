@@ -395,7 +395,7 @@ function EditTaskModal({ todo, onClose, onSave }) {
             </div>
           </div>
           <div className="modal-actions">
-            <button type="button" className="action-button secondary" onClick={onClose}>
+            <button type="button" className="action-button delete" onClick={onClose}>
               {translate("board.actions.cancel")}
             </button>
             <button type="submit" className="action-button primary">

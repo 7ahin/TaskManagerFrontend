@@ -173,5 +173,128 @@
       "startPrefix": "S:"
     },
     "buttons": { "clear": "Zurücksetzen", "done": "Erledigt", "undo": "Rückgängig" }
+  },
+  "timeline": {
+    "title": "Timeline",
+    "subtitle": {
+      "week": "Aufgaben nach Fälligkeitswoche gruppiert (überfällig → demnächst).",
+      "day": "Aufgaben nach Fälligkeitsdatum gruppiert (überfällig → demnächst)."
+    },
+    "actions": { "openBoard": "Board öffnen", "open": "Öffnen" },
+    "search": { "placeholder": "Aufgaben in der Timeline suchen" },
+    "groupBy": { "label": "Gruppieren", "day": "Nach Tag gruppieren", "week": "Nach Woche gruppieren" },
+    "priority": { "label": "Priorität", "all": "Alle Prioritäten" },
+    "toggle": { "showDone": "Erledigte anzeigen" },
+    "empty": { "noMatch": "Keine Aufgaben passen zu deinen Timeline-Filtern." },
+    "group": {
+      "prefix": { "overdue": "Überfällig", "today": "Heute", "thisWeek": "Diese Woche", "upcoming": "Demnächst" },
+      "day": { "label": "{{prefix}} — {{date}}" },
+      "week": { "label": "{{prefix}} — {{start}} – {{end}}" },
+      "noDates": "Keine Daten"
+    },
+    "due": { "label": "Fällig {{date}}" },
+    "conflict": { "title": "Startdatum liegt nach dem Fälligkeitsdatum", "label": "Konflikt" },
+    "dates": { "startLabel": "Start:", "dueLabel": "Fällig:" }
+  },
+  "calendar": {
+    "title": "Kalender",
+    "subtitle": "Plane deine Fälligkeiten über den Monat.",
+    "actions": { "today": "Heute", "openBoard": "Board öffnen" },
+    "aria": { "previousMonth": "Vorheriger Monat", "nextMonth": "Nächster Monat" },
+    "weekdays": {
+      "short": { "su": "S", "mo": "M", "tu": "D", "we": "M", "th": "D", "fr": "F", "sa": "S" }
+    },
+    "more": { "label": "+{{count}} mehr" },
+    "sidebar": { "subtitle": "{{count}} Aufgaben fällig" },
+    "empty": { "noTasksDue": "Keine Aufgaben an diesem Tag fällig." },
+    "status": { "completed": "Erledigt", "pending": "Offen" },
+    "ariaTasks": {
+      "markComplete": "Als erledigt markieren",
+      "markNotComplete": "Als nicht erledigt markieren"
+    }
+  },
+  "goals": {
+    "title": "Ziele",
+    "subtitle": "Setze Ziele und verfolge den Fortschritt aus deinen Aufgaben.",
+    "types": { "completedAll": "Erledigte Aufgaben", "completedHigh": "Erledigte hohe Priorität" },
+    "templates": {
+      "heading": "Schnellstart",
+      "productiveWeek": { "title": "Produktive Woche (20 Aufgaben)" },
+      "clearHigh": { "title": "5 hohe Prioritäten schaffen" },
+      "dailyGrind": { "title": "Täglicher Lauf (5 Aufgaben)" },
+      "pill": { "highPriority": "Hohe Priorität", "allTasks": "Alle Aufgaben", "target": "Ziel {{count}}" }
+    },
+    "summary": {
+      "completionRate": "Erledigungsrate",
+      "done": "erledigt",
+      "active": "offen",
+      "doneActive": "{{done}} {{doneLabel}} • {{active}} {{activeLabel}}",
+      "overdue": "Überfällig",
+      "overdueSub": "Unvollständige Aufgaben nach Fälligkeit",
+      "highPriorityDone": "Hohe Priorität erledigt",
+      "highPriorityDoneSub": "Erledigte Aufgaben mit Priorität Hoch"
+    },
+    "panels": { "createGoal": "Ziel erstellen", "yourGoals": "Deine Ziele" },
+    "toggle": { "showAchieved": "Erreichte anzeigen" },
+    "loading": "Ziele werden geladen...",
+    "empty": {
+      "allAchieved": "Alle Ziele erreicht. Aktiviere „Erreichte anzeigen“, um sie zu sehen.",
+      "none": "Noch keine Ziele. Erstelle eins, um zu starten."
+    },
+    "form": {
+      "labels": {
+        "goalTitle": "Zieltitel",
+        "type": "Typ",
+        "target": "Ziel",
+        "dueDateOptional": "Fälligkeitsdatum (optional)"
+      },
+      "placeholders": { "goalTitle": "z. B. 20 Aufgaben abschließen" },
+      "buttons": { "add": "Ziel hinzufügen", "adding": "Wird hinzugefügt..." },
+      "aria": { "decreaseTarget": "Ziel verringern", "increaseTarget": "Ziel erhöhen" }
+    },
+    "card": {
+      "achieved": "Erreicht",
+      "meta": { "highPriority": "Hohe Priorität", "allTasks": "Alle Aufgaben", "due": "Fällig {{date}}" },
+      "insights": {
+        "remaining": "Verbleibend",
+        "due": "Fällig",
+        "pace": "Tempo",
+        "neededPerDay": "Pro Tag nötig",
+        "none": "—"
+      }
+    },
+    "due": {
+      "set": "Fälligkeitsdatum setzen",
+      "today": "Heute fällig",
+      "inDays": "Fällig in {{count}} Tag(en)",
+      "overdueBy": "{{count}} Tag(e) überfällig"
+    },
+    "modal": {
+      "editTitle": "Ziel bearbeiten",
+      "buttons": { "cancel": "Abbrechen", "saveChanges": "Speichern", "saving": "Speichern..." }
+    },
+    "date": {
+      "noDueDate": "Kein Datum",
+      "weekdays": { "su": "S", "mo": "M", "tu": "D", "we": "M", "th": "D", "fr": "F", "sa": "S" },
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "endOfWeek": "Ende der Woche",
+      "nextWeek": "Nächste Woche",
+      "clear": "Zurücksetzen"
+    },
+    "actions": { "openBoard": "Board öffnen", "edit": "Bearbeiten", "viewTasks": "Aufgaben ansehen", "delete": "Löschen" },
+    "toast": {
+      "added": "Ziel hinzugefügt",
+      "addFailed": "Ziel konnte nicht hinzugefügt werden",
+      "removed": "Ziel entfernt",
+      "deleteFailed": "Ziel konnte nicht gelöscht werden",
+      "updated": "Ziel aktualisiert",
+      "updateFailed": "Ziel konnte nicht aktualisiert werden",
+      "couldNotLoad": "Ziele konnten nicht geladen werden",
+      "undoSuccessful": "Rückgängig erfolgreich",
+      "undoFailed": "Rückgängig fehlgeschlagen"
+    }
   }
 }

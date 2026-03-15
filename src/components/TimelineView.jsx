@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./TimelineView.css";
 import { toYmd, normalizeDueDate } from "../utils/dateUtils";
-import { CalendarDaysIcon, FlagIcon } from "@heroicons/react/24/outline";
+import { CalendarDaysIcon, ChevronDownIcon, FlagIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdateTask }) {
+  const { t: translate, i18n } = useTranslation();
   const [timelineSearch, setTimelineSearch] = useState("");
   const [timelineShowDone, setTimelineShowDone] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState("All");
@@ -32,33 +34,47 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
     };
   }, [openDropdown]);
 
-  const getStatusLabel = (t) => {
-    return t.status || (t.isComplete ? "Done" : "Working on it");
+  const getStatusKey = (task) => {
+    const raw = String(task.status || "").trim().toLowerCase();
+    if (task.isComplete) return "done";
+    if (raw === "done") return "done";
+    if (raw === "stuck") return "stuck";
+    if (raw === "review") return "review";
+    if (raw === "in progress" || raw === "in-progress") return "inProgress";
+    if (raw === "working on it" || raw === "working-on-it") return "workingOnIt";
+    return "workingOnIt";
+  };
+
+  const getStatusClass = (task) => {
+    const key = getStatusKey(task);
+    if (key === "workingOnIt") return "working-on-it";
+    if (key === "inProgress") return "in-progress";
+    return key;
   };
 
   const dropdownId = openDropdown ? `timeline-dropdown-${openDropdown}` : undefined;
 
   const groupByOptions = useMemo(
     () => [
-      { value: "day", label: "Group by day" },
-      { value: "week", label: "Group by week" },
+      { value: "day", label: translate("timeline.groupBy.day") },
+      { value: "week", label: translate("timeline.groupBy.week") },
     ],
-    []
+    [translate]
   );
 
   const priorityOptions = useMemo(
     () => [
-      { value: "All", label: "All Priorities" },
-      { value: "High", label: "High" },
-      { value: "Medium", label: "Medium" },
-      { value: "Low", label: "Low" },
+      { value: "All", label: translate("timeline.priority.all") },
+      { value: "High", label: translate("board.priority.high") },
+      { value: "Medium", label: translate("board.priority.medium") },
+      { value: "Low", label: translate("board.priority.low") },
     ],
-    []
+    [translate]
   );
 
   const getDropdownLabel = (kind) => {
-    if (kind === "groupBy") return groupByOptions.find((o) => o.value === groupBy)?.label || "Group by";
-    return priorityOptions.find((o) => o.value === priorityFilter)?.label || "All Priorities";
+    if (kind === "groupBy") return groupByOptions.find((o) => o.value === groupBy)?.label || translate("timeline.groupBy.label");
+    return priorityOptions.find((o) => o.value === priorityFilter)?.label || translate("timeline.priority.all");
   };
 
   const onDropdownKeyDown = (e, kind) => {
@@ -181,17 +197,25 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
         end.setDate(end.getDate() + 6);
         const startYmd = toYmd(start);
         const endYmd = toYmd(end);
-        const prefix =
-          endYmd < todayYmd ? "Overdue" : startYmd <= todayYmd && todayYmd <= endYmd ? "This week" : "Upcoming";
-        const label = `${prefix} — ${start.toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })} – ${end.toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })}`;
+        const prefixKey =
+          endYmd < todayYmd
+            ? "overdue"
+            : startYmd <= todayYmd && todayYmd <= endYmd
+              ? "thisWeek"
+              : "upcoming";
+        const label = translate("timeline.group.week.label", {
+          prefix: translate(`timeline.group.prefix.${prefixKey}`),
+          start: start.toLocaleDateString(i18n.language, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          }),
+          end: end.toLocaleDateString(i18n.language, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          }),
+        });
 
         const items = (byGroupKey.get(key) || [])
           .slice()
@@ -200,13 +224,16 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
       }
 
       const date = ymdToDate(key);
-      const prefix = key < todayYmd ? "Overdue" : key === todayYmd ? "Today" : "Upcoming";
-      const label = `${prefix} — ${date.toLocaleDateString(undefined, {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })}`;
+      const prefixKey = key < todayYmd ? "overdue" : key === todayYmd ? "today" : "upcoming";
+      const label = translate("timeline.group.day.label", {
+        prefix: translate(`timeline.group.prefix.${prefixKey}`),
+        date: date.toLocaleDateString(i18n.language, {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+      });
 
       const tasks = (byGroupKey.get(key) || [])
         .slice()
@@ -217,22 +244,22 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
 
     const undated = noDate.slice().sort(sortTasks);
     return { groups, undated };
-  }, [todos, timelineSearch, timelineShowDone, priorityFilter, groupBy]);
+  }, [todos, timelineSearch, timelineShowDone, priorityFilter, groupBy, i18n.language, translate]);
 
   return (
     <section className="timeline-view-container">
       <div className="timeline-header">
         <div>
-          <div className="timeline-title">Timeline</div>
+          <div className="timeline-title">{translate("timeline.title")}</div>
           <div className="timeline-subtitle">
             {groupBy === "week"
-              ? "Tasks grouped by due week (overdue → upcoming)."
-              : "Tasks grouped by due date (overdue → upcoming)."}
+              ? translate("timeline.subtitle.week")
+              : translate("timeline.subtitle.day")}
           </div>
         </div>
         <div className="timeline-view-actions">
         <button className="timeline-go-board-btn" type="button" onClick={onGoBoard}>
-          Open Board
+          {translate("timeline.actions.openBoard")}
         </button>
       </div>
       </div>
@@ -241,7 +268,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
         <input
           className="search-input timeline-search"
           type="search"
-          placeholder="Search tasks in timeline"
+          placeholder={translate("timeline.search.placeholder")}
           value={timelineSearch}
           onChange={(e) => setTimelineSearch(e.target.value)}
         />
@@ -257,7 +284,8 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
             onKeyDown={(e) => onDropdownKeyDown(e, "groupBy")}
           >
             <CalendarDaysIcon className="timeline-dropdown-icon" aria-hidden="true" />
-            {getDropdownLabel("groupBy")}
+            <span className="timeline-dropdown-label">{getDropdownLabel("groupBy")}</span>
+            <ChevronDownIcon className={`timeline-dropdown-chevron ${openDropdown === "groupBy" ? "is-open" : ""}`} aria-hidden="true" />
           </button>
           {openDropdown === "groupBy" ? (
             <div
@@ -265,7 +293,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
               id={dropdownId}
               className="timeline-dropdown-menu"
               role="listbox"
-              aria-label="Group by"
+              aria-label={translate("timeline.groupBy.label")}
             >
               {groupByOptions.map((o) => {
                 const selected = o.value === groupBy;
@@ -305,7 +333,8 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
             onKeyDown={(e) => onDropdownKeyDown(e, "priority")}
           >
             <FlagIcon className="timeline-dropdown-icon" aria-hidden="true" />
-            {getDropdownLabel("priority")}
+            <span className="timeline-dropdown-label">{getDropdownLabel("priority")}</span>
+            <ChevronDownIcon className={`timeline-dropdown-chevron ${openDropdown === "priority" ? "is-open" : ""}`} aria-hidden="true" />
           </button>
           {openDropdown === "priority" ? (
             <div
@@ -313,7 +342,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
               id={dropdownId}
               className="timeline-dropdown-menu"
               role="listbox"
-              aria-label="Priority"
+              aria-label={translate("timeline.priority.label")}
             >
               {priorityOptions.map((o) => {
                 const selected = o.value === priorityFilter;
@@ -350,12 +379,12 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
           <span className="timeline-toggle-ui" aria-hidden="true">
             <span className="timeline-toggle-knob" />
           </span>
-          <span className="timeline-toggle-text">Show done</span>
+          <span className="timeline-toggle-text">{translate("timeline.toggle.showDone")}</span>
         </label>
       </div>
 
       {timelineGroups.groups.length === 0 && timelineGroups.undated.length === 0 ? (
-        <div className="empty-state">No tasks match your timeline filters.</div>
+        <div className="empty-state">{translate("timeline.empty.noMatch")}</div>
       ) : (
         <div className="timeline-groups">
           {timelineGroups.groups.map((g) => (
@@ -392,19 +421,21 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         <div className="timeline-item-title">{t.name}</div>
                         <div className="timeline-item-meta">
                           <span className={`timeline-status-pill priority-${(t.priority || "Medium").toLowerCase()}`}>
-                            {t.priority || "Medium"}
+                            {translate(`board.priority.${String(t.priority || "Medium").toLowerCase()}`)}
                           </span>
-                          <span className={`timeline-status-pill status-${String(getStatusLabel(t)).toLowerCase().replace(/\s+/g, "-")}`}>
-                            {getStatusLabel(t)}
+                          <span className={`timeline-status-pill status-${getStatusClass(t)}`}>
+                            {translate(`board.status.${getStatusKey(t)}`)}
                           </span>
                           {t.dueDate && (
                             <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
-                              Due {new Date(t.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                              {translate("timeline.due.label", {
+                                date: new Date(t.dueDate).toLocaleDateString(i18n.language, { month: "short", day: "numeric" }),
+                              })}
                             </span>
                           )}
                           {t.startDate && t.dueDate && t.startDate > t.dueDate && (
-                            <span className="timeline-conflict-warning" title="Start date is after due date">
-                              ⚠️ Conflict
+                            <span className="timeline-conflict-warning" title={translate("timeline.conflict.title")}>
+                              ⚠️ {translate("timeline.conflict.label")}
                             </span>
                           )}
                         </div>
@@ -412,7 +443,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                     </div>
                     <div className="timeline-item-actions" onClick={(e) => e.stopPropagation()}>
                       <div className="timeline-date-group">
-                        <span className="timeline-date-label">Start:</span>
+                        <span className="timeline-date-label">{translate("timeline.dates.startLabel")}</span>
                         <input
                           type="date"
                           className="timeline-date-input"
@@ -422,7 +453,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         />
                       </div>
                       <div className="timeline-date-group">
-                        <span className="timeline-date-label">Due:</span>
+                        <span className="timeline-date-label">{translate("timeline.dates.dueLabel")}</span>
                         <input
                           type="date"
                           className="timeline-date-input"
@@ -432,7 +463,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         />
                       </div>
                       <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>
-                        Open
+                        {translate("timeline.actions.open")}
                       </button>
                     </div>
                   </div>
@@ -444,7 +475,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
           {timelineGroups.undated.length > 0 ? (
             <div className="timeline-group">
               <div className="timeline-group-header">
-                <div className="timeline-group-title">No dates</div>
+                <div className="timeline-group-title">{translate("timeline.group.noDates")}</div>
                 <div className="timeline-group-count">{timelineGroups.undated.length}</div>
               </div>
               <div className="timeline-list">
@@ -475,19 +506,21 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         <div className="timeline-item-title">{t.name}</div>
                         <div className="timeline-item-meta">
                           <span className={`timeline-status-pill priority-${(t.priority || "Medium").toLowerCase()}`}>
-                            {t.priority || "Medium"}
+                            {translate(`board.priority.${String(t.priority || "Medium").toLowerCase()}`)}
                           </span>
-                          <span className={`timeline-status-pill status-${String(getStatusLabel(t)).toLowerCase().replace(/\s+/g, "-")}`}>
-                            {getStatusLabel(t)}
+                          <span className={`timeline-status-pill status-${getStatusClass(t)}`}>
+                            {translate(`board.status.${getStatusKey(t)}`)}
                           </span>
                           {t.dueDate && (
                             <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
-                              Due {new Date(t.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                              {translate("timeline.due.label", {
+                                date: new Date(t.dueDate).toLocaleDateString(i18n.language, { month: "short", day: "numeric" }),
+                              })}
                             </span>
                           )}
                           {t.startDate && t.dueDate && t.startDate > t.dueDate && (
-                            <span className="timeline-conflict-warning" title="Start date is after due date">
-                              ⚠️ Conflict
+                            <span className="timeline-conflict-warning" title={translate("timeline.conflict.title")}>
+                              ⚠️ {translate("timeline.conflict.label")}
                             </span>
                           )}
                         </div>
@@ -495,7 +528,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                     </div>
                     <div className="timeline-item-actions" onClick={(e) => e.stopPropagation()}>
                       <div className="timeline-date-group">
-                        <span className="timeline-date-label">Start:</span>
+                        <span className="timeline-date-label">{translate("timeline.dates.startLabel")}</span>
                         <input
                           type="date"
                           className="timeline-date-input"
@@ -505,7 +538,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         />
                       </div>
                       <div className="timeline-date-group">
-                        <span className="timeline-date-label">Due:</span>
+                        <span className="timeline-date-label">{translate("timeline.dates.dueLabel")}</span>
                         <input
                           type="date"
                           className="timeline-date-input"
@@ -515,7 +548,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                         />
                       </div>
                       <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>
-                        Open
+                        {translate("timeline.actions.open")}
                       </button>
                     </div>
                   </div>
