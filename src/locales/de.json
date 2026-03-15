@@ -172,7 +172,18 @@
       "noDates": "Keine Daten",
       "startPrefix": "S:"
     },
-    "buttons": { "clear": "Zurücksetzen", "done": "Erledigt", "undo": "Rückgängig" }
+    "buttons": { "clear": "Zurücksetzen", "done": "Erledigt", "undo": "Rückgängig" },
+    "toast": {
+      "added": "Aufgabe hinzugefügt",
+      "addFailed": "Aufgabe konnte nicht hinzugefügt werden",
+      "updated": "Aufgabe aktualisiert",
+      "updateFailed": "Aufgabe konnte nicht aktualisiert werden",
+      "deleted": "Aufgabe gelöscht",
+      "deleteFailed": "Aufgabe konnte nicht gelöscht werden",
+      "undoSuccessful": "Rückgängig erfolgreich",
+      "undoFailed": "Rückgängig fehlgeschlagen",
+      "couldNotLoad": "Aufgaben konnten nicht geladen werden"
+    }
   },
   "timeline": {
     "title": "Timeline",

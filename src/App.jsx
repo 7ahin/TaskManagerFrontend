@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import toast from "react-hot-toast";
 import BoardView from "./components/BoardView.jsx";
@@ -58,6 +58,7 @@ function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const isLoggedIn = !!user;
+  const lastDeletedTodoRef = useRef(null);
 
   // Helper to generate headers with User ID
   const generateAuthHeaders = useCallback(() => {
@@ -269,10 +270,11 @@ function App() {
       setTodos(mergeTodoMeta(data));
     } catch (err) {
       setError(err.message || "Unknown error");
+      toast.error(t("board.toast.couldNotLoad"));
     } finally {
       setLoading(false);
     }
-  }, [generateAuthHeaders, mergeTodoMeta, user]);
+  }, [generateAuthHeaders, mergeTodoMeta, t, user]);
 
   async function handleAddTodo(event) {
     event.preventDefault();
@@ -337,10 +339,10 @@ function App() {
       }
 
       setNewTodoName("");
-      toast.success("Task added");
+      toast.success(t("board.toast.added"));
     } catch (err) {
       setError(err.message || "Unknown error");
-      toast.error(err.message || "Failed to add task");
+      toast.error(err.message || t("board.toast.addFailed"));
     }
   }
 
@@ -371,9 +373,10 @@ function App() {
           t.id === updatedTodo.id ? normalizeTodo({ ...t, ...updatedTodo }) : t
         )
       );
-      toast.success("Task updated");
+      toast.success(t("board.toast.updated"));
     } catch (err) {
       setError(err.message || "Unknown error");
+      toast.error(err.message || t("board.toast.updateFailed"));
     }
   }
 
@@ -404,9 +407,74 @@ function App() {
 
       removeTodoMeta(todo.id);
       setTodos((prev) => (prev || []).filter((t) => t.id !== todo.id));
+      lastDeletedTodoRef.current = todo;
+      toast((toastInstance) => (
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span>{t("board.toast.deleted")}</span>
+          <button
+            className="action-button"
+            onClick={async () => {
+              const snapshot = lastDeletedTodoRef.current;
+              if (!snapshot) return toast.dismiss(toastInstance.id);
+              try {
+                const payload = {
+                  name: snapshot.name,
+                  isComplete: !!snapshot.isComplete,
+                  priority: snapshot.priority || "Medium",
+                  dueDate: snapshot.dueDate || null,
+                  startDate: snapshot.startDate || null,
+                  status: snapshot.status || (snapshot.isComplete ? "Done" : "Working on it"),
+                };
+                const resp = await fetch(API_BASE_URL, {
+                  method: "POST",
+                  headers: generateAuthHeaders(),
+                  body: JSON.stringify(payload),
+                });
+                if (!resp.ok) throw new Error("Failed to undo delete");
+
+                const responseText = await resp.text();
+                let createdTodo = null;
+                try {
+                  createdTodo = responseText ? JSON.parse(responseText) : null;
+                } catch {
+                  createdTodo = null;
+                }
+
+                const createdId = createdTodo?.id ?? createdTodo?.Id ?? null;
+                const metaPatch = {
+                  priority: payload.priority,
+                  dueDate: payload.dueDate,
+                  startDate: payload.startDate,
+                  status: payload.status,
+                };
+
+                if (createdId != null) {
+                  upsertTodoMeta(createdId, metaPatch);
+                  setTodos((prev) => {
+                    const existing = (prev || []).some((t) => t.id === createdId);
+                    if (existing) return prev;
+                    return [normalizeTodo({ ...metaPatch, ...createdTodo, id: createdId }), ...(prev || [])];
+                  });
+                } else {
+                  await loadTodos();
+                }
+
+                lastDeletedTodoRef.current = null;
+                toast.success(t("board.toast.undoSuccessful"));
+              } catch {
+                toast.error(t("board.toast.undoFailed"));
+              } finally {
+                toast.dismiss(toastInstance.id);
+              }
+            }}
+          >
+            {t("board.buttons.undo")}
+          </button>
+        </div>
+      ));
     } catch (err) {
       setError(err.message || "Unknown error");
-      toast.error("Failed to delete");
+      toast.error(err.message || t("board.toast.deleteFailed"));
     }
   }
 

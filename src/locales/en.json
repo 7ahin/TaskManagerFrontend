@@ -175,7 +175,18 @@
       "noDates": "No dates",
       "startPrefix": "S:"
     },
-    "buttons": { "clear": "Clear", "done": "Done", "undo": "Undo" }
+    "buttons": { "clear": "Clear", "done": "Done", "undo": "Undo" },
+    "toast": {
+      "added": "Task added",
+      "addFailed": "Failed to add task",
+      "updated": "Task updated",
+      "updateFailed": "Failed to update task",
+      "deleted": "Task deleted",
+      "deleteFailed": "Failed to delete task",
+      "undoSuccessful": "Undo successful",
+      "undoFailed": "Undo failed",
+      "couldNotLoad": "Could not load tasks"
+    }
   },
   "timeline": {
     "title": "Timeline",

@@ -172,7 +172,18 @@
       "noDates": "Sin fechas",
       "startPrefix": "I:"
     },
-    "buttons": { "clear": "Limpiar", "done": "Hecho", "undo": "Deshacer" }
+    "buttons": { "clear": "Borrar", "done": "Hecho", "undo": "Deshacer" },
+    "toast": {
+      "added": "Tarea añadida",
+      "addFailed": "No se pudo añadir la tarea",
+      "updated": "Tarea actualizada",
+      "updateFailed": "No se pudo actualizar la tarea",
+      "deleted": "Tarea eliminada",
+      "deleteFailed": "No se pudo eliminar la tarea",
+      "undoSuccessful": "Deshacer realizado",
+      "undoFailed": "No se pudo deshacer",
+      "couldNotLoad": "No se pudieron cargar las tareas"
+    }
   },
   "timeline": {
     "title": "Cronología",

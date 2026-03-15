@@ -46,10 +46,6 @@
 }
 
 /* Positioning variants */
-.tutorial-card.center {
-  /* Default centered by flex parent */
-}
-
 .tutorial-card.top-left {
   position: absolute;
   top: 80px;

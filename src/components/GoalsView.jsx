@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./GoalsView.css";
 import toast from "react-hot-toast";
 import { normalizeDueDate } from "../utils/dateUtils";
 import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { ChevronUpIcon as ChevronUpSolid, ChevronDownIcon as ChevronDownSolid } from "@heroicons/react/20/solid";
 import { useTranslation } from "react-i18next";
 
 const API_URL = "https://localhost:7076/api/Goals";
@@ -308,10 +307,25 @@ function GoalsView({ todos, onGoBoard }) {
     return localStorage.getItem("taskSenpai.goals.showAchieved") === "true";
   });
 
+  const loadGoals = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error("Failed to load goals");
+      const data = await response.json();
+      setGoals(data);
+    } catch (error) {
+      console.error("Error loading goals:", error);
+      toast.error(translate("goals.toast.couldNotLoad"));
+    } finally {
+      setLoading(false);
+    }
+  }, [translate]);
+
   // Load goals from API
   useEffect(() => {
     loadGoals();
-  }, []);
+  }, [loadGoals]);
 
   useEffect(() => {
     if (!editingGoal) return;
@@ -337,21 +351,6 @@ function GoalsView({ todos, onGoBoard }) {
   useEffect(() => {
     localStorage.setItem("taskSenpai.goals.showAchieved", showAchieved ? "true" : "false");
   }, [showAchieved]);
-
-  async function loadGoals() {
-    try {
-      setLoading(true);
-      const response = await fetch(API_URL);
-      if (!response.ok) throw new Error("Failed to load goals");
-      const data = await response.json();
-      setGoals(data);
-    } catch (error) {
-      console.error("Error loading goals:", error);
-      toast.error(translate("goals.toast.couldNotLoad"));
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const goalStats = useMemo(() => {
     const completed = todos.filter((t) => t.isComplete).length;
@@ -871,11 +870,12 @@ function GoalsView({ todos, onGoBoard }) {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      const form = e.target;
-                      const title = form.title.value.trim();
-                      const type = form.type.value;
-                      const target = Math.max(1, Math.floor(Number(form.target.value)));
-                      const dueDate = form.dueDate.value || null;
+                      const data = new FormData(e.currentTarget);
+                      const title = String(data.get("title") || "").trim();
+                      const type = String(data.get("type") || "");
+                      const target = Math.max(1, Math.floor(Number(String(data.get("target") || ""))));
+                      const dueDateRaw = String(data.get("dueDate") || "");
+                      const dueDate = dueDateRaw ? dueDateRaw : null;
                       if (!title) return;
                       handleSaveEdit({
                         ...editingGoal,

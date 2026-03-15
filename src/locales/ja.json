@@ -172,7 +172,18 @@
       "noDates": "日付なし",
       "startPrefix": "S:"
     },
-    "buttons": { "clear": "クリア", "done": "完了", "undo": "元に戻す" }
+    "buttons": { "clear": "クリア", "done": "完了", "undo": "元に戻す" },
+    "toast": {
+      "added": "タスクを追加しました",
+      "addFailed": "タスクの追加に失敗しました",
+      "updated": "タスクを更新しました",
+      "updateFailed": "タスクの更新に失敗しました",
+      "deleted": "タスクを削除しました",
+      "deleteFailed": "タスクの削除に失敗しました",
+      "undoSuccessful": "元に戻しました",
+      "undoFailed": "元に戻せませんでした",
+      "couldNotLoad": "タスクを読み込めませんでした"
+    }
   },
   "timeline": {
     "title": "タイムライン",

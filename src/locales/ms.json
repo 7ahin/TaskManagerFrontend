@@ -172,7 +172,18 @@
       "noDates": "Tiada tarikh",
       "startPrefix": "M:"
     },
-    "buttons": { "clear": "Kosongkan", "done": "Selesai", "undo": "Buat asal" }
+    "buttons": { "clear": "Kosongkan", "done": "Selesai", "undo": "Buat asal" },
+    "toast": {
+      "added": "Tugasan ditambah",
+      "addFailed": "Gagal menambah tugasan",
+      "updated": "Tugasan dikemas kini",
+      "updateFailed": "Gagal mengemas kini tugasan",
+      "deleted": "Tugasan dipadam",
+      "deleteFailed": "Gagal memadam tugasan",
+      "undoSuccessful": "Buat asal berjaya",
+      "undoFailed": "Buat asal gagal",
+      "couldNotLoad": "Tidak dapat memuatkan tugasan"
+    }
   },
   "timeline": {
     "title": "Garis masa",

@@ -172,7 +172,18 @@
       "noDates": "Aucune date",
       "startPrefix": "D:"
     },
-    "buttons": { "clear": "Effacer", "done": "Fait", "undo": "Annuler" }
+    "buttons": { "clear": "Effacer", "done": "Fait", "undo": "Annuler" },
+    "toast": {
+      "added": "Tâche ajoutée",
+      "addFailed": "Échec de l’ajout de la tâche",
+      "updated": "Tâche mise à jour",
+      "updateFailed": "Échec de la mise à jour de la tâche",
+      "deleted": "Tâche supprimée",
+      "deleteFailed": "Échec de la suppression de la tâche",
+      "undoSuccessful": "Annulation réussie",
+      "undoFailed": "Échec de l’annulation",
+      "couldNotLoad": "Impossible de charger les tâches"
+    }
   },
   "timeline": {
     "title": "Chronologie",

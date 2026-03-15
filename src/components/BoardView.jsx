@@ -340,7 +340,7 @@ function EditTaskModal({ todo, onClose, onSave }) {
                   className={`edit-status-btn ${!isComplete ? "active" : ""}`}
                   onClick={() => setIsComplete(false)}
                 >
-                  <span className="status-indicator working"></span>
+                  <span className="board-priority-indicator medium"></span>
                   {translate("board.status.inProgress")}
                 </button>
                 <button
@@ -348,7 +348,7 @@ function EditTaskModal({ todo, onClose, onSave }) {
                   className={`edit-status-btn ${isComplete ? "active" : ""}`}
                   onClick={() => setIsComplete(true)}
                 >
-                  <span className="status-indicator done"></span>
+                  <span className="board-priority-indicator low"></span>
                   {translate("board.status.done")}
                 </button>
               </div>
@@ -890,7 +890,7 @@ function BoardView({
                 </div>
                 <p style={{ color: "var(--text-main)", marginBottom: "1.5rem" }}>
                   {translate("board.modal.deleteTask.confirmPrefix")}
-                  <strong style={{ color: "#fff" }}>"{pendingDelete.name}"</strong>
+                  <strong style={{ color: "var(--text-main)" }}>"{pendingDelete.name}"</strong>
                   {translate("board.modal.deleteTask.confirmSuffix")}
                 </p>
                 <div className="modal-actions">

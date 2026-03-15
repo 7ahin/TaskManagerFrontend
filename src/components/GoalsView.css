@@ -433,7 +433,7 @@
   position: fixed;
   inset: 0;
   background: rgba(2, 6, 23, 0.55);
-  z-index: 49;
+  z-index: 10000;
   animation: goalsFadeIn 140ms ease-out;
 }
 
@@ -441,7 +441,7 @@
   position: fixed;
   inset: 0;
   background: transparent;
-  z-index: 49;
+  z-index: 10000;
 }
 
 .goals-dropdown-menu {
@@ -454,7 +454,7 @@
   background: var(--modal-bg);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
   overflow: hidden;
-  z-index: 50;
+  z-index: 10001;
   transform-origin: top;
   will-change: opacity, transform;
   animation: goalsMenuIn 140ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -561,7 +561,7 @@
 .goals-calendar-modal {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 10001;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -704,7 +704,7 @@
   height: 28px;
 }
 
-.goals-calendar-day {
+.goals-calendar-panel .goals-calendar-day {
   height: 28px;
   display: flex;
   align-items: center;
@@ -715,23 +715,34 @@
   color: var(--text-main);
   transition: all 0.1s;
   min-width: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  outline: none;
+  appearance: none;
 }
 
-.goals-calendar-day:hover {
+.goals-calendar-panel .goals-calendar-day:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.goals-calendar-day.today {
+.goals-calendar-panel .goals-calendar-day:focus-visible {
+  border-color: rgba(59, 130, 246, 0.45);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.goals-calendar-panel .goals-calendar-day.today {
   border: 1px solid var(--primary);
   color: var(--primary);
 }
 
-.goals-calendar-day.selected {
+.goals-calendar-panel .goals-calendar-day.selected {
   background: var(--primary);
   color: #fff;
+  border-color: var(--primary);
 }
 
-.goals-calendar-day.selected.today {
+.goals-calendar-panel .goals-calendar-day.selected.today {
   color: #fff;
 }
 
@@ -1007,7 +1018,7 @@ body.light-mode .goals-calendar-nav:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
-body.light-mode .goals-calendar-day:hover {
+body.light-mode .goals-calendar-panel .goals-calendar-day:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 

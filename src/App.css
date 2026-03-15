@@ -401,13 +401,13 @@ body.light-mode .app-header.scrolled {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75); /* Darker backdrop */
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999; /* Ensure on top of everything */
-  animation: fadeIn 0.12s ease-out;
+  animation: none;
 }
 
 @keyframes fadeIn {
@@ -731,14 +731,6 @@ body.light-mode .app-header.scrolled {
   border-color: rgba(16, 185, 129, 0.2);
 }
 
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: currentColor;
-  opacity: 0.8;
-}
-
 .edit-date-stack {
   display: flex;
   flex-direction: column;
@@ -844,7 +836,7 @@ body.light-mode .app-header.scrolled {
 }
 
 body.light-mode .modal-overlay {
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.35);
 }
 
 body.light-mode .modal-content {
@@ -861,15 +853,15 @@ body.light-mode .edit-status-btn:hover {
 }
 
 body.light-mode .edit-status-btn.active:first-child {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #ffffff;
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.24);
+  color: #1d4ed8;
 }
 
 body.light-mode .edit-status-btn.active:last-child {
-  background: #10b981;
-  border-color: #10b981;
-  color: #ffffff;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.24);
+  color: #059669;
 }
 
 /* Shared Action Buttons */
