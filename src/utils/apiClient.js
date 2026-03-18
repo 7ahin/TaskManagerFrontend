@@ -1,4 +1,7 @@
-const API_ROOT = String(import.meta.env.VITE_API_BASE_URL || "https://localhost:7076/api").replace(/\/+$/, "");
+const DEFAULT_DEV_API_ROOT = "https://localhost:7076/api";
+const API_ROOT = String(
+  import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? "/api" : DEFAULT_DEV_API_ROOT)
+).replace(/\/+$/, "");
 
 function resolveUserId(explicitUserId) {
   if (explicitUserId != null) return explicitUserId;
@@ -87,4 +90,3 @@ export function apiPut(path, body, options) {
 export function apiDelete(path, options) {
   return apiRequest({ ...(options || {}), path, method: "DELETE" });
 }
-
