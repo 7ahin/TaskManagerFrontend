@@ -1,15 +1,371 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./TimelineView.css";
 import { toYmd, normalizeDueDate } from "../utils/dateUtils";
-import { CalendarDaysIcon, ChevronDownIcon, FlagIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowsUpDownIcon,
+  CalendarDaysIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  FlagIcon,
+} from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+
+function TimelineGroupSortDropdown({ value, onChange, options, isOpen, onToggle, onClose, ariaLabel }) {
+  const selectedLabel = (options.find((o) => o.value === value) || options[0])?.label;
+  const btnRef = useRef(null);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0, width: 0, maxHeight: 0 });
+
+  const computePopupPos = () => {
+    const rect = btnRef.current?.getBoundingClientRect?.();
+    const width = Math.min(260, Math.max(200, Math.ceil(rect?.width || 240)));
+    const desiredHeight = 280;
+    const minHeight = 160;
+    const gap = 8;
+    const margin = 10;
+
+    if (!rect) {
+      setPopupPos({ top: margin, left: margin, width, maxHeight: desiredHeight });
+      return;
+    }
+
+    const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+    const left = Math.min(Math.max(margin, rect.right - width), maxLeft);
+
+    const spaceBelow = window.innerHeight - margin - (rect.bottom + gap);
+    const spaceAbove = rect.top - margin - gap;
+    const placeBelow =
+      spaceBelow >= 220 ? true : spaceAbove >= 220 ? false : spaceBelow >= spaceAbove;
+
+    const maxHeight = Math.max(minHeight, Math.min(desiredHeight, placeBelow ? spaceBelow : spaceAbove));
+    const top = placeBelow ? rect.bottom + gap : rect.top - gap - maxHeight;
+
+    setPopupPos({ top, left, width, maxHeight });
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let raf = 0;
+    const onScrollOrResize = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        computePopupPos();
+      });
+    };
+    window.addEventListener("scroll", onScrollOrResize, true);
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      if (raf) window.cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScrollOrResize, true);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="timeline-dropdown timeline-group-sort">
+      <button
+        ref={btnRef}
+        type="button"
+        className={`timeline-filter-select timeline-dropdown-trigger timeline-group-sort-btn ${isOpen ? "is-open" : ""}`}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        onClick={() => {
+          if (!isOpen) computePopupPos();
+          onToggle();
+        }}
+        title={ariaLabel}
+      >
+        <ArrowsUpDownIcon className="timeline-dropdown-icon" aria-hidden="true" />
+        <span className="timeline-dropdown-label timeline-group-sort-label">{selectedLabel}</span>
+        <ChevronDownIcon className={`timeline-dropdown-chevron ${isOpen ? "is-open" : ""}`} aria-hidden="true" />
+      </button>
+
+      {isOpen
+        ? createPortal(
+            <>
+              <div className="timeline-dropdown-backdrop" onClick={onClose} aria-hidden="true" />
+              <div
+                className="timeline-dropdown-menu timeline-group-sort-menu"
+                style={{
+                  position: "fixed",
+                  top: popupPos.top,
+                  left: popupPos.left,
+                  width: popupPos.width,
+                  maxHeight: popupPos.maxHeight,
+                }}
+                role="listbox"
+                aria-label={ariaLabel}
+              >
+                {options.map((o) => {
+                  const selected = o.value === value;
+                  return (
+                    <button
+                      key={o.value}
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      className={`timeline-dropdown-option ${selected ? "is-selected" : ""}`}
+                      onClick={() => {
+                        onChange(o.value);
+                        onClose();
+                      }}
+                    >
+                      <span className="timeline-dropdown-option-label">{o.label}</span>
+                      {selected ? <span className="timeline-dropdown-check" aria-hidden="true" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </>,
+            document.body
+          )
+        : null}
+    </div>
+  );
+}
+
+function TimelineDatePicker({ value, onChange, placeholder }) {
+  const { t: translate, i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const btnRef = useRef(null);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0, maxHeight: 0 });
+
+  const ymdToLocalDate = (ymd) => {
+    if (!ymd || typeof ymd !== "string") return null;
+    const m = ymd.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    const yy = Number(m[1]);
+    const mm = Number(m[2]);
+    const dd = Number(m[3]);
+    const d = new Date(yy, mm - 1, dd);
+    if (Number.isNaN(d.getTime())) return null;
+    return d;
+  };
+
+  const today = new Date();
+  const selectedDate = ymdToLocalDate(value);
+  const [viewDate, setViewDate] = useState(selectedDate || today);
+
+  const displayDate = selectedDate
+    ? selectedDate.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" })
+    : placeholder || translate("board.dates.selectDate", "Select date");
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    return { daysInMonth, firstDayOfMonth };
+  };
+
+  const { daysInMonth, firstDayOfMonth } = getDaysInMonth(viewDate);
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const paddingDays = Array.from({ length: firstDayOfMonth }, (_, i) => i);
+  const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
+    new Date(2021, 7, 1 + i).toLocaleDateString(i18n.language, { weekday: "narrow" })
+  );
+
+  const changeMonth = (increment) => {
+    const next = new Date(viewDate);
+    next.setMonth(next.getMonth() + increment);
+    setViewDate(next);
+  };
+
+  const handleDateSelect = (day) => {
+    const next = new Date(viewDate);
+    next.setDate(day);
+    const year = next.getFullYear();
+    const month = String(next.getMonth() + 1).padStart(2, "0");
+    const dayStr = String(day).padStart(2, "0");
+    onChange(`${year}-${month}-${dayStr}`);
+    setIsOpen(false);
+  };
+
+  const handleClear = () => {
+    onChange("");
+    setIsOpen(false);
+  };
+
+  const handleToday = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const dayStr = String(now.getDate()).padStart(2, "0");
+    onChange(`${year}-${month}-${dayStr}`);
+    setIsOpen(false);
+  };
+
+  const computePopupPos = () => {
+    const rect = btnRef.current?.getBoundingClientRect?.();
+    const width = 240;
+    const desiredHeight = 320;
+    const minHeight = 180;
+    const gap = 6;
+    const margin = 10;
+
+    if (!rect) {
+      setPopupPos({ top: margin, left: margin, maxHeight: desiredHeight });
+      return;
+    }
+
+    const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+    const left = Math.min(Math.max(margin, rect.right - width), maxLeft);
+
+    const spaceBelow = window.innerHeight - margin - (rect.bottom + gap);
+    const spaceAbove = rect.top - margin - gap;
+    const placeBelow =
+      spaceBelow >= 240 ? true : spaceAbove >= 240 ? false : spaceBelow >= spaceAbove;
+
+    const maxHeight = Math.max(minHeight, Math.min(desiredHeight, placeBelow ? spaceBelow : spaceAbove));
+    const top = placeBelow ? rect.bottom + gap : rect.top - gap - maxHeight;
+
+    setPopupPos({ top, left, maxHeight });
+  };
+
+  const openPopup = () => {
+    setViewDate(ymdToLocalDate(value) || new Date());
+    computePopupPos();
+    setIsOpen(true);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let raf = 0;
+    const onScrollOrResize = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        computePopupPos();
+      });
+    };
+    window.addEventListener("scroll", onScrollOrResize, true);
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      if (raf) window.cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScrollOrResize, true);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="timeline-date-picker" onClick={(e) => e.stopPropagation()}>
+      <button
+        ref={btnRef}
+        type="button"
+        className="timeline-date-btn"
+        onClick={() => (isOpen ? setIsOpen(false) : openPopup())}
+        aria-expanded={isOpen}
+      >
+        <div className={`timeline-date-display ${!value ? "timeline-date-placeholder" : ""}`}>
+          <CalendarDaysIcon className="timeline-date-icon" aria-hidden="true" />
+          <span className="timeline-date-text">{displayDate}</span>
+        </div>
+        <ChevronDownIcon className={`timeline-date-chevron ${isOpen ? "is-open" : ""}`} aria-hidden="true" />
+      </button>
+
+      {isOpen
+        ? createPortal(
+            <>
+              <div className="timeline-date-backdrop" onClick={() => setIsOpen(false)} aria-hidden="true" />
+              <div
+                className="timeline-calendar-popup"
+                style={{
+                  position: "fixed",
+                  top: popupPos.top,
+                  left: popupPos.left,
+                  maxHeight: popupPos.maxHeight,
+                  overflowY: "auto",
+                }}
+                role="dialog"
+                aria-label={translate("board.dates.selectDate", "Select date")}
+              >
+                <div className="timeline-calendar-header">
+                  <button type="button" onClick={() => changeMonth(-1)} className="timeline-calendar-nav-btn">
+                    <ChevronLeftIcon className="timeline-calendar-nav-icon" aria-hidden="true" />
+                  </button>
+                  <span className="timeline-calendar-month-year">
+                    {viewDate.toLocaleDateString(i18n.language, { month: "long", year: "numeric" })}
+                  </span>
+                  <button type="button" onClick={() => changeMonth(1)} className="timeline-calendar-nav-btn">
+                    <ChevronRightIcon className="timeline-calendar-nav-icon" aria-hidden="true" />
+                  </button>
+                </div>
+
+                <div className="timeline-calendar-grid-header">
+                  {daysOfWeek.map((d, i) => (
+                    <div key={`${d}-${i}`} className="timeline-calendar-day-name">
+                      {d}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="timeline-calendar-grid">
+                  {paddingDays.map((p) => (
+                    <div key={`padding-${p}`} className="timeline-calendar-day padding" />
+                  ))}
+                  {days.map((day) => {
+                    const isSelected =
+                      !!selectedDate &&
+                      selectedDate.getDate() === day &&
+                      selectedDate.getMonth() === viewDate.getMonth() &&
+                      selectedDate.getFullYear() === viewDate.getFullYear();
+
+                    const isToday =
+                      today.getDate() === day &&
+                      today.getMonth() === viewDate.getMonth() &&
+                      today.getFullYear() === viewDate.getFullYear();
+
+                    return (
+                      <div
+                        key={day}
+                        className={`timeline-calendar-day ${isSelected ? "selected" : ""} ${isToday ? "today" : ""}`}
+                        onClick={() => handleDateSelect(day)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") handleDateSelect(day);
+                        }}
+                      >
+                        {day}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="timeline-calendar-footer">
+                  {value ? (
+                    <button type="button" className="timeline-calendar-footer-btn" onClick={handleClear}>
+                      {translate("board.buttons.clear", "Clear")}
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                  <button type="button" className="timeline-calendar-footer-btn" onClick={handleToday}>
+                    {translate("dashboard.due.today", "Today")}
+                  </button>
+                </div>
+              </div>
+            </>,
+            document.body
+          )
+        : null}
+    </div>
+  );
+}
 
 function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdateTask }) {
   const { t: translate, i18n } = useTranslation();
+  const language = i18n.language;
   const [timelineSearch, setTimelineSearch] = useState("");
   const [timelineShowDone, setTimelineShowDone] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [groupBy, setGroupBy] = useState("day");
+  const [sortMode, setSortMode] = useState(() => {
+    return localStorage.getItem("taskSenpai.timeline.sortMode") || "created_desc";
+  });
+  const [openGroupSortKey, setOpenGroupSortKey] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
   const groupByBtnRef = useRef(null);
   const priorityBtnRef = useRef(null);
@@ -33,6 +389,19 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [openDropdown]);
+
+  useEffect(() => {
+    localStorage.setItem("taskSenpai.timeline.sortMode", sortMode);
+  }, [sortMode]);
+
+  useEffect(() => {
+    if (!openGroupSortKey) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setOpenGroupSortKey(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [openGroupSortKey]);
 
   const getStatusKey = (task) => {
     const raw = String(task.status || "").trim().toLowerCase();
@@ -68,6 +437,20 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
       { value: "High", label: translate("board.priority.high") },
       { value: "Medium", label: translate("board.priority.medium") },
       { value: "Low", label: translate("board.priority.low") },
+    ],
+    [translate]
+  );
+
+  const sortOptions = useMemo(
+    () => [
+      { value: "created_desc", label: translate("board.sort.createdDesc", "Created (newest)") },
+      { value: "created_asc", label: translate("board.sort.createdAsc", "Created (oldest)") },
+      { value: "start_asc", label: translate("board.sort.startAsc", "Start date (soonest)") },
+      { value: "start_desc", label: translate("board.sort.startDesc", "Start date (latest)") },
+      { value: "priority_desc", label: translate("board.sort.priorityDesc", "Priority (High–Low)") },
+      { value: "priority_asc", label: translate("board.sort.priorityAsc", "Priority (Low–High)") },
+      { value: "name_asc", label: translate("board.sort.nameAsc", "Name (A–Z)") },
+      { value: "name_desc", label: translate("board.sort.nameDesc", "Name (Z–A)") },
     ],
     [translate]
   );
@@ -135,6 +518,98 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
     }
   };
 
+  const sortItems = useMemo(() => {
+    const toMs = (value) => {
+      if (!value) return null;
+      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        const [yy, mm, dd] = value.split("-").map((p) => Number(p));
+        const d = new Date(yy, mm - 1, dd);
+        const ms = d.getTime();
+        return Number.isFinite(ms) ? ms : null;
+      }
+      const d = new Date(value);
+      const ms = d.getTime();
+      return Number.isFinite(ms) ? ms : null;
+    };
+
+    const createdMsOf = (t) =>
+      toMs(
+        t?.createdAt ??
+          t?.CreatedAt ??
+          t?.created_at ??
+          t?.createdDate ??
+          t?.created_on ??
+          t?.CreatedOn ??
+          null
+      );
+
+    const startMsOf = (t) => toMs(t?.startDate ?? t?.start_date ?? null);
+
+    const nameOf = (t) => String(t?.name || "");
+
+    const cmpNameAsc = (a, b) => nameOf(a).localeCompare(nameOf(b), language, { sensitivity: "base" });
+
+    const priorityRankOf = (t) => {
+      const raw = String(t?.priority || "Medium").trim().toLowerCase();
+      if (raw === "high") return 3;
+      if (raw === "low") return 1;
+      return 2;
+    };
+
+    const idOrder = (t) => {
+      const v = t?.id;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+      if (typeof v === "string" && v.trim() && !Number.isNaN(Number(v))) return Number(v);
+      return null;
+    };
+
+    return (items, mode) => {
+      const next = items ? [...items] : [];
+      if (!mode) mode = "created_desc";
+
+      next.sort((a, b) => {
+        if (!!a?.isComplete !== !!b?.isComplete) return a?.isComplete ? 1 : -1;
+
+        if (mode === "name_asc") return cmpNameAsc(a, b);
+        if (mode === "name_desc") return -cmpNameAsc(a, b);
+
+        if (mode === "created_desc" || mode === "created_asc") {
+          const am = createdMsOf(a);
+          const bm = createdMsOf(b);
+          if (am == null && bm == null) {
+            const ai = idOrder(a);
+            const bi = idOrder(b);
+            if (ai != null && bi != null) return mode === "created_desc" ? bi - ai : ai - bi;
+            return cmpNameAsc(a, b);
+          }
+          if (am == null) return 1;
+          if (bm == null) return -1;
+          return mode === "created_desc" ? bm - am : am - bm;
+        }
+
+        if (mode === "start_desc" || mode === "start_asc") {
+          const am = startMsOf(a);
+          const bm = startMsOf(b);
+          if (am == null && bm == null) return cmpNameAsc(a, b);
+          if (am == null) return 1;
+          if (bm == null) return -1;
+          return mode === "start_desc" ? bm - am : am - bm;
+        }
+
+        if (mode === "priority_desc" || mode === "priority_asc") {
+          const ar = priorityRankOf(a);
+          const br = priorityRankOf(b);
+          if (ar !== br) return mode === "priority_desc" ? br - ar : ar - br;
+          return cmpNameAsc(a, b);
+        }
+
+        return cmpNameAsc(a, b);
+      });
+
+      return next;
+    };
+  }, [language]);
+
   const timelineGroups = useMemo(() => {
     const term = timelineSearch.trim().toLowerCase();
     const todayYmd = toYmd(new Date());
@@ -175,20 +650,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
       else byGroupKey.set(groupKey, [{ t, ymd }]);
     }
 
-    const priorityRank = (p) => {
-      const key = (p || "Medium").toLowerCase();
-      if (key === "high") return 0;
-      if (key === "medium") return 1;
-      return 2;
-    };
-
-    const sortTasks = (a, b) => {
-      if (a.isComplete !== b.isComplete) return a.isComplete ? 1 : -1;
-      const pr = priorityRank(a.priority) - priorityRank(b.priority);
-      if (pr !== 0) return pr;
-      return String(a.name || "").localeCompare(String(b.name || ""));
-    };
-
+    const mode = sortMode || "created_desc";
     const keys = Array.from(byGroupKey.keys()).sort((a, b) => a.localeCompare(b));
     const groups = keys.map((key) => {
       if (groupBy === "week") {
@@ -205,29 +667,28 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
               : "upcoming";
         const label = translate("timeline.group.week.label", {
           prefix: translate(`timeline.group.prefix.${prefixKey}`),
-          start: start.toLocaleDateString(i18n.language, {
+          start: start.toLocaleDateString(language, {
             month: "short",
             day: "numeric",
             year: "numeric",
           }),
-          end: end.toLocaleDateString(i18n.language, {
+          end: end.toLocaleDateString(language, {
             month: "short",
             day: "numeric",
             year: "numeric",
           }),
         });
 
-        const items = (byGroupKey.get(key) || [])
-          .slice()
-          .sort((a, b) => a.ymd.localeCompare(b.ymd) || sortTasks(a.t, b.t));
-        return { key, label, tasks: items.map((i) => i.t) };
+        const items = (byGroupKey.get(key) || []).map((i) => i.t);
+        const tasks = sortItems(items, mode);
+        return { key, label, tasks, sortMode: mode };
       }
 
       const date = ymdToDate(key);
       const prefixKey = key < todayYmd ? "overdue" : key === todayYmd ? "today" : "upcoming";
       const label = translate("timeline.group.day.label", {
         prefix: translate(`timeline.group.prefix.${prefixKey}`),
-        date: date.toLocaleDateString(i18n.language, {
+        date: date.toLocaleDateString(language, {
           weekday: "short",
           month: "short",
           day: "numeric",
@@ -235,16 +696,14 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
         }),
       });
 
-      const tasks = (byGroupKey.get(key) || [])
-        .slice()
-        .map((i) => i.t)
-        .sort(sortTasks);
-      return { key, label, tasks };
+      const items = (byGroupKey.get(key) || []).map((i) => i.t);
+      const tasks = sortItems(items, mode);
+      return { key, label, tasks, sortMode: mode };
     });
 
-    const undated = noDate.slice().sort(sortTasks);
-    return { groups, undated };
-  }, [todos, timelineSearch, timelineShowDone, priorityFilter, groupBy, i18n.language, translate]);
+    const undated = sortItems(noDate, mode);
+    return { groups, undated, undatedSortMode: mode };
+  }, [todos, timelineSearch, timelineShowDone, priorityFilter, groupBy, language, sortItems, sortMode, translate]);
 
   return (
     <section className="timeline-view-container">
@@ -390,8 +849,27 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
           {timelineGroups.groups.map((g) => (
             <div key={g.key} className="timeline-group">
               <div className="timeline-group-header">
-                <div className="timeline-group-title">{g.label}</div>
-                <div className="timeline-group-count">{g.tasks.length}</div>
+                <div className="timeline-group-left">
+                  <div className="timeline-group-title">{g.label}</div>
+                  <div className="timeline-group-count">{g.tasks.length}</div>
+                </div>
+                <div className="timeline-group-right">
+                  <TimelineGroupSortDropdown
+                    value={g.sortMode}
+                    options={sortOptions}
+                    ariaLabel={translate("timeline.sort.label", "Sort")}
+                    isOpen={openGroupSortKey === g.key}
+                    onToggle={() => {
+                      setOpenDropdown(null);
+                      setOpenGroupSortKey((prev) => (prev === g.key ? null : g.key));
+                    }}
+                    onClose={() => setOpenGroupSortKey(null)}
+                    onChange={(value) => {
+                      setSortMode(value);
+                      setOpenGroupSortKey(null);
+                    }}
+                  />
+                </div>
               </div>
               <div className="timeline-list">
                 {g.tasks.map((t) => (
@@ -429,7 +907,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                           {t.dueDate && (
                             <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
                               {translate("timeline.due.label", {
-                                date: new Date(t.dueDate).toLocaleDateString(i18n.language, { month: "short", day: "numeric" }),
+                                date: new Date(t.dueDate).toLocaleDateString(language, { month: "short", day: "numeric" }),
                               })}
                             </span>
                           )}
@@ -444,22 +922,18 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                     <div className="timeline-item-actions" onClick={(e) => e.stopPropagation()}>
                       <div className="timeline-date-group">
                         <span className="timeline-date-label">{translate("timeline.dates.startLabel")}</span>
-                        <input
-                          type="date"
-                          className="timeline-date-input"
+                        <TimelineDatePicker
                           value={normalizeDueDate(t.startDate) || ""}
-                          onChange={(e) => onUpdateTask({ ...t, startDate: e.target.value })}
-                          onClick={(e) => e.stopPropagation()}
+                          onChange={(val) => onUpdateTask({ ...t, startDate: val })}
+                          placeholder={translate("timeline.dates.startPlaceholder", "Start")}
                         />
                       </div>
                       <div className="timeline-date-group">
                         <span className="timeline-date-label">{translate("timeline.dates.dueLabel")}</span>
-                        <input
-                          type="date"
-                          className="timeline-date-input"
+                        <TimelineDatePicker
                           value={normalizeDueDate(t.dueDate) || ""}
-                          onChange={(e) => onUpdateTask({ ...t, dueDate: e.target.value })}
-                          onClick={(e) => e.stopPropagation()}
+                          onChange={(val) => onUpdateTask({ ...t, dueDate: val })}
+                          placeholder={translate("timeline.dates.duePlaceholder", "Due")}
                         />
                       </div>
                       <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>
@@ -475,8 +949,27 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
           {timelineGroups.undated.length > 0 ? (
             <div className="timeline-group">
               <div className="timeline-group-header">
-                <div className="timeline-group-title">{translate("timeline.group.noDates")}</div>
-                <div className="timeline-group-count">{timelineGroups.undated.length}</div>
+                <div className="timeline-group-left">
+                  <div className="timeline-group-title">{translate("timeline.group.noDates")}</div>
+                  <div className="timeline-group-count">{timelineGroups.undated.length}</div>
+                </div>
+                <div className="timeline-group-right">
+                  <TimelineGroupSortDropdown
+                    value={timelineGroups.undatedSortMode}
+                    options={sortOptions}
+                    ariaLabel={translate("timeline.sort.label", "Sort")}
+                    isOpen={openGroupSortKey === "__undated__"}
+                    onToggle={() => {
+                      setOpenDropdown(null);
+                      setOpenGroupSortKey((prev) => (prev === "__undated__" ? null : "__undated__"));
+                    }}
+                    onClose={() => setOpenGroupSortKey(null)}
+                    onChange={(value) => {
+                      setSortMode(value);
+                      setOpenGroupSortKey(null);
+                    }}
+                  />
+                </div>
               </div>
               <div className="timeline-list">
                 {timelineGroups.undated.map((t) => (
@@ -514,7 +1007,7 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                           {t.dueDate && (
                             <span className={`timeline-due-pill ${new Date(t.dueDate) < new Date().setHours(0,0,0,0) ? "overdue" : ""}`}>
                               {translate("timeline.due.label", {
-                                date: new Date(t.dueDate).toLocaleDateString(i18n.language, { month: "short", day: "numeric" }),
+                                date: new Date(t.dueDate).toLocaleDateString(language, { month: "short", day: "numeric" }),
                               })}
                             </span>
                           )}
@@ -529,22 +1022,18 @@ function TimelineView({ todos, onToggleComplete, onGoBoard, onOpenTask, onUpdate
                     <div className="timeline-item-actions" onClick={(e) => e.stopPropagation()}>
                       <div className="timeline-date-group">
                         <span className="timeline-date-label">{translate("timeline.dates.startLabel")}</span>
-                        <input
-                          type="date"
-                          className="timeline-date-input"
+                        <TimelineDatePicker
                           value={normalizeDueDate(t.startDate) || ""}
-                          onChange={(e) => onUpdateTask({ ...t, startDate: e.target.value })}
-                          onClick={(e) => e.stopPropagation()}
+                          onChange={(val) => onUpdateTask({ ...t, startDate: val })}
+                          placeholder={translate("timeline.dates.startPlaceholder", "Start")}
                         />
                       </div>
                       <div className="timeline-date-group">
                         <span className="timeline-date-label">{translate("timeline.dates.dueLabel")}</span>
-                        <input
-                          type="date"
-                          className="timeline-date-input"
+                        <TimelineDatePicker
                           value={normalizeDueDate(t.dueDate) || ""}
-                          onChange={(e) => onUpdateTask({ ...t, dueDate: e.target.value })}
-                          onClick={(e) => e.stopPropagation()}
+                          onChange={(val) => onUpdateTask({ ...t, dueDate: val })}
+                          placeholder={translate("timeline.dates.duePlaceholder", "Due")}
                         />
                       </div>
                       <button type="button" className="timeline-action-button" onClick={() => onOpenTask(t)}>

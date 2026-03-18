@@ -10,7 +10,9 @@
     "header": {
       "profile": "Profil",
       "settings": "Tetapan",
-      "language": "Bahasa"
+      "language": "Bahasa",
+      "logoAlt": "Logo Task Senpai",
+      "profileAlt": "Profil"
     },
     "profile": {
       "title_guest": "Selamat Datang ke Task Senpai",
@@ -34,7 +36,8 @@
       "es": "Bahasa Sepanyol",
       "fr": "Bahasa Perancis",
       "de": "Bahasa Jerman",
-      "ms": "Bahasa Melayu"
+      "ms": "Bahasa Melayu",
+      "changed": "Bahasa ditukar kepada {{language}}"
     },
     "settings": {
       "title": "Tetapan",
@@ -43,7 +46,178 @@
       "theme_light": "Terang",
       "sound": "Kesan Bunyi",
       "notifications": "Pemberitahuan",
-      "compact_mode": "Mod Padat"
+      "compact_mode": "Mod Padat",
+      "rememberLastView": "Sambung dari kali terakhir",
+      "startPage": "Halaman permulaan",
+      "fallbackPage": "Halaman sandaran"
+    },
+    "notifications": {
+      "enable": "Dayakan",
+      "inApp": "Toast dalam aplikasi",
+      "desktop": "Pemberitahuan desktop",
+      "dueToday": "Amaran tamat hari ini",
+      "overdue": "Amaran lewat",
+      "log": "Log",
+      "clear": "Kosongkan",
+      "empty": "Belum ada pemberitahuan"
+    }
+  },
+  "landing": {
+    "kicker": {
+      "focus": "集中",
+      "plan": "計画",
+      "achieve": "達成"
+    },
+    "hero": {
+      "title": "Task Senpai",
+      "highlight": "Kuasai Aliran Kerja Anda",
+      "jpTagline": "先輩モード • 今日も一歩ずつ",
+      "subtitle": "Susun, utamakan dan jejak kerja anda dengan mudah. Alat terbaik untuk produktiviti peribadi dan profesional."
+    },
+    "capabilities": {
+      "kanban": "Papan Kanban",
+      "timeline": "Garis Masa",
+      "calendar": "Kalendar",
+      "goals": "Matlamat",
+      "assistant": "Bot pembantu",
+      "music": "Muzik fokus"
+    },
+    "actions": {
+      "startFree": "Mula percuma",
+      "viewDemo": "Lihat demo"
+    },
+    "socialProof": {
+      "label": "Direka & dibina oleh",
+      "team": "Pasukan Task Senpai"
+    },
+    "preview": {
+      "brand": "TaskSenpai"
+    },
+    "previewTabs": {
+      "dashboard": {
+        "label": "Papan Pemuka",
+        "title": "Mulakan hari dengan sekali pandang",
+        "desc": "Lihat apa yang tamat, lewat, dan apa yang penting seterusnya."
+      },
+      "board": {
+        "label": "Papan",
+        "title": "Seret, lepas, siap",
+        "desc": "Alihkan tugasan antara status dengan Kanban yang lancar."
+      },
+      "timeline": {
+        "label": "Garis Masa",
+        "title": "Rancang minggu secara visual",
+        "desc": "Susun tugasan mengikut tarikh untuk elak kejutan saat akhir."
+      },
+      "calendar": {
+        "label": "Kalendar",
+        "title": "Tarikh yang betul-betul melekat",
+        "desc": "Pilih tarikh mula/akhir dengan cepat dan kekalkan jadual kemas."
+      },
+      "goals": {
+        "label": "Matlamat",
+        "title": "Tukar matlamat jadi kemajuan",
+        "desc": "Jejak streak dan pencapaian dengan dorongan yang mesra."
+      }
+    },
+    "featuresSection": {
+      "title": "Semua yang anda perlukan untuk bergerak lebih pantas",
+      "subtitle": "Dari tangkap pantas hingga perancangan harian—Task Senpai kekal seronok dan fokus."
+    },
+    "features": {
+      "smartFlow": {
+        "title": "Aliran pintar",
+        "desc": "Tangkap tugasan cepat, kemudian perincikan dengan keutamaan, tarikh mula dan tarikh akhir."
+      },
+      "dragDrop": {
+        "title": "Papan seret & lepas",
+        "desc": "Alihkan kad antara lajur untuk kemas kini status serta-merta."
+      },
+      "calendarClarity": {
+        "title": "Kejelasan kalendar",
+        "desc": "Rancang mengikut tarikh akhir sebenar dan seimbangkan minggu anda."
+      },
+      "timelinePlanning": {
+        "title": "Perancangan garis masa",
+        "desc": "Visualkan kerja mengikut masa supaya anda nampak beban awal."
+      },
+      "assistantBot": {
+        "title": "Bot pembantu",
+        "desc": "Aksi pantas dan panduan mesra bantu anda bergerak tanpa geseran."
+      },
+      "focusMode": {
+        "title": "Vibe fokus",
+        "desc": "Muzik latar dan animasi halus kekalkan anda dalam zon."
+      }
+    },
+    "cta": {
+      "title": "Bersedia untuk ambil kawalan?",
+      "subtitle": "Mulakan kecil, bina momentum dan naik taraf aliran kerja anda.",
+      "button": "Mula sekarang"
+    },
+    "footer": {
+      "brand": "Task Senpai",
+      "privacy": "Privasi",
+      "terms": "Terma"
+    }
+  },
+  "assistant": {
+    "greeting": "Hai! Saya bot pembantu anda. Bagaimana saya boleh membantu hari ini?",
+    "ui": {
+      "title": "Bot pembantu",
+      "statusOnline": "Dalam talian",
+      "openChat": "Buka chat",
+      "closeChat": "Tutup chat",
+      "botAlt": "Bot",
+      "userAlt": "Pengguna",
+      "scrollLeft": "Tatal ke kiri",
+      "scrollRight": "Tatal ke kanan",
+      "userTyping": "Pengguna sedang menaip...",
+      "placeholder": "Taip mesej...",
+      "send": "Hantar mesej"
+    },
+    "quickActions": {
+      "taskCount": "Jumlah tugasan",
+      "dashboard": "Papan Pemuka",
+      "calendar": "Kalendar",
+      "board": "Papan",
+      "goals": "Matlamat"
+    },
+    "responses": {
+      "greeting": "Hai! Bagaimana saya boleh bantu dengan tugasan anda hari ini?",
+      "taskStats": "Anda ada {{total}} tugasan: {{completed}} selesai dan {{pending}} belum selesai. Teruskan usaha!",
+      "signInToAccess": "Sila log masuk untuk akses {{view}}.",
+      "navigatingTo": "Pergi ke {{view}}...",
+      "switchingTo": "Beralih ke paparan {{view}}...",
+      "openingView": "Membuka paparan {{view}}...",
+      "takingYouTo": "Membawa anda ke paparan {{view}}...",
+      "showingView": "Memaparkan paparan {{view}}...",
+      "todayIs": "Hari ini {{date}} {{time}}",
+      "help": "Saya boleh bantu semak tugasan atau navigasi aplikasi. Cuba juga tindakan pantas di bawah.",
+      "default": "Saya masih belajar. Tanya tentang tugasan atau navigasi, atau guna tindakan pantas di bawah."
+    }
+  },
+  "music": {
+    "ui": {
+      "player": "Pemain muzik",
+      "changeTrack": "Tukar lagu",
+      "selectTrack": "Pilih lagu"
+    },
+    "controls": {
+      "play": "Main",
+      "pause": "Jeda",
+      "previous": "Sebelum",
+      "next": "Seterusnya",
+      "mute": "Senyap",
+      "unmute": "Buka senyap",
+      "volume": "Kelantangan",
+      "seek": "Cari",
+      "loopOn": "Ulang aktif",
+      "loopOff": "Ulang tidak aktif"
+    },
+    "tracks": {
+      "track1": { "name": "Lagu 1", "artist": "Task Senpai" },
+      "track2": { "name": "Lagu 2", "artist": "Task Senpai" }
     }
   },
   "dashboard": {
@@ -306,6 +480,95 @@
       "couldNotLoad": "Tidak dapat memuatkan matlamat",
       "undoSuccessful": "Buat asal berjaya",
       "undoFailed": "Buat asal gagal"
+    }
+  },
+  "tutorial": {
+    "title": "Lihat Demo",
+    "subtitle": "Lawatan ringkas tentang apa yang boleh dibuat",
+    "logoAlt": "Task Senpai",
+    "stepsNavLabel": "Langkah tutorial",
+    "actions": { "close": "Tutup", "next": "Seterusnya", "back": "Kembali", "finish": "Selesai" },
+    "steps": {
+      "welcome": {
+        "label": "Selamat datang",
+        "title": "Selamat datang ke Task Senpai",
+        "desc": "Demo ini menerangkan skrin utama dan cara menggunakannya.",
+        "bullets": [
+          "Ikuti langkah di sebelah kiri untuk setiap skrin.",
+          "Gambar membantu anda tahu apa yang perlu dicari.",
+          "Anda boleh buka demo ini bila-bila masa dari halaman utama."
+        ]
+      },
+      "dashboard": {
+        "label": "Papan pemuka",
+        "title": "Papan pemuka: ringkasan harian",
+        "desc": "Mulakan di sini untuk lihat apa yang perlu diberi perhatian sekarang.",
+        "bullets": [
+          "Lihat tugas lewat, hari ini, dan yang akan datang.",
+          "Lompat ke Papan untuk sunting atau tandakan siap.",
+          "Senarai Next Up bantu kekal fokus."
+        ]
+      },
+      "board": {
+        "label": "Papan",
+        "title": "Papan: susun dengan drag & drop",
+        "desc": "Gunakan Papan untuk urus tugas dan status dengan cepat.",
+        "bullets": [
+          "Tambah tugas dengan pantas dan kemas kini butiran kemudian.",
+          "Seret tugas antara lajur untuk tukar status segera.",
+          "Cari dan tapis untuk fokus pada kerja tertentu."
+        ]
+      },
+      "calendar": {
+        "label": "Kalendar",
+        "title": "Kalendar: rancang ikut tarikh",
+        "desc": "Pastikan tarikh mula dan tarikh akhir konsisten dalam pelan anda.",
+        "bullets": [
+          "Pilih tarikh dengan cepat dan seimbangkan beban.",
+          "Kesan himpunan tarikh akhir lebih awal.",
+          "Gunakan bersama Papan untuk laras pelan."
+        ]
+      },
+      "goals": {
+        "label": "Matlamat",
+        "title": "Matlamat: tukar hasil jadi langkah",
+        "desc": "Tetapkan sasaran dan jejaki kemajuan merentasi tugasan.",
+        "bullets": [
+          "Tambah matlamat (contoh: siapkan 5 tugas keutamaan tinggi).",
+          "Tetapkan tarikh akhir untuk kekal konsisten.",
+          "Jejak baki dan kadar untuk laras lebih awal."
+        ]
+      },
+      "assistant": {
+        "label": "Pembantu",
+        "title": "Bot pembantu: bantuan pantas",
+        "desc": "Gunakan pembantu untuk ringkasan, panduan, dan pintasan navigasi.",
+        "bullets": [
+          "Minta ringkasan cepat tentang beban kerja.",
+          "Pergi terus ke paparan yang anda perlukan.",
+          "Dapatkan cadangan apa langkah seterusnya."
+        ]
+      },
+      "music": {
+        "label": "Muzik",
+        "title": "Muzik fokus: kekal dalam zon",
+        "desc": "Gunakan pemain muzik untuk bantu fokus semasa bekerja.",
+        "bullets": [
+          "Main/jeda dan tukar trek tanpa ganggu kerja.",
+          "Laraskan volum atau bisukan dengan segera.",
+          "Hidupkan gelung untuk sesi fokus yang lebih lama."
+        ]
+      },
+      "finish": {
+        "label": "Selesai",
+        "title": "Anda sudah bersedia",
+        "desc": "Itu sahaja. Mulakan dengan Papan pemuka, urus di Papan, dan jejaki dengan Matlamat.",
+        "bullets": [
+          "Mulakan kecil: tambah beberapa tugas dan alihkan di Papan.",
+          "Cipta satu matlamat mingguan dan pastikan ia jelas.",
+          "Kembali ke Demo bila-bila masa."
+        ]
+      }
     }
   }
 }

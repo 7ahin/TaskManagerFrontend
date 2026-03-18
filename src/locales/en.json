@@ -13,7 +13,9 @@
     "header": {
       "profile": "Profile",
       "settings": "Settings",
-      "language": "Language"
+      "language": "Language",
+      "logoAlt": "Task Senpai logo",
+      "profileAlt": "Profile"
     },
     "profile": {
       "title_guest": "Welcome to Task Senpai",
@@ -37,7 +39,8 @@
       "es": "Spanish",
       "fr": "French",
       "de": "German",
-      "ms": "Malay"
+      "ms": "Malay",
+      "changed": "Language changed to {{language}}"
     },
     "settings": {
       "title": "Settings",
@@ -46,7 +49,178 @@
       "theme_light": "Light",
       "sound": "Sound Effects",
       "notifications": "Notifications",
-      "compact_mode": "Compact Mode"
+      "compact_mode": "Compact Mode",
+      "rememberLastView": "Resume where I left off",
+      "startPage": "Start page",
+      "fallbackPage": "Fallback page"
+    },
+    "notifications": {
+      "enable": "Enable",
+      "inApp": "In-app toasts",
+      "desktop": "Desktop notifications",
+      "dueToday": "Due today alerts",
+      "overdue": "Overdue alerts",
+      "log": "Log",
+      "clear": "Clear",
+      "empty": "No notifications yet"
+    }
+  },
+  "landing": {
+    "kicker": {
+      "focus": "集中",
+      "plan": "計画",
+      "achieve": "達成"
+    },
+    "hero": {
+      "title": "Task Senpai",
+      "highlight": "Master Your Workflow",
+      "jpTagline": "先輩モード • 今日も一歩ずつ",
+      "subtitle": "Organize, prioritize, and track your work with ease. The ultimate tool for personal and professional productivity."
+    },
+    "capabilities": {
+      "kanban": "Kanban Board",
+      "timeline": "Timeline",
+      "calendar": "Calendar",
+      "goals": "Goals",
+      "assistant": "Assistant Bot",
+      "music": "Focus Music"
+    },
+    "actions": {
+      "startFree": "Start for free",
+      "viewDemo": "View Demo"
+    },
+    "socialProof": {
+      "label": "Designed & Built by",
+      "team": "Task Senpai Team"
+    },
+    "preview": {
+      "brand": "TaskSenpai"
+    },
+    "previewTabs": {
+      "dashboard": {
+        "label": "Dashboard",
+        "title": "Start your day in one glance",
+        "desc": "See what’s due, what’s overdue, and what matters next."
+      },
+      "board": {
+        "label": "Board",
+        "title": "Drag, drop, done",
+        "desc": "Move tasks across statuses with a smooth Kanban workflow."
+      },
+      "timeline": {
+        "label": "Timeline",
+        "title": "Plan your week visually",
+        "desc": "Map tasks across dates to avoid crunch-time surprises."
+      },
+      "calendar": {
+        "label": "Calendar",
+        "title": "Dates that actually stick",
+        "desc": "Quickly pick start/due dates and keep your schedule clean."
+      },
+      "goals": {
+        "label": "Goals",
+        "title": "Turn goals into progress",
+        "desc": "Track your streaks and milestones with friendly nudges."
+      }
+    },
+    "featuresSection": {
+      "title": "Everything you need to ship faster",
+      "subtitle": "From quick capture to daily planning—Task Senpai keeps it fun and focused."
+    },
+    "features": {
+      "smartFlow": {
+        "title": "Smart flow",
+        "desc": "Capture tasks fast, then refine with priority, start date, and due date."
+      },
+      "dragDrop": {
+        "title": "Drag & drop board",
+        "desc": "Move cards between columns to instantly update status and momentum."
+      },
+      "calendarClarity": {
+        "title": "Calendar clarity",
+        "desc": "Plan around real deadlines and keep your week balanced."
+      },
+      "timelinePlanning": {
+        "title": "Timeline planning",
+        "desc": "Visualize work over time so you can spot overload early."
+      },
+      "assistantBot": {
+        "title": "Assistant bot",
+        "desc": "Quick actions and friendly guidance help you move without friction."
+      },
+      "focusMode": {
+        "title": "Focus mode vibes",
+        "desc": "Background music and subtle animations keep you in the zone."
+      }
+    },
+    "cta": {
+      "title": "Ready to take control?",
+      "subtitle": "Start small, build momentum, and watch your workflow level up.",
+      "button": "Get Started Now"
+    },
+    "footer": {
+      "brand": "Task Senpai",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
+  },
+  "assistant": {
+    "greeting": "Hello! I'm your assistant bot. How can I help you today?",
+    "ui": {
+      "title": "Assistant Bot",
+      "statusOnline": "Online",
+      "openChat": "Open Chat",
+      "closeChat": "Close Chat",
+      "botAlt": "Bot",
+      "userAlt": "User",
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right",
+      "userTyping": "User is typing...",
+      "placeholder": "Type a message...",
+      "send": "Send message"
+    },
+    "quickActions": {
+      "taskCount": "Task Count",
+      "dashboard": "Dashboard",
+      "calendar": "Calendar",
+      "board": "Board",
+      "goals": "Goals"
+    },
+    "responses": {
+      "greeting": "Hello there! How can I assist you with your tasks today?",
+      "taskStats": "You have {{total}} total tasks: {{completed}} completed and {{pending}} pending. Keep up the good work!",
+      "signInToAccess": "Please sign in to access {{view}}.",
+      "navigatingTo": "Navigating to {{view}}...",
+      "switchingTo": "Switching to {{view}} view...",
+      "openingView": "Opening {{view}} view...",
+      "takingYouTo": "Taking you to {{view}} view...",
+      "showingView": "Showing {{view}} view...",
+      "todayIs": "Today is {{date}} {{time}}",
+      "help": "I can help you check your tasks or navigate the app. Try asking about your tasks, or use the Quick Actions below.",
+      "default": "I'm still learning. Try asking about your tasks, navigation, or check the Quick Actions below!"
+    }
+  },
+  "music": {
+    "ui": {
+      "player": "Music player",
+      "changeTrack": "Change track",
+      "selectTrack": "Select track"
+    },
+    "controls": {
+      "play": "Play",
+      "pause": "Pause",
+      "previous": "Previous",
+      "next": "Next",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "volume": "Volume",
+      "seek": "Seek",
+      "loopOn": "Loop on",
+      "loopOff": "Loop off"
+    },
+    "tracks": {
+      "track1": { "name": "Track 1", "artist": "Task Senpai" },
+      "track2": { "name": "Track 2", "artist": "Task Senpai" }
     }
   },
   "dashboard": {
@@ -309,6 +483,95 @@
       "couldNotLoad": "Could not load goals",
       "undoSuccessful": "Undo successful",
       "undoFailed": "Undo failed"
+    }
+  },
+  "tutorial": {
+    "title": "View Demo",
+    "subtitle": "A quick guided tour of what you can do",
+    "logoAlt": "Task Senpai",
+    "stepsNavLabel": "Tutorial steps",
+    "actions": { "close": "Close", "next": "Next", "back": "Back", "finish": "Finish" },
+    "steps": {
+      "welcome": {
+        "label": "Welcome",
+        "title": "Welcome to Task Senpai",
+        "desc": "This demo walks through the core screens and features so you know where to start.",
+        "bullets": [
+          "Follow the steps on the left to learn each screen.",
+          "Use the images as a quick reference for what to look for.",
+          "Try View Demo anytime from the landing page."
+        ]
+      },
+      "dashboard": {
+        "label": "Dashboard",
+        "title": "Dashboard: your daily overview",
+        "desc": "Use Dashboard to see what needs attention right now before you start moving tasks around.",
+        "bullets": [
+          "Get a quick snapshot of what’s due today, overdue, and coming up.",
+          "Jump from a task to the Board to edit or complete it.",
+          "Keep momentum with a clear Next Up list."
+        ]
+      },
+      "board": {
+        "label": "Board",
+        "title": "Board: drag, drop, and organize",
+        "desc": "Use the Board when you want to actively manage tasks and their status.",
+        "bullets": [
+          "Add a task quickly, then refine details later.",
+          "Drag tasks across columns to update status instantly.",
+          "Search and filter to focus on a subset of work."
+        ]
+      },
+      "calendar": {
+        "label": "Calendar",
+        "title": "Calendar: schedule with confidence",
+        "desc": "Use Calendar to keep start and due dates consistent across your plan.",
+        "bullets": [
+          "Pick dates quickly and keep your workload balanced.",
+          "Spot deadline clusters early.",
+          "Use it alongside the Board to stay realistic."
+        ]
+      },
+      "goals": {
+        "label": "Goals",
+        "title": "Goals: turn outcomes into steps",
+        "desc": "Use Goals to set targets and track progress across your tasks.",
+        "bullets": [
+          "Add a goal (for example: complete 5 high priority tasks).",
+          "Set a due date to stay accountable.",
+          "Track remaining work and pace so you can adjust early."
+        ]
+      },
+      "assistant": {
+        "label": "Assistant",
+        "title": "Assistant bot: quick help and summaries",
+        "desc": "Use the Assistant when you want guidance, status summaries, or navigation shortcuts.",
+        "bullets": [
+          "Ask for a quick summary of your workload.",
+          "Jump directly to the view you need.",
+          "Get tips on what to do next."
+        ]
+      },
+      "music": {
+        "label": "Music",
+        "title": "Focus music: stay in the zone",
+        "desc": "Use the music player to keep focus while planning and executing tasks.",
+        "bullets": [
+          "Play/pause and switch tracks without leaving your work.",
+          "Adjust volume or mute instantly.",
+          "Loop a track for longer focus sessions."
+        ]
+      },
+      "finish": {
+        "label": "Finish",
+        "title": "You’re ready",
+        "desc": "That’s the demo. Start with Dashboard, then manage tasks on the Board, and track progress with Goals.",
+        "bullets": [
+          "Start small: add a few tasks and move them across the Board.",
+          "Set one goal for the week and keep it visible.",
+          "Come back to View Demo anytime."
+        ]
+      }
     }
   }
 }

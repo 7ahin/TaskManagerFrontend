@@ -16,6 +16,7 @@ import {
   GlobeAltIcon,
   UserCircleIcon,
   CheckIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from 'react-i18next';
@@ -23,6 +24,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import LoginModal from './components/LoginModal';
 import './i18n';
+import { apiDelete, apiGet, apiPost, apiPut } from "./utils/apiClient.js";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 
@@ -36,9 +38,6 @@ const LANGUAGES = [
   { code: 'ms', label: 'Bahasa Melayu', countryCode: 'MY' },
 ];
 
-const API_BASE_URL = "https://localhost:7076/api/TodoItems";
-const API_AUTH_URL = "https://localhost:7076/api/Auth/google";
-
 function App() {
   const { t, i18n } = useTranslation();
   const [todos, setTodos] = useState([]);
@@ -51,7 +50,20 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeView, setActiveView] = useState(() => {
-    return localStorage.getItem("taskSenpai.activeView") || "landing";
+    let rememberLastView = true;
+    let startView = "dashboard";
+    try {
+      const rawSettings = localStorage.getItem("taskSenpai.settings");
+      const parsed = rawSettings ? JSON.parse(rawSettings) : null;
+      if (parsed && typeof parsed === "object") {
+        if (typeof parsed.rememberLastView === "boolean") rememberLastView = parsed.rememberLastView;
+        if (typeof parsed.startView === "string" && parsed.startView) startView = parsed.startView;
+      }
+    } catch {
+      void 0;
+    }
+    if (!rememberLastView) return startView;
+    return localStorage.getItem("taskSenpai.activeView") || startView;
   });
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("taskSenpai.user");
@@ -59,17 +71,9 @@ function App() {
   });
   const isLoggedIn = !!user;
   const lastDeletedTodoRef = useRef(null);
-
-  // Helper to generate headers with User ID
-  const generateAuthHeaders = useCallback(() => {
-    const headers = {
-      "Content-Type": "application/json",
-    };
-    if (user && user.id) {
-      headers["X-User-Id"] = user.id.toString();
-    }
-    return headers;
-  }, [user]);
+  const todosRef = useRef([]);
+  const notificationStateRef = useRef({ overdueIds: new Set(), dueTodayIds: new Set() });
+  const notificationAudioCtxRef = useRef(null);
 
   const todoMetaStorageKey = useMemo(() => {
     if (!user?.id) return null;
@@ -130,7 +134,17 @@ function App() {
       return (items || []).map((todo) => {
         const m = meta[String(todo?.id)] || null;
         const merged = m ? { ...m, ...todo } : todo;
-        return normalizeTodo(merged);
+        const backendCreated =
+          merged?.createdAt ??
+          merged?.CreatedAt ??
+          merged?.created_at ??
+          merged?.createdDate ??
+          merged?.created_on ??
+          merged?.CreatedOn ??
+          null;
+        const metaCreated = m?.createdAt ?? m?.created_at ?? m?.CreatedAt ?? null;
+        const createdAt = backendCreated ?? metaCreated ?? null;
+        return normalizeTodo(createdAt ? { ...merged, createdAt } : merged);
       });
     },
     [normalizeTodo, readTodoMeta]
@@ -144,25 +158,69 @@ function App() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [showLanguagePopup, setShowLanguagePopup] = useState(false);
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
+  const [showNotificationsPopup, setShowNotificationsPopup] = useState(false);
+  const languageContainerRef = useRef(null);
+  const settingsContainerRef = useRef(null);
+  const notificationsContainerRef = useRef(null);
+  const profileContainerRef = useRef(null);
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem("taskSenpai.language") || "en";
   });
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem("taskSenpai.settings");
-    return saved ? JSON.parse(saved) : {
-      theme: 'dark',
+    const defaults = {
+      theme: "dark",
       sound: true,
-      notifications: true,
-      compactMode: false
+      rememberLastView: true,
+      startView: "dashboard",
+      notifications: {
+        enabled: true,
+        inApp: true,
+        desktop: false,
+        dueToday: true,
+        overdue: true,
+      },
     };
+    if (!saved) return defaults;
+    try {
+      const parsed = JSON.parse(saved);
+      if (!parsed || typeof parsed !== "object") return defaults;
+      const next = { ...defaults, ...parsed };
+      const savedNotifications = parsed.notifications;
+      if (typeof savedNotifications === "boolean") {
+        next.notifications = { ...defaults.notifications, enabled: savedNotifications };
+      } else if (savedNotifications && typeof savedNotifications === "object") {
+        next.notifications = { ...defaults.notifications, ...savedNotifications };
+      } else {
+        next.notifications = defaults.notifications;
+      }
+      return next;
+    } catch {
+      return defaults;
+    }
   });
+
+  const notificationLogStorageKey = useMemo(() => {
+    const id = user?.id != null ? String(user.id) : "guest";
+    return `taskSenpai.notifications.log.${id}`;
+  }, [user?.id]);
+
+  const notificationUnreadStorageKey = useMemo(() => {
+    const id = user?.id != null ? String(user.id) : "guest";
+    return `taskSenpai.notifications.unread.${id}`;
+  }, [user?.id]);
+
+  const [notificationLog, setNotificationLog] = useState([]);
+  const [notificationUnreadCount, setNotificationUnreadCount] = useState(0);
 
   const handleLanguageChange = (langCode) => {
     i18n.changeLanguage(langCode);
     setLanguage(langCode);
     localStorage.setItem("taskSenpai.language", langCode);
     setShowLanguagePopup(false);
-    toast.success(`Language changed to ${LANGUAGES.find(l => l.code === langCode).label}`);
+    const languageLabel =
+      t(`app.languages.${langCode}`, LANGUAGES.find((l) => l.code === langCode)?.label || langCode);
+    toast.success(t("app.languages.changed", { language: languageLabel }));
   };
 
   const handleSettingChange = (key, value) => {
@@ -175,7 +233,156 @@ function App() {
       // Future implementation for theme switching
       document.body.classList.toggle('light-mode', value === 'light');
     }
+    if (key === "rememberLastView") {
+      if (value) {
+        localStorage.setItem("taskSenpai.activeView", activeView);
+      } else {
+        localStorage.removeItem("taskSenpai.activeView");
+        setActiveView(newSettings.startView || "dashboard");
+      }
+    }
+    if (key === "startView" && newSettings.rememberLastView === false) {
+      setActiveView(value || "dashboard");
+    }
   };
+
+  const updateNotificationSettings = (patch) => {
+    const current = settings?.notifications || {};
+    const nextNotifications = { ...current, ...(patch || {}) };
+    const nextSettings = { ...settings, notifications: nextNotifications };
+    setSettings(nextSettings);
+    localStorage.setItem("taskSenpai.settings", JSON.stringify(nextSettings));
+
+    const shouldRequest =
+      (patch?.desktop === true || patch?.enabled === true) && nextNotifications.desktop === true;
+    if (shouldRequest && typeof Notification !== "undefined" && Notification?.permission === "default") {
+      Notification.requestPermission().catch(() => undefined);
+    }
+  };
+
+  useEffect(() => {
+    const anyOpen = showLanguagePopup || showSettingsPopup || showNotificationsPopup || showProfilePopup;
+    if (!anyOpen) return;
+
+    const onPointerDown = (e) => {
+      const target = e.target;
+      if (languageContainerRef.current && languageContainerRef.current.contains(target)) return;
+      if (settingsContainerRef.current && settingsContainerRef.current.contains(target)) return;
+      if (notificationsContainerRef.current && notificationsContainerRef.current.contains(target)) return;
+      if (profileContainerRef.current && profileContainerRef.current.contains(target)) return;
+
+      setShowLanguagePopup(false);
+      setShowSettingsPopup(false);
+      setShowNotificationsPopup(false);
+      setShowProfilePopup(false);
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setShowLanguagePopup(false);
+        setShowSettingsPopup(false);
+        setShowNotificationsPopup(false);
+        setShowProfilePopup(false);
+      }
+    };
+
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [showLanguagePopup, showSettingsPopup, showNotificationsPopup, showProfilePopup]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(notificationLogStorageKey);
+      const parsed = raw ? JSON.parse(raw) : [];
+      setNotificationLog(Array.isArray(parsed) ? parsed : []);
+    } catch {
+      setNotificationLog([]);
+    }
+  }, [notificationLogStorageKey]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(notificationUnreadStorageKey);
+    const num = raw ? Number(raw) : 0;
+    setNotificationUnreadCount(Number.isFinite(num) && num > 0 ? num : 0);
+  }, [notificationUnreadStorageKey]);
+
+  const appendNotificationLog = useCallback(
+    (entry) => {
+      if (!entry) return;
+      if (entry.id) {
+        try {
+          const raw = localStorage.getItem(notificationLogStorageKey);
+          const parsed = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(parsed) && parsed.some((e) => e?.id === entry.id)) return;
+        } catch {
+          void 0;
+        }
+      }
+      setNotificationLog((prev) => {
+        const next = [entry, ...(prev || [])].slice(0, 50);
+        localStorage.setItem(notificationLogStorageKey, JSON.stringify(next));
+        return next;
+      });
+
+      setNotificationUnreadCount((prev) => {
+        const next = Math.min((prev || 0) + 1, 99);
+        localStorage.setItem(notificationUnreadStorageKey, String(next));
+        return next;
+      });
+    },
+    [notificationLogStorageKey, notificationUnreadStorageKey]
+  );
+
+  const clearNotificationLog = useCallback(() => {
+    setNotificationLog([]);
+    localStorage.setItem(notificationLogStorageKey, JSON.stringify([]));
+    setNotificationUnreadCount(0);
+    localStorage.setItem(notificationUnreadStorageKey, "0");
+  }, [notificationLogStorageKey, notificationUnreadStorageKey]);
+
+  const playNotificationSound = useCallback(() => {
+    if (!settings?.sound) return;
+    if (typeof window === "undefined") return;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+
+    let ctx = notificationAudioCtxRef.current;
+    if (!ctx) {
+      ctx = new Ctx();
+      notificationAudioCtxRef.current = ctx;
+    }
+
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => undefined);
+    }
+
+    const now = ctx.currentTime;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+    gain.connect(ctx.destination);
+
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.setValueAtTime(660, now + 0.1);
+    osc.connect(gain);
+    osc.start(now);
+    osc.stop(now + 0.23);
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gain.disconnect();
+      } catch (err) {
+        void err;
+      }
+    };
+  }, [settings?.sound]);
 
   const handleLoginSuccess = async (credentialResponse) => {
     try {
@@ -185,31 +392,7 @@ function App() {
       }
 
       const decoded = jwtDecode(googleIdToken);
-
-      const authResponse = await fetch(API_AUTH_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(googleIdToken),
-      });
-
-      const authText = await authResponse.text();
-      let authPayload = null;
-      try {
-        authPayload = authText ? JSON.parse(authText) : null;
-      } catch {
-        authPayload = null;
-      }
-
-      if (!authResponse.ok) {
-        const message =
-          authPayload?.message ||
-          authPayload?.error ||
-          authText ||
-          "Login failed";
-        throw new Error(message);
-      }
+      const authPayload = await apiPost("/Auth/google", googleIdToken);
 
       const backendUserId = authPayload?.userId ?? authPayload?.id ?? authPayload?.user?.id;
       if (!backendUserId) {
@@ -222,9 +405,13 @@ function App() {
       setShowLoginModal(false);
       setShowProfilePopup(false);
       
-      // Navigate to dashboard if currently on landing
       if (activeView === "landing") {
-        setActiveView("dashboard");
+        if (settings.rememberLastView) {
+          const savedView = localStorage.getItem("taskSenpai.activeView");
+          setActiveView(savedView || settings.startView || "dashboard");
+        } else {
+          setActiveView(settings.startView || "dashboard");
+        }
       }
       
       toast.success(t('app.profile.login_success', 'Logged in successfully'));
@@ -258,15 +445,8 @@ function App() {
     try {
       setLoading(true);
       setError("");
-      
-      const response = await fetch(API_BASE_URL, {
-        headers: generateAuthHeaders()
-      });
 
-      if (!response.ok) {
-        throw new Error("Failed to load todos");
-      }
-      const data = await response.json();
+      const data = await apiGet("/TodoItems", { userId: user.id });
       setTodos(mergeTodoMeta(data));
     } catch (err) {
       setError(err.message || "Unknown error");
@@ -274,7 +454,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [generateAuthHeaders, mergeTodoMeta, t, user]);
+  }, [mergeTodoMeta, t, user]);
 
   async function handleAddTodo(event) {
     event.preventDefault();
@@ -292,40 +472,34 @@ function App() {
 
     try {
       setError("");
-      const response = await fetch(API_BASE_URL, {
-        method: "POST",
-        headers: generateAuthHeaders(),
-        body: JSON.stringify({
+      const createdTodo = await apiPost(
+        "/TodoItems",
+        {
           name: newTodoName,
           isComplete: false,
           priority: newPriority,
           dueDate: newDueDate || null,
           startDate: newStartDate || null,
           status: "Working on it",
-        }),
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-            throw new Error("Unauthorized: Please sign in");
-        }
-        throw new Error("Failed to create todo");
-      }
-
-      const responseText = await response.text();
-      let createdTodo = null;
-      try {
-        createdTodo = responseText ? JSON.parse(responseText) : null;
-      } catch {
-        createdTodo = null;
-      }
+        },
+        { userId: user.id }
+      );
 
       const createdId = createdTodo?.id ?? createdTodo?.Id ?? null;
+      const createdAt =
+        createdTodo?.createdAt ??
+        createdTodo?.CreatedAt ??
+        createdTodo?.created_at ??
+        createdTodo?.createdDate ??
+        createdTodo?.created_on ??
+        createdTodo?.CreatedOn ??
+        new Date().toISOString();
       const metaPatch = {
         priority: newPriority,
         dueDate: newDueDate || null,
         startDate: newStartDate || null,
         status: "Working on it",
+        createdAt,
       };
       if (createdId != null) {
         upsertTodoMeta(createdId, metaPatch);
@@ -349,15 +523,7 @@ function App() {
   async function handleUpdateTodo(updatedTodo) {
     try {
       setError("");
-      const response = await fetch(`${API_BASE_URL}/${updatedTodo.id}`, {
-        method: "PUT",
-        headers: generateAuthHeaders(),
-        body: JSON.stringify(updatedTodo),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update todo");
-      }
+      await apiPut(`/TodoItems/${updatedTodo.id}`, updatedTodo, { userId: user?.id });
 
       if (updatedTodo?.id != null) {
         const patch = {};
@@ -396,14 +562,7 @@ function App() {
   async function handleDelete(todo) {
     try {
       setError("");
-      const response = await fetch(`${API_BASE_URL}/${todo.id}`, {
-        method: "DELETE",
-        headers: generateAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete todo");
-      }
+      await apiDelete(`/TodoItems/${todo.id}`, { userId: user?.id });
 
       removeTodoMeta(todo.id);
       setTodos((prev) => (prev || []).filter((t) => t.id !== todo.id));
@@ -425,27 +584,23 @@ function App() {
                   startDate: snapshot.startDate || null,
                   status: snapshot.status || (snapshot.isComplete ? "Done" : "Working on it"),
                 };
-                const resp = await fetch(API_BASE_URL, {
-                  method: "POST",
-                  headers: generateAuthHeaders(),
-                  body: JSON.stringify(payload),
-                });
-                if (!resp.ok) throw new Error("Failed to undo delete");
-
-                const responseText = await resp.text();
-                let createdTodo = null;
-                try {
-                  createdTodo = responseText ? JSON.parse(responseText) : null;
-                } catch {
-                  createdTodo = null;
-                }
+                const createdTodo = await apiPost("/TodoItems", payload, { userId: user?.id });
 
                 const createdId = createdTodo?.id ?? createdTodo?.Id ?? null;
+                const createdAt =
+                  createdTodo?.createdAt ??
+                  createdTodo?.CreatedAt ??
+                  createdTodo?.created_at ??
+                  createdTodo?.createdDate ??
+                  createdTodo?.created_on ??
+                  createdTodo?.CreatedOn ??
+                  new Date().toISOString();
                 const metaPatch = {
                   priority: payload.priority,
                   dueDate: payload.dueDate,
                   startDate: payload.startDate,
                   status: payload.status,
+                  createdAt,
                 };
 
                 if (createdId != null) {
@@ -514,8 +669,12 @@ function App() {
   }, [todos, search, boardQuickFilter]);
 
   useEffect(() => {
-    localStorage.setItem("taskSenpai.activeView", activeView);
-  }, [activeView]);
+    if (settings.rememberLastView) {
+      localStorage.setItem("taskSenpai.activeView", activeView);
+    } else {
+      localStorage.removeItem("taskSenpai.activeView");
+    }
+  }, [activeView, settings.rememberLastView]);
 
   useEffect(() => {
     // Only load todos if we have a user
@@ -533,12 +692,150 @@ function App() {
     }
   }, [loadTodos, settings.theme, user]); // Re-run when user changes
 
+  const runNotificationsCheck = useCallback(() => {
+    const notifications = settings?.notifications || {};
+    if (!notifications.enabled) return;
+    if (!user?.id) return;
+
+    const msDay = 1000 * 60 * 60 * 24;
+    const dayStartMs = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+
+    const notify = (entry) => {
+      playNotificationSound();
+      appendNotificationLog(entry);
+      if (notifications.inApp) toast(entry.message);
+      if (!notifications.desktop) return;
+      if (typeof Notification === "undefined") return;
+      if (Notification.permission !== "granted") return;
+      try {
+        new Notification("Task Senpai", { body: entry.message });
+      } catch (err) {
+        void err;
+      }
+    };
+
+    const items = todosRef.current || [];
+    const now = new Date();
+    const todayStart = dayStartMs(now);
+    const tomorrowStart = todayStart + msDay;
+
+    const pendingWithDue = items
+      .filter((task) => task && !task.isComplete && task.dueDate)
+      .map((task) => {
+        const raw = task.dueDate;
+        let due;
+        if (typeof raw === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+          const [yy, mm, dd] = raw.split("-").map((p) => Number(p));
+          due = new Date(yy, mm - 1, dd);
+        } else {
+          due = new Date(raw);
+        }
+        if (Number.isNaN(due.getTime())) return null;
+        return { task, dueStart: dayStartMs(due) };
+      })
+      .filter(Boolean);
+
+    const idKeyOf = (task) => {
+      const raw = task?.id ?? task?.Id ?? task?.todoId ?? task?.todo_id ?? null;
+      if (raw == null) return null;
+      return String(raw);
+    };
+
+    const overdue = pendingWithDue
+      .filter((x) => x.dueStart < todayStart)
+      .map((x) => ({ task: x.task, dueStart: x.dueStart, idKey: idKeyOf(x.task) }))
+      .filter((x) => !!x.idKey);
+
+    const dueToday = pendingWithDue
+      .filter((x) => x.dueStart >= todayStart && x.dueStart < tomorrowStart)
+      .map((x) => ({ task: x.task, dueStart: x.dueStart, idKey: idKeyOf(x.task) }))
+      .filter((x) => !!x.idKey);
+
+    const prevOverdueIds = new Set(Array.from(notificationStateRef.current.overdueIds || []).map((v) => String(v)));
+    const prevDueTodayIds = new Set(Array.from(notificationStateRef.current.dueTodayIds || []).map((v) => String(v)));
+
+    const newOverdue = overdue.filter((x) => !prevOverdueIds.has(x.idKey));
+    const newDueToday = dueToday.filter((x) => !prevDueTodayIds.has(x.idKey));
+
+    const tasksWord = t("dashboard.misc.tasks", "tasks");
+    if (notifications.overdue && newOverdue.length > 0) {
+      if (newOverdue.length <= 3) {
+        for (const x of newOverdue) {
+          notify({
+            id: `overdue:${x.idKey}:${x.dueStart}`,
+            ts: Date.now(),
+            type: "overdue",
+            message: `${x.task?.name || t("board.task.untitled", "Untitled")} • ${t("dashboard.due.overdue", "Overdue")}`,
+          });
+        }
+      } else {
+        const ids = newOverdue.map((x) => x.idKey).sort().join(",");
+        notify({
+          id: `overdue:batch:${todayStart}:${ids}`,
+          ts: Date.now(),
+          type: "overdue",
+          message: `${newOverdue.length} ${tasksWord} ${t("dashboard.due.overdue", "Overdue")}`,
+        });
+      }
+    }
+    if (notifications.dueToday && newDueToday.length > 0) {
+      if (newDueToday.length <= 3) {
+        for (const x of newDueToday) {
+          notify({
+            id: `due_today:${x.idKey}:${todayStart}`,
+            ts: Date.now(),
+            type: "due_today",
+            message: `${x.task?.name || t("board.task.untitled", "Untitled")} • ${t("dashboard.due.today", "Today")}`,
+          });
+        }
+      } else {
+        const ids = newDueToday.map((x) => x.idKey).sort().join(",");
+        notify({
+          id: `due_today:batch:${todayStart}:${ids}`,
+          ts: Date.now(),
+          type: "due_today",
+          message: `${newDueToday.length} ${tasksWord} ${t("dashboard.due.today", "Today")}`,
+        });
+      }
+    }
+
+    notificationStateRef.current = {
+      overdueIds: new Set(overdue.map((x) => x.idKey)),
+      dueTodayIds: new Set(dueToday.map((x) => x.idKey)),
+    };
+  }, [appendNotificationLog, playNotificationSound, settings?.notifications, t, user?.id]);
+
+  useEffect(() => {
+    todosRef.current = todos || [];
+    runNotificationsCheck();
+  }, [runNotificationsCheck, todos]);
+
+  useEffect(() => {
+    const notifications = settings?.notifications || {};
+    if (!notifications.enabled) {
+      notificationStateRef.current = { overdueIds: new Set(), dueTodayIds: new Set() };
+      return;
+    }
+    if (!user?.id) return;
+
+    if (notifications.desktop && typeof Notification !== "undefined" && Notification?.permission === "default") {
+      Notification.requestPermission().catch(() => undefined);
+    }
+    runNotificationsCheck();
+    const intervalId = window.setInterval(runNotificationsCheck, 5 * 60 * 1000);
+    return () => window.clearInterval(intervalId);
+  }, [runNotificationsCheck, settings?.notifications, user?.id]);
+
   // Force landing view if not authenticated
   useEffect(() => {
     if (!user && activeView !== "landing") {
       setActiveView("landing");
     }
   }, [user, activeView]);
+
+  useEffect(() => {
+    document.body.classList.toggle("landing-active", activeView === "landing");
+  }, [activeView]);
 
   // Handle scroll effect for header
   useEffect(() => {
@@ -566,7 +863,16 @@ function App() {
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-    <div className="app-root">
+    <div className={`app-root ${activeView === "landing" ? "is-landing" : ""}`}>
+      <div className="landing-bg app-global-bg" aria-hidden="true">
+        <span className="landing-blob blob-1" />
+        <span className="landing-blob blob-2" />
+        <span className="landing-blob blob-3" />
+        <span className="landing-sparkle sparkle-1" />
+        <span className="landing-sparkle sparkle-2" />
+        <span className="landing-sparkle sparkle-3" />
+      </div>
+      <div className="app-content">
       {showLoginModal && (
         <LoginModal 
           onClose={() => {
@@ -595,7 +901,7 @@ function App() {
             style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
           >
             <div className="logo-group">
-              <img src={logoImg} alt="Task Senpai logo" className="logo-nav-img" />
+              <img src={logoImg} alt={t("app.header.logoAlt")} className="logo-nav-img" />
             </div>
           </button>
         </div>
@@ -638,13 +944,14 @@ function App() {
         </nav>
 
         <div className="app-header-right">
-          <div className="language-container" style={{ position: 'relative' }}>
+          <div className="language-container" style={{ position: 'relative' }} ref={languageContainerRef}>
             <button 
               className={`icon-button ${showLanguagePopup ? 'active' : ''}`}
               title={t('app.header.language')}
               onClick={() => {
                 setShowLanguagePopup(!showLanguagePopup);
                 setShowSettingsPopup(false);
+                setShowNotificationsPopup(false);
                 setShowProfilePopup(false);
               }}
             >
@@ -660,19 +967,20 @@ function App() {
                     onClick={() => handleLanguageChange(lang.code)}
                   >
                     <ReactCountryFlag countryCode={lang.countryCode} svg style={{ width: '1.5em', height: '1.5em' }} />
-                    <span className="lang-label">{lang.label}</span>
+                    <span className="lang-label">{t(`app.languages.${lang.code}`, lang.label)}</span>
                     {language === lang.code && <CheckIcon className="icon-xs" style={{ marginLeft: 'auto', width: '16px', height: '16px' }} />}
                   </button>
                 ))}
               </div>
             )}
           </div>
-          <div className="settings-container" style={{ position: 'relative' }}>
+          <div className="settings-container" style={{ position: 'relative' }} ref={settingsContainerRef}>
             <button 
               className={`icon-button ${showSettingsPopup ? 'active' : ''}`}
               title={t('app.header.settings')}
               onClick={() => {
                 setShowSettingsPopup(!showSettingsPopup);
+                setShowNotificationsPopup(false);
                 setShowLanguagePopup(false);
                 setShowProfilePopup(false);
               }}
@@ -712,41 +1020,208 @@ function App() {
               </div>
 
               <div className="setting-item">
-                <span>{t('app.settings.notifications')}</span>
-                <button 
-                  className={`toggle-switch ${settings.notifications ? 'active' : ''}`}
-                  onClick={() => handleSettingChange('notifications', !settings.notifications)}
+                <span>{t("app.settings.rememberLastView")}</span>
+                <button
+                  className={`toggle-switch ${settings.rememberLastView ? "active" : ""}`}
+                  onClick={() => handleSettingChange("rememberLastView", !settings.rememberLastView)}
                 >
                   <div className="toggle-knob"></div>
                 </button>
               </div>
 
               <div className="setting-item">
-                <span>{t('app.settings.compact_mode')}</span>
-                <button 
-                  className={`toggle-switch ${settings.compactMode ? 'active' : ''}`}
-                  onClick={() => handleSettingChange('compactMode', !settings.compactMode)}
-                >
-                  <div className="toggle-knob"></div>
-                </button>
+                <span>
+                  {settings.rememberLastView
+                    ? t("app.settings.fallbackPage")
+                    : t("app.settings.startPage")}
+                </span>
+                <div className="toggle-group">
+                  <button
+                    className={`toggle-btn ${settings.startView === "dashboard" ? "active" : ""}`}
+                    onClick={() => handleSettingChange("startView", "dashboard")}
+                  >
+                    {t("app.nav.dashboard")}
+                  </button>
+                  <button
+                    className={`toggle-btn ${settings.startView === "board" ? "active" : ""}`}
+                    onClick={() => handleSettingChange("startView", "board")}
+                  >
+                    {t("app.nav.board")}
+                  </button>
+                  <button
+                    className={`toggle-btn ${settings.startView === "timeline" ? "active" : ""}`}
+                    onClick={() => handleSettingChange("startView", "timeline")}
+                  >
+                    {t("app.nav.timeline")}
+                  </button>
+                  <button
+                    className={`toggle-btn ${settings.startView === "calendar" ? "active" : ""}`}
+                    onClick={() => handleSettingChange("startView", "calendar")}
+                  >
+                    {t("app.nav.calendar")}
+                  </button>
+                  <button
+                    className={`toggle-btn ${settings.startView === "goals" ? "active" : ""}`}
+                    onClick={() => handleSettingChange("startView", "goals")}
+                  >
+                    {t("app.nav.goals")}
+                  </button>
+                </div>
               </div>
             </div>
           )}
           </div>
-          <div className="profile-container" style={{ position: 'relative' }}>
+          <div className="notifications-container" style={{ position: 'relative' }} ref={notificationsContainerRef}>
+            <button
+              className={`icon-button ${showNotificationsPopup ? 'active' : ''}`}
+              title={t('app.settings.notifications')}
+              onClick={() => {
+                setShowNotificationsPopup(!showNotificationsPopup);
+                setShowSettingsPopup(false);
+                setShowLanguagePopup(false);
+                setShowProfilePopup(false);
+              }}
+            >
+              <BellIcon className="icon-svg" />
+              {notificationUnreadCount > 0 && (
+                <span className="notification-badge">
+                  {notificationUnreadCount > 99 ? "99+" : notificationUnreadCount}
+                </span>
+              )}
+            </button>
+            {showNotificationsPopup && (
+              <div className="settings-popup notifications-popup">
+                <div className="popup-title">{t("app.settings.notifications")}</div>
+
+                <div className="setting-item">
+                  <span>{t("app.notifications.enable")}</span>
+                  <button
+                    className={`toggle-switch ${settings.notifications?.enabled ? "active" : ""}`}
+                    onClick={() =>
+                      updateNotificationSettings({ enabled: !settings.notifications?.enabled })
+                    }
+                  >
+                    <div className="toggle-knob"></div>
+                  </button>
+                </div>
+
+                <div className="setting-item">
+                  <span>{t("app.notifications.inApp")}</span>
+                  <button
+                    className={`toggle-switch ${settings.notifications?.inApp ? "active" : ""}`}
+                    disabled={!settings.notifications?.enabled}
+                    onClick={() =>
+                      updateNotificationSettings({ inApp: !settings.notifications?.inApp })
+                    }
+                  >
+                    <div className="toggle-knob"></div>
+                  </button>
+                </div>
+
+                <div className="setting-item">
+                  <span>{t("app.notifications.desktop")}</span>
+                  <button
+                    className={`toggle-switch ${settings.notifications?.desktop ? "active" : ""}`}
+                    disabled={!settings.notifications?.enabled}
+                    onClick={() =>
+                      updateNotificationSettings({ desktop: !settings.notifications?.desktop })
+                    }
+                  >
+                    <div className="toggle-knob"></div>
+                  </button>
+                </div>
+
+                <div className="setting-item">
+                  <span>{t("app.notifications.dueToday")}</span>
+                  <button
+                    className={`toggle-switch ${settings.notifications?.dueToday ? "active" : ""}`}
+                    disabled={!settings.notifications?.enabled}
+                    onClick={() =>
+                      updateNotificationSettings({ dueToday: !settings.notifications?.dueToday })
+                    }
+                  >
+                    <div className="toggle-knob"></div>
+                  </button>
+                </div>
+
+                <div className="setting-item">
+                  <span>{t("app.notifications.overdue")}</span>
+                  <button
+                    className={`toggle-switch ${settings.notifications?.overdue ? "active" : ""}`}
+                    disabled={!settings.notifications?.enabled}
+                    onClick={() =>
+                      updateNotificationSettings({ overdue: !settings.notifications?.overdue })
+                    }
+                  >
+                    <div className="toggle-knob"></div>
+                  </button>
+                </div>
+
+                <div className="notifications-log">
+                  <div className="notifications-log-header">
+                    <span className="notifications-log-title">{t("app.notifications.log")}</span>
+                    <button
+                      type="button"
+                      className="notifications-log-clear"
+                      disabled={notificationLog.length === 0}
+                      onClick={clearNotificationLog}
+                    >
+                      {t("app.notifications.clear")}
+                    </button>
+                  </div>
+
+                  <div className="notifications-log-list">
+                    {notificationLog.length === 0 ? (
+                      <div className="notifications-log-empty">
+                        {t("app.notifications.empty")}
+                      </div>
+                    ) : (
+                      notificationLog.map((entry) => (
+                        <div
+                          key={entry?.id || `${entry?.ts}-${entry?.message}`}
+                          className="notifications-log-item"
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => {
+                            clearNotificationLog();
+                            setShowNotificationsPopup(false);
+                            handleNavigation("board");
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              clearNotificationLog();
+                              setShowNotificationsPopup(false);
+                              handleNavigation("board");
+                            }
+                          }}
+                        >
+                          <div className="notifications-log-message">{entry?.message}</div>
+                          <div className="notifications-log-time">
+                            {entry?.ts ? new Date(entry.ts).toLocaleString(i18n.language) : ""}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="profile-container" style={{ position: 'relative' }} ref={profileContainerRef}>
             <button
               className={`icon-button ${showProfilePopup ? 'active' : ''}`}
               onClick={() => {
                 setShowProfilePopup(!showProfilePopup);
                 setShowLanguagePopup(false);
                 setShowSettingsPopup(false);
+                setShowNotificationsPopup(false);
               }}
               title={t('app.header.profile')}
             >
               {isLoggedIn && user?.picture ? (
                 <img 
                   src={user.picture} 
-                  alt="Profile" 
+                  alt={t("app.header.profileAlt")}
                   className="profile-avatar" 
                   referrerPolicy="no-referrer"
                 />
@@ -765,12 +1240,6 @@ function App() {
                     : t('app.profile.desc_guest')}
                 </div>
                 <div className="profile-popup-actions">
-                  <button
-                    className="profile-popup-button"
-                    onClick={() => setShowProfilePopup(false)}
-                  >
-                    {t('app.profile.close')}
-                  </button>
                   <button
                     className={`profile-popup-button ${isLoggedIn ? 'danger' : 'primary'}`}
                     onClick={() => {
@@ -881,6 +1350,7 @@ function App() {
           )}
         </div>
       </main>
+      </div>
     </div>
     </GoogleOAuthProvider>
   );

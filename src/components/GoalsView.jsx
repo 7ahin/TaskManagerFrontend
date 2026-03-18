@@ -5,8 +5,7 @@ import toast from "react-hot-toast";
 import { normalizeDueDate } from "../utils/dateUtils";
 import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-
-const API_URL = "https://localhost:7076/api/Goals";
+import { apiDelete, apiGet, apiPost, apiPut } from "../utils/apiClient.js";
 
 const GOAL_TEMPLATES = [
   { key: "productiveWeek", titleKey: "goals.templates.productiveWeek.title", target: 20, type: "completed_all" },
@@ -291,6 +290,60 @@ function GoalDatePicker({ value, onChange, id, placeholder }) {
   );
 }
 
+function GoalsSortDropdown({ value, onChange, id }) {
+  const { t: translate } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const options = [
+    { key: "created_desc", label: translate("board.sort.createdDesc", "Created (newest)") },
+    { key: "created_asc", label: translate("board.sort.createdAsc", "Created (oldest)") },
+    { key: "due_asc", label: translate("goals.sort.dueAsc", "Due date (soonest)") },
+    { key: "due_desc", label: translate("goals.sort.dueDesc", "Due date (latest)") },
+    { key: "name_asc", label: translate("board.sort.nameAsc", "Name (A–Z)") },
+    { key: "name_desc", label: translate("board.sort.nameDesc", "Name (Z–A)") },
+  ];
+
+  const selected = options.find((o) => o.key === value) || options[0];
+
+  return (
+    <div className="goals-dropdown-container">
+      <button
+        type="button"
+        id={id}
+        className="goals-dropdown-btn"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        <span className="goals-dropdown-text">{selected.label}</span>
+        <ChevronDownIcon className={`goals-dropdown-chevron ${isOpen ? "open" : ""}`} />
+      </button>
+
+      {isOpen ? (
+        <>
+          <div className="goals-click-capture" onClick={() => setIsOpen(false)} aria-hidden="true" />
+          <div className="goals-dropdown-menu" role="listbox" aria-labelledby={id}>
+            {options.map((o) => (
+              <button
+                key={o.key}
+                type="button"
+                className={`goals-dropdown-item ${o.key === value ? "selected" : ""}`}
+                role="option"
+                aria-selected={o.key === value}
+                onClick={() => {
+                  onChange(o.key);
+                  setIsOpen(false);
+                }}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 function GoalsView({ todos, onGoBoard }) {
   const { t: translate, i18n } = useTranslation();
   const [goals, setGoals] = useState([]);
@@ -306,13 +359,12 @@ function GoalsView({ todos, onGoBoard }) {
   const [showAchieved, setShowAchieved] = useState(() => {
     return localStorage.getItem("taskSenpai.goals.showAchieved") === "true";
   });
+  const [goalSortMode, setGoalSortMode] = useState("created_desc");
 
   const loadGoals = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(API_URL);
-      if (!response.ok) throw new Error("Failed to load goals");
-      const data = await response.json();
+      const data = await apiGet("/Goals");
       setGoals(data);
     } catch (error) {
       console.error("Error loading goals:", error);
@@ -395,15 +447,7 @@ function GoalsView({ todos, onGoBoard }) {
 
     try {
       setAddSaving(true);
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newGoal),
-      });
-
-      if (!response.ok) throw new Error("Failed to create goal");
-      
-      const savedGoal = await response.json();
+      const savedGoal = await apiPost("/Goals", newGoal);
       setGoals((prev) => [savedGoal, ...prev]);
       
       setNewGoalTitle("");
@@ -421,11 +465,7 @@ function GoalsView({ todos, onGoBoard }) {
   const handleDeleteGoal = async (id) => {
     try {
       const toDelete = goals.find((g) => g.id === id) || null;
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete goal");
+      await apiDelete(`/Goals/${id}`);
 
       setGoals((prev) => prev.filter((g) => g.id !== id));
       if (toDelete) {
@@ -439,18 +479,14 @@ function GoalsView({ todos, onGoBoard }) {
                 const g = lastDeletedRef.current;
                 if (!g) return toast.dismiss(t.id);
                 try {
-                  const resp = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title: g.title, type: g.type, target: g.target, dueDate: g.dueDate || null }),
+                  const back = await apiPost("/Goals", {
+                    title: g.title,
+                    type: g.type,
+                    target: g.target,
+                    dueDate: g.dueDate || null,
                   });
-                  if (resp.ok) {
-                    const back = await resp.json();
-                    setGoals((prev) => [back, ...prev]);
-                    toast.success(translate("goals.toast.undoSuccessful"));
-                  } else {
-                    toast.error(translate("goals.toast.undoFailed"));
-                  }
+                  setGoals((prev) => [back, ...prev]);
+                  toast.success(translate("goals.toast.undoSuccessful"));
                 } catch {
                   toast.error(translate("goals.toast.undoFailed"));
                 } finally {
@@ -474,13 +510,7 @@ function GoalsView({ todos, onGoBoard }) {
   const handleSaveEdit = async (updated) => {
     try {
       setEditSaving(true);
-      const response = await fetch(`${API_URL}/${updated.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
-      });
-
-      if (!response.ok) throw new Error("Failed to update goal");
+      await apiPut(`/Goals/${updated.id}`, updated);
 
       setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
       setEditingGoal(null);
@@ -525,18 +555,74 @@ function GoalsView({ todos, onGoBoard }) {
 
     visible.sort((a, b) => {
       if (a.achieved !== b.achieved) return a.achieved ? 1 : -1;
-      const ad = a.dueStart;
-      const bd = b.dueStart;
-      if (ad != null && bd != null && ad !== bd) return ad - bd;
-      if (ad != null && bd == null) return -1;
-      if (ad == null && bd != null) return 1;
-      if (a.pct !== b.pct) return b.pct - a.pct;
-      return String(a.g?.title || "").localeCompare(String(b.g?.title || ""));
+
+      const titleCmpAsc = String(a.g?.title || "").localeCompare(String(b.g?.title || ""), i18n.language, {
+        sensitivity: "base",
+      });
+
+      const toMs = (value) => {
+        if (!value) return null;
+        if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          const [yy, mm, dd] = value.split("-").map((p) => Number(p));
+          const d = new Date(yy, mm - 1, dd);
+          const ms = d.getTime();
+          return Number.isFinite(ms) ? ms : null;
+        }
+        const d = new Date(value);
+        const ms = d.getTime();
+        return Number.isFinite(ms) ? ms : null;
+      };
+
+      const createdMsOf = (r) =>
+        toMs(
+          r?.g?.createdAt ??
+            r?.g?.CreatedAt ??
+            r?.g?.created_at ??
+            r?.g?.createdDate ??
+            r?.g?.created_on ??
+            r?.g?.CreatedOn ??
+            null
+        );
+
+      const idOrder = (r) => {
+        const v = r?.g?.id;
+        if (typeof v === "number" && Number.isFinite(v)) return v;
+        if (typeof v === "string" && v.trim() && !Number.isNaN(Number(v))) return Number(v);
+        return null;
+      };
+
+      if (goalSortMode === "name_asc") return titleCmpAsc;
+      if (goalSortMode === "name_desc") return -titleCmpAsc;
+
+      if (goalSortMode === "due_asc" || goalSortMode === "due_desc") {
+        const ad = a.dueStart;
+        const bd = b.dueStart;
+        if (ad == null && bd == null) return titleCmpAsc;
+        if (ad == null) return 1;
+        if (bd == null) return -1;
+        return goalSortMode === "due_desc" ? bd - ad : ad - bd;
+      }
+
+      if (goalSortMode === "created_desc" || goalSortMode === "created_asc") {
+        const am = createdMsOf(a);
+        const bm = createdMsOf(b);
+        if (am == null && bm == null) {
+          const ai = idOrder(a);
+          const bi = idOrder(b);
+          if (ai != null && bi != null) return goalSortMode === "created_desc" ? bi - ai : ai - bi;
+          return titleCmpAsc;
+        }
+        if (am == null) return 1;
+        if (bm == null) return -1;
+        return goalSortMode === "created_desc" ? bm - am : am - bm;
+      }
+
+      return titleCmpAsc;
     });
 
     const achievedCount = rows.filter((r) => r.achieved).length;
     return { rows: visible, achievedCount };
-  }, [goals, goalStats.completed, goalStats.completedHigh, showAchieved]);
+  }, [goals, goalSortMode, goalStats.completed, goalStats.completedHigh, i18n.language, showAchieved]);
 
   return (
     <section className="board-card">
@@ -642,12 +728,12 @@ function GoalsView({ todos, onGoBoard }) {
                     className="qty-btn"
                     aria-label={translate("goals.form.aria.decreaseTarget")}
                     disabled={Number(newGoalTarget || 1) <= 1}
-                    onClick={() =>
-                      setNewGoalTarget((v) => {
-                        const n = Math.max(1, Math.floor(Number(v || 1)) - 1);
-                        return String(n);
-                      })
-                    }
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter" && e.key !== " ") return;
+                      if (Number(newGoalTarget || 1) <= 1) return;
+                      e.preventDefault();
+                      setNewGoalTarget((v) => String(Math.max(1, Math.floor(Number(v || 1)) - 1)));
+                    }}
                     onPointerDown={(e) => {
                       if (Number(newGoalTarget || 1) <= 1) return;
                       e.currentTarget.setPointerCapture(e.pointerId);
@@ -689,12 +775,11 @@ function GoalsView({ todos, onGoBoard }) {
                     type="button"
                     className="qty-btn"
                     aria-label={translate("goals.form.aria.increaseTarget")}
-                    onClick={() =>
-                      setNewGoalTarget((v) => {
-                        const n = Math.max(1, Math.floor(Number(v || 0)) + 1);
-                        return String(n);
-                      })
-                    }
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter" && e.key !== " ") return;
+                      e.preventDefault();
+                      setNewGoalTarget((v) => String(Math.max(1, Math.floor(Number(v || 0)) + 1)));
+                    }}
                     onPointerDown={(e) => {
                       e.currentTarget.setPointerCapture(e.pointerId);
                       const step = () =>
@@ -740,15 +825,18 @@ function GoalsView({ todos, onGoBoard }) {
         <div className="goals-panel">
           <div className="goals-panel-header">
             <div className="goals-panel-title">{translate("goals.panels.yourGoals")}</div>
-            <button
-              type="button"
-              className={`goals-toggle ${showAchieved ? "active" : ""}`}
-              onClick={() => setShowAchieved((v) => !v)}
-              disabled={goalRows.achievedCount === 0}
-            >
-              {translate("goals.toggle.showAchieved")}{" "}
-              {goalRows.achievedCount > 0 ? `(${goalRows.achievedCount})` : ""}
-            </button>
+            <div className="goals-panel-actions">
+              <GoalsSortDropdown id="goals-sort" value={goalSortMode} onChange={setGoalSortMode} />
+              <button
+                type="button"
+                className={`goals-toggle ${showAchieved ? "active" : ""}`}
+                onClick={() => setShowAchieved((v) => !v)}
+                disabled={goalRows.achievedCount === 0}
+              >
+                {translate("goals.toggle.showAchieved")}{" "}
+                {goalRows.achievedCount > 0 ? `(${goalRows.achievedCount})` : ""}
+              </button>
+            </div>
           </div>
           {loading ? (
              <div className="empty-state">{translate("goals.loading")}</div>

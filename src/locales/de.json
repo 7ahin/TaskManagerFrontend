@@ -10,7 +10,9 @@
     "header": {
       "profile": "Profil",
       "settings": "Einstellungen",
-      "language": "Sprache"
+      "language": "Sprache",
+      "logoAlt": "Task Senpai Logo",
+      "profileAlt": "Profil"
     },
     "profile": {
       "title_guest": "Willkommen bei Task Senpai",
@@ -34,7 +36,8 @@
       "es": "Spanisch",
       "fr": "Französisch",
       "de": "Deutsch",
-      "ms": "Malaiisch"
+      "ms": "Malaiisch",
+      "changed": "Sprache geändert zu {{language}}"
     },
     "settings": {
       "title": "Einstellungen",
@@ -43,7 +46,178 @@
       "theme_light": "Hell",
       "sound": "Soundeffekte",
       "notifications": "Benachrichtigungen",
-      "compact_mode": "Kompaktmodus"
+      "compact_mode": "Kompaktmodus",
+      "rememberLastView": "Weiter machen, wo ich aufgehört habe",
+      "startPage": "Startseite",
+      "fallbackPage": "Ersatzseite"
+    },
+    "notifications": {
+      "enable": "Aktivieren",
+      "inApp": "In-App-Toasts",
+      "desktop": "Desktop-Benachrichtigungen",
+      "dueToday": "Heute-fällig Hinweise",
+      "overdue": "Überfällig Hinweise",
+      "log": "Protokoll",
+      "clear": "Leeren",
+      "empty": "Noch keine Benachrichtigungen"
+    }
+  },
+  "landing": {
+    "kicker": {
+      "focus": "集中",
+      "plan": "計画",
+      "achieve": "達成"
+    },
+    "hero": {
+      "title": "Task Senpai",
+      "highlight": "Meistere deinen Workflow",
+      "jpTagline": "先輩モード • 今日も一歩ずつ",
+      "subtitle": "Organisiere, priorisiere und verfolge deine Arbeit mit Leichtigkeit. Das ultimative Tool für persönliche und berufliche Produktivität."
+    },
+    "capabilities": {
+      "kanban": "Kanban-Board",
+      "timeline": "Zeitplan",
+      "calendar": "Kalender",
+      "goals": "Ziele",
+      "assistant": "Assistent-Bot",
+      "music": "Fokus-Musik"
+    },
+    "actions": {
+      "startFree": "Kostenlos starten",
+      "viewDemo": "Demo ansehen"
+    },
+    "socialProof": {
+      "label": "Entworfen & gebaut von",
+      "team": "Task Senpai Team"
+    },
+    "preview": {
+      "brand": "TaskSenpai"
+    },
+    "previewTabs": {
+      "dashboard": {
+        "label": "Dashboard",
+        "title": "Starte den Tag auf einen Blick",
+        "desc": "Sieh, was fällig ist, was überfällig ist und was als Nächstes zählt."
+      },
+      "board": {
+        "label": "Board",
+        "title": "Ziehen, ablegen, erledigt",
+        "desc": "Verschiebe Aufgaben zwischen Status mit einem flüssigen Kanban-Workflow."
+      },
+      "timeline": {
+        "label": "Zeitplan",
+        "title": "Plane deine Woche visuell",
+        "desc": "Verteile Aufgaben über Daten, um Crunch-Time zu vermeiden."
+      },
+      "calendar": {
+        "label": "Kalender",
+        "title": "Daten, die wirklich sitzen",
+        "desc": "Start-/Fälligkeitsdaten schnell wählen und den Plan sauber halten."
+      },
+      "goals": {
+        "label": "Ziele",
+        "title": "Mach aus Zielen Fortschritt",
+        "desc": "Verfolge Streaks und Meilensteine mit freundlichen Nudges."
+      }
+    },
+    "featuresSection": {
+      "title": "Alles, was du brauchst, um schneller zu liefern",
+      "subtitle": "Von schneller Erfassung bis Tagesplanung – Task Senpai hält es spaßig und fokussiert."
+    },
+    "features": {
+      "smartFlow": {
+        "title": "Smarter Flow",
+        "desc": "Erfasse Aufgaben schnell und verfeinere mit Priorität, Start- und Fälligkeitsdatum."
+      },
+      "dragDrop": {
+        "title": "Drag & Drop Board",
+        "desc": "Ziehe Karten zwischen Spalten und aktualisiere den Status sofort."
+      },
+      "calendarClarity": {
+        "title": "Kalender-Klarheit",
+        "desc": "Plane nach echten Deadlines und halte deine Woche im Gleichgewicht."
+      },
+      "timelinePlanning": {
+        "title": "Zeitplan-Planung",
+        "desc": "Visualisiere Arbeit über Zeit und erkenne Überlast früh."
+      },
+      "assistantBot": {
+        "title": "Assistent-Bot",
+        "desc": "Schnelle Aktionen und freundliche Hilfe bringen dich ohne Reibung voran."
+      },
+      "focusMode": {
+        "title": "Fokus-Vibes",
+        "desc": "Hintergrundmusik und dezente Animationen halten dich im Flow."
+      }
+    },
+    "cta": {
+      "title": "Bereit, die Kontrolle zu übernehmen?",
+      "subtitle": "Fang klein an, baue Momentum auf und level deinen Workflow.",
+      "button": "Jetzt loslegen"
+    },
+    "footer": {
+      "brand": "Task Senpai",
+      "privacy": "Datenschutz",
+      "terms": "AGB"
+    }
+  },
+  "assistant": {
+    "greeting": "Hallo! Ich bin dein Assistent-Bot. Wie kann ich dir heute helfen?",
+    "ui": {
+      "title": "Assistent-Bot",
+      "statusOnline": "Online",
+      "openChat": "Chat öffnen",
+      "closeChat": "Chat schließen",
+      "botAlt": "Bot",
+      "userAlt": "Benutzer",
+      "scrollLeft": "Nach links scrollen",
+      "scrollRight": "Nach rechts scrollen",
+      "userTyping": "Benutzer tippt...",
+      "placeholder": "Nachricht eingeben...",
+      "send": "Nachricht senden"
+    },
+    "quickActions": {
+      "taskCount": "Aufgabenanzahl",
+      "dashboard": "Dashboard",
+      "calendar": "Kalender",
+      "board": "Board",
+      "goals": "Ziele"
+    },
+    "responses": {
+      "greeting": "Hallo! Wie kann ich dir heute bei deinen Aufgaben helfen?",
+      "taskStats": "Du hast insgesamt {{total}} Aufgaben: {{completed}} erledigt und {{pending}} offen. Weiter so!",
+      "signInToAccess": "Bitte melde dich an, um auf {{view}} zuzugreifen.",
+      "navigatingTo": "Navigiere zu {{view}}...",
+      "switchingTo": "Wechsle zur Ansicht {{view}}...",
+      "openingView": "Öffne die Ansicht {{view}}...",
+      "takingYouTo": "Ich bringe dich zur Ansicht {{view}}...",
+      "showingView": "Zeige die Ansicht {{view}}...",
+      "todayIs": "Heute ist {{date}} {{time}}",
+      "help": "Ich kann dir bei Aufgaben oder der Navigation helfen. Nutze auch die Schnellaktionen unten.",
+      "default": "Ich lerne noch. Frage nach Aufgaben oder Navigation, oder nutze die Schnellaktionen unten."
+    }
+  },
+  "music": {
+    "ui": {
+      "player": "Musikplayer",
+      "changeTrack": "Track wechseln",
+      "selectTrack": "Track auswählen"
+    },
+    "controls": {
+      "play": "Abspielen",
+      "pause": "Pause",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "mute": "Stummschalten",
+      "unmute": "Stummschaltung aufheben",
+      "volume": "Lautstärke",
+      "seek": "Springen",
+      "loopOn": "Loop an",
+      "loopOff": "Loop aus"
+    },
+    "tracks": {
+      "track1": { "name": "Track 1", "artist": "Task Senpai" },
+      "track2": { "name": "Track 2", "artist": "Task Senpai" }
     }
   },
   "dashboard": {
@@ -306,6 +480,95 @@
       "couldNotLoad": "Ziele konnten nicht geladen werden",
       "undoSuccessful": "Rückgängig erfolgreich",
       "undoFailed": "Rückgängig fehlgeschlagen"
+    }
+  },
+  "tutorial": {
+    "title": "Demo ansehen",
+    "subtitle": "Eine kurze Tour durch die wichtigsten Funktionen",
+    "logoAlt": "Task Senpai",
+    "stepsNavLabel": "Tutorial-Schritte",
+    "actions": { "close": "Schließen", "next": "Weiter", "back": "Zurück", "finish": "Fertig" },
+    "steps": {
+      "welcome": {
+        "label": "Willkommen",
+        "title": "Willkommen bei Task Senpai",
+        "desc": "Diese Demo zeigt dir die wichtigsten Ansichten und wofür sie gedacht sind.",
+        "bullets": [
+          "Nutze die Schritte links, um jede Ansicht kennenzulernen.",
+          "Die Bilder dienen als schnelle Orientierung.",
+          "Du kannst die Demo jederzeit auf der Startseite öffnen."
+        ]
+      },
+      "dashboard": {
+        "label": "Dashboard",
+        "title": "Dashboard: Tagesüberblick",
+        "desc": "Starte hier, um zu sehen, was jetzt Aufmerksamkeit braucht.",
+        "bullets": [
+          "Überblick über Überfälliges, Heute und demnächst.",
+          "Wechsle zur Board-Ansicht, um Aufgaben zu bearbeiten oder abzuschließen.",
+          "Eine klare Next-Up-Liste hält dich im Flow."
+        ]
+      },
+      "board": {
+        "label": "Board",
+        "title": "Board: organisieren per Drag & Drop",
+        "desc": "Im Board verwaltest du Aufgaben aktiv und änderst ihren Status.",
+        "bullets": [
+          "Aufgaben schnell anlegen, Details später verfeinern.",
+          "Zwischen Spalten ziehen, um den Status sofort zu aktualisieren.",
+          "Suchen und filtern, um fokussiert zu bleiben."
+        ]
+      },
+      "calendar": {
+        "label": "Kalender",
+        "title": "Kalender: Planung mit Daten",
+        "desc": "Halte Start- und Fälligkeitsdaten konsistent in deinem Plan.",
+        "bullets": [
+          "Daten schnell wählen und die Last besser verteilen.",
+          "Deadline-Cluster früh erkennen.",
+          "Zusammen mit dem Board planen und nachjustieren."
+        ]
+      },
+      "goals": {
+        "label": "Ziele",
+        "title": "Ziele: Ergebnisse in Schritte übersetzen",
+        "desc": "Setze Ziele und verfolge den Fortschritt über deine Aufgaben hinweg.",
+        "bullets": [
+          "Ein Ziel hinzufügen (z. B. 5 Aufgaben mit hoher Priorität abschließen).",
+          "Fälligkeitsdatum setzen, um dran zu bleiben.",
+          "Rest und Tempo prüfen, um früh anzupassen."
+        ]
+      },
+      "assistant": {
+        "label": "Assistent",
+        "title": "Assistent: schnelle Hilfe & Zusammenfassung",
+        "desc": "Nutze den Assistenten für Guidance, Status und Shortcuts.",
+        "bullets": [
+          "Schnelle Zusammenfassung der Arbeitslast anfragen.",
+          "Direkt zur passenden Ansicht springen.",
+          "Tipps für den nächsten Schritt bekommen."
+        ]
+      },
+      "music": {
+        "label": "Musik",
+        "title": "Fokus-Musik: im Rhythmus bleiben",
+        "desc": "Der Musik-Player unterstützt dich beim Planen und Abarbeiten.",
+        "bullets": [
+          "Play/Pause und Track-Wechsel ohne Kontextwechsel.",
+          "Lautstärke anpassen oder sofort stummschalten.",
+          "Loop für längere Fokus-Sessions aktivieren."
+        ]
+      },
+      "finish": {
+        "label": "Fertig",
+        "title": "Du bist startklar",
+        "desc": "Das war’s. Starte mit dem Dashboard, organisiere im Board und tracke Fortschritt mit Zielen.",
+        "bullets": [
+          "Klein anfangen: ein paar Aufgaben anlegen und im Board bewegen.",
+          "Ein Wochenziel setzen und sichtbar halten.",
+          "Die Demo jederzeit erneut öffnen."
+        ]
+      }
     }
   }
 }

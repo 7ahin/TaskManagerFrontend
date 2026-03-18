@@ -398,3 +398,123 @@
 .scroll-arrow.right {
     right: -5px;
 }
+
+body.light-mode .chat-toggle-btn {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+body.light-mode .chat-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.16);
+}
+
+body.light-mode .chat-toggle-btn.active {
+    background: #646cff;
+    border-color: rgba(100, 108, 255, 0.35);
+    color: #fff;
+}
+
+body.light-mode .chat-toggle-btn.active:hover {
+    background: #646cff;
+}
+
+body.light-mode .chat-interface {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+    color: #0f172a;
+}
+
+body.light-mode .chat-header {
+    border-bottom-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .chat-header h3 {
+    color: #0f172a;
+}
+
+body.light-mode .status-indicator {
+    color: rgba(15, 23, 42, 0.7);
+}
+
+body.light-mode .close-btn {
+    color: rgba(15, 23, 42, 0.55);
+}
+
+body.light-mode .close-btn:hover {
+    color: #0f172a;
+}
+
+body.light-mode .chat-messages::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.05);
+}
+
+body.light-mode .chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.18);
+}
+
+body.light-mode .message-icon.bot-icon {
+    background: rgba(15, 23, 42, 0.06);
+    color: #646cff;
+}
+
+body.light-mode .message-icon.user-icon {
+    background: rgba(100, 108, 255, 0.18);
+    color: #0f172a;
+}
+
+body.light-mode .message-bubble.bot {
+    background: rgba(15, 23, 42, 0.06);
+    color: rgba(15, 23, 42, 0.92);
+}
+
+body.light-mode .typing-indicator {
+    background: rgba(15, 23, 42, 0.06);
+}
+
+body.light-mode .typing-dot {
+    background: rgba(15, 23, 42, 0.45);
+}
+
+body.light-mode .chat-input-area {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .chat-input {
+    color: #0f172a;
+}
+
+body.light-mode .chat-input::placeholder {
+    color: rgba(15, 23, 42, 0.5);
+}
+
+body.light-mode .user-typing {
+    color: rgba(15, 23, 42, 0.55);
+}
+
+body.light-mode .quick-actions button {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.12);
+    color: rgba(15, 23, 42, 0.85);
+}
+
+body.light-mode .quick-actions button:hover {
+    background: rgba(59, 130, 246, 0.12);
+    border-color: rgba(59, 130, 246, 0.28);
+    color: #1d4ed8;
+}
+
+body.light-mode .scroll-arrow {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(15, 23, 42, 0.14);
+    color: rgba(15, 23, 42, 0.85);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .scroll-arrow:hover {
+    color: #fff;
+}

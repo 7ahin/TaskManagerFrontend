@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import "./BoardView.css";
+import { getTodoUpdateFromDragEnd } from "./boardDragUtils.js";
 import {
   DndContext,
   closestCorners,
@@ -25,6 +26,7 @@ import {
   ListBulletIcon, 
   Squares2X2Icon, 
   CheckCircleIcon,
+  ArrowsUpDownIcon,
   ClockIcon,
   XMarkIcon,
   ChevronDownIcon,
@@ -268,16 +270,86 @@ function CustomPriorityDropdown({ value, onChange }) {
   );
 }
 
+function BoardSortDropdown({ value, onChange, variant, title }) {
+  const { t: translate } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const options = [
+    { key: "created_desc", label: translate("board.sort.createdDesc", "Created (newest)") },
+    { key: "created_asc", label: translate("board.sort.createdAsc", "Created (oldest)") },
+    { key: "start_asc", label: translate("board.sort.startAsc", "Start date (soonest)") },
+    { key: "start_desc", label: translate("board.sort.startDesc", "Start date (latest)") },
+    { key: "priority_desc", label: translate("board.sort.priorityDesc", "Priority (High–Low)") },
+    { key: "priority_asc", label: translate("board.sort.priorityAsc", "Priority (Low–High)") },
+    { key: "name_asc", label: translate("board.sort.nameAsc", "Name (A–Z)") },
+    { key: "name_desc", label: translate("board.sort.nameDesc", "Name (Z–A)") },
+  ];
+
+  const selectedLabel = (options.find((o) => o.key === value) || options[0])?.label;
+
+  const handleSelect = (k) => {
+    onChange(k);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className={`board-dropdown-container ${variant === "column" ? "board-sort-dropdown" : ""}`}>
+      <button
+        type="button"
+        className={`board-dropdown-btn ${variant === "column" ? "board-sort-btn" : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        title={title}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <ArrowsUpDownIcon className="icon-sm" />
+          <span className="board-sort-label">{selectedLabel}</span>
+        </div>
+        <ChevronDownIcon className="board-dropdown-chevron" />
+      </button>
+
+      {isOpen && (
+        <>
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 49, cursor: "default" }}
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="board-dropdown-menu">
+            {options.map((o) => (
+              <div
+                key={o.key}
+                className={`board-dropdown-item ${value === o.key ? "selected" : ""}`}
+                onClick={() => handleSelect(o.key)}
+              >
+                {o.label}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function EditTaskModal({ todo, onClose, onSave }) {
   const { t: translate } = useTranslation();
+  const toYmdLocal = (value) => {
+    if (!value) return "";
+    if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "";
+    const yyyy = String(d.getFullYear());
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
   const [name, setName] = useState(todo.name);
   const [priority, setPriority] = useState(todo.priority || "Medium");
   const [isComplete, setIsComplete] = useState(!!todo.isComplete);
   const [dueDate, setDueDate] = useState(
-    todo.dueDate ? new Date(todo.dueDate).toISOString().split("T")[0] : ""
+    toYmdLocal(todo.dueDate)
   );
   const [startDate, setStartDate] = useState(
-    todo.startDate ? new Date(todo.startDate).toISOString().split("T")[0] : ""
+    toYmdLocal(todo.startDate)
   );
 
   useEffect(() => {
@@ -501,7 +573,7 @@ function SortableTaskCard({ todo, setPendingDeleteId, onToggleComplete, onEdit }
 
 const STATUSES = ["Working on it", "Stuck", "Done", "Review"];
 
-function DroppableColumn({ id, title, count, statusClass, items, children }) {
+function DroppableColumn({ id, title, count, statusClass, items, sortMode, onSortModeChange, children }) {
   const { t: translate } = useTranslation();
   const { setNodeRef, isOver } = useDroppable({ id });
 
@@ -511,6 +583,12 @@ function DroppableColumn({ id, title, count, statusClass, items, children }) {
         <span className={`board-status-dot ${statusClass}`}></span>
         <h3>{title}</h3>
         <span className="board-count-badge">{count}</span>
+        <BoardSortDropdown
+          value={sortMode}
+          onChange={onSortModeChange}
+          variant="column"
+          title={translate("board.sort.column", "Sort this column")}
+        />
       </div>
       <div className="board-kanban-list">
         <SortableContext
@@ -551,9 +629,111 @@ function BoardView({
 }) {
   const { t: translate, i18n } = useTranslation();
   const [viewMode, setViewMode] = useState("kanban"); // 'list' or 'kanban'
+  const [listSortMode, setListSortMode] = useState("created_desc");
+  const [sortModeByStatus, setSortModeByStatus] = useState(() => ({
+    "Working on it": "created_desc",
+    Stuck: "created_desc",
+    Done: "created_desc",
+    Review: "created_desc",
+  }));
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [editingTodo, setEditingTodo] = useState(null);
   const [activeId, setActiveId] = useState(null); // For DragOverlay
+
+  const sortItems = useMemo(() => {
+    const toMs = (value) => {
+      if (!value) return null;
+      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        const [yy, mm, dd] = value.split("-").map((p) => Number(p));
+        const d = new Date(yy, mm - 1, dd);
+        const ms = d.getTime();
+        return Number.isFinite(ms) ? ms : null;
+      }
+      const d = new Date(value);
+      const ms = d.getTime();
+      return Number.isFinite(ms) ? ms : null;
+    };
+
+    const nameOf = (t) => String(t?.name || "");
+
+    const createdMsOf = (t) =>
+      toMs(
+        t?.createdAt ??
+          t?.CreatedAt ??
+          t?.created_at ??
+          t?.createdDate ??
+          t?.created_on ??
+          t?.CreatedOn ??
+          null
+      );
+
+    const startMsOf = (t) => toMs(t?.startDate ?? t?.start_date ?? null);
+
+    const cmpNameAsc = (a, b) => nameOf(a).localeCompare(nameOf(b), i18n.language, { sensitivity: "base" });
+
+    const priorityRankOf = (t) => {
+      const raw = String(t?.priority || "Medium").trim().toLowerCase();
+      if (raw === "high") return 3;
+      if (raw === "low") return 1;
+      return 2;
+    };
+
+    return (items, mode) => {
+      const next = items ? [...items] : [];
+      if (!mode || mode === "manual") return next;
+
+      const idOrder = (t) => {
+        const v = t?.id;
+        if (typeof v === "number" && Number.isFinite(v)) return v;
+        if (typeof v === "string" && v.trim() && !Number.isNaN(Number(v))) return Number(v);
+        return null;
+      };
+
+      next.sort((a, b) => {
+        if (mode === "name_asc") return cmpNameAsc(a, b);
+        if (mode === "name_desc") return -cmpNameAsc(a, b);
+
+        if (mode === "created_desc" || mode === "created_asc") {
+          const am = createdMsOf(a);
+          const bm = createdMsOf(b);
+          if (am == null && bm == null) {
+            const ai = idOrder(a);
+            const bi = idOrder(b);
+            if (ai != null && bi != null) return mode === "created_desc" ? bi - ai : ai - bi;
+            return cmpNameAsc(a, b);
+          }
+          if (am == null) return 1;
+          if (bm == null) return -1;
+          return mode === "created_desc" ? bm - am : am - bm;
+        }
+
+        if (mode === "start_desc" || mode === "start_asc") {
+          const am = startMsOf(a);
+          const bm = startMsOf(b);
+          if (am == null && bm == null) return cmpNameAsc(a, b);
+          if (am == null) return 1;
+          if (bm == null) return -1;
+          return mode === "start_desc" ? bm - am : am - bm;
+        }
+
+        if (mode === "priority_desc" || mode === "priority_asc") {
+          const ar = priorityRankOf(a);
+          const br = priorityRankOf(b);
+          if (ar !== br) return mode === "priority_desc" ? br - ar : ar - br;
+          return cmpNameAsc(a, b);
+        }
+
+        return cmpNameAsc(a, b);
+      });
+
+      return next;
+    };
+  }, [i18n.language]);
+
+  const sortedListTodos = useMemo(
+    () => sortItems(filteredTodos, listSortMode),
+    [filteredTodos, listSortMode, sortItems]
+  );
 
   const statusKeyOf = (status) => {
     if (status === "Working on it") return "workingOnIt";
@@ -615,34 +795,13 @@ function BoardView({
     setActiveId(null);
 
     if (!over) return;
-
-    const activeTask = todos.find((t) => t.id === active.id);
-    if (!activeTask) return;
-
-    // Check if dropped on a column
-    const statusColumn = STATUSES.find(s => s === over.id);
-    
-    if (statusColumn) {
-        if (activeTask.status !== statusColumn) {
-            onUpdateTodo({
-                ...activeTask,
-                status: statusColumn,
-                isComplete: statusColumn === "Done"
-            });
-        }
-        return;
-    }
-
-    // Dropped on another task? 
-    // We need to find which column that task belongs to
-    const overTask = todos.find((t) => t.id === over.id);
-    if (overTask && overTask.status !== activeTask.status) {
-         onUpdateTodo({
-            ...activeTask,
-            status: overTask.status,
-            isComplete: overTask.status === "Done"
-        });
-    }
+    const update = getTodoUpdateFromDragEnd({
+      todos,
+      activeId: active.id,
+      overId: over.id,
+      statuses: STATUSES,
+    });
+    if (update) onUpdateTodo(update);
   }
 
   // Find the item being dragged for Overlay
@@ -741,6 +900,13 @@ function BoardView({
 
         {viewMode === 'list' ? (
         <div className="board-view-table-wrapper">
+            <div className="board-list-toolbar">
+              <BoardSortDropdown
+                value={listSortMode}
+                onChange={setListSortMode}
+                title={translate("board.sort.list", "Sort tasks")}
+              />
+            </div>
             <table className="board-view-table">
             <thead>
                 <tr>
@@ -753,7 +919,7 @@ function BoardView({
                 </tr>
             </thead>
             <tbody>
-                {filteredTodos.map((todo) => (
+                {sortedListTodos.map((todo) => (
                     <tr key={todo.id}>
                     <td className="board-checkbox-cell" onClick={() => onToggleComplete(todo)}>
                         <div className={`board-checkbox-custom ${todo.isComplete ? "checked" : ""}`}>
@@ -812,7 +978,7 @@ function BoardView({
             </tbody>
             </table>
             
-            {filteredTodos.length === 0 && !loading && (
+            {sortedListTodos.length === 0 && !loading && (
               <div className="board-empty-state">
                 <div className="empty-state-icon-wrapper">
                   <ClipboardDocumentListIcon className="empty-state-icon" />
@@ -835,9 +1001,11 @@ function BoardView({
           >
             <div className="board-kanban-scroll-container">
               {STATUSES.map((status) => {
-                const statusItems = filteredTodos.filter(
+                const statusItems = (filteredTodos || []).filter(
                   (t) => (t.status || "Working on it") === status
                 );
+                const mode = sortModeByStatus[status] || "created_desc";
+                const sortedStatusItems = sortItems(statusItems, mode);
                 // Map status to a color class for the header dot
                 let dotClass = "working"; // default
                 if (status === "Done") dotClass = "done";
@@ -849,11 +1017,15 @@ function BoardView({
                     key={status}
                     id={status}
                     title={translate(`board.status.${statusKeyOf(status)}`)}
-                    count={statusItems.length}
+                    count={sortedStatusItems.length}
                     statusClass={dotClass}
-                    items={statusItems}
+                    items={sortedStatusItems}
+                    sortMode={mode}
+                    onSortModeChange={(nextMode) =>
+                      setSortModeByStatus((prev) => ({ ...(prev || {}), [status]: nextMode }))
+                    }
                   >
-                    {statusItems.map((todo) => (
+                    {sortedStatusItems.map((todo) => (
                       <SortableTaskCard
                         key={todo.id}
                         todo={todo}

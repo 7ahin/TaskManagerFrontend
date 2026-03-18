@@ -1,23 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   ChatBubbleLeftRightIcon, 
   UserCircleIcon,
-  SparklesIcon,
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
+import { useTranslation } from "react-i18next";
 import './ChatAssistant.css';
 import botLogo from '../assets/bot.png';
 
 const ChatAssistant = ({ user, todos, onNavigate }) => {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hello! I'm your assistant bot. How can I help you today?", sender: 'bot' }
+  const [messages, setMessages] = useState(() => [
+    { id: 1, text: t("assistant.greeting"), sender: 'bot' }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const quickActionsRef = useRef(null);
+  const containerRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
@@ -54,6 +56,28 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
     };
   }, [isOpen]); // Re-check when chat opens
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const onPointerDown = (e) => {
+      const container = containerRef.current;
+      if (!container) return;
+      if (container.contains(e.target)) return;
+      setIsOpen(false);
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen]);
+
   const scrollQuickActions = (direction) => {
     if (quickActionsRef.current) {
       const scrollAmount = 150;
@@ -84,7 +108,7 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
     
     // Greetings
     if (lowerText.includes('hello') || lowerText.includes('hi') || lowerText.includes('hey')) {
-      return "Hello there! How can I assist you with your tasks today?";
+      return t("assistant.responses.greeting");
     }
     
     // Task Statistics
@@ -92,52 +116,56 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
       const count = todos ? todos.length : 0;
       const completed = todos ? todos.filter(t => t.isCompleted).length : 0;
       const pending = count - completed;
-      return `You have ${count} total tasks: ${completed} completed and ${pending} pending. Keep up the good work!`;
+      return t("assistant.responses.taskStats", { total: count, completed, pending });
     }
 
     // Navigation Commands
     if (lowerText.includes('dashboard')) {
       onNavigate && onNavigate('dashboard');
-      if (!user) return "Please sign in to access the Dashboard.";
-      return "Navigating to Dashboard...";
+      if (!user) return t("assistant.responses.signInToAccess", { view: t("app.nav.dashboard") });
+      return t("assistant.responses.navigatingTo", { view: t("app.nav.dashboard") });
     }
 
     if (lowerText.includes('board') || lowerText.includes('kanban')) {
       onNavigate && onNavigate('board');
-      if (!user) return "Please sign in to access the Board.";
-      return "Switching to Board view...";
+      if (!user) return t("assistant.responses.signInToAccess", { view: t("app.nav.board") });
+      return t("assistant.responses.switchingTo", { view: t("app.nav.board") });
     }
 
     if (lowerText.includes('calendar') || lowerText.includes('schedule')) {
       onNavigate && onNavigate('calendar');
-      if (!user) return "Please sign in to access the Calendar.";
-      return "Opening Calendar view...";
+      if (!user) return t("assistant.responses.signInToAccess", { view: t("app.nav.calendar") });
+      return t("assistant.responses.openingView", { view: t("app.nav.calendar") });
     }
     
     if (lowerText.includes('goals') || lowerText.includes('target')) {
       onNavigate && onNavigate('goals');
-      if (!user) return "Please sign in to access Goals.";
-      return "Taking you to Goals view...";
+      if (!user) return t("assistant.responses.signInToAccess", { view: t("app.nav.goals") });
+      return t("assistant.responses.takingYouTo", { view: t("app.nav.goals") });
     }
 
     if (lowerText.includes('timeline') || lowerText.includes('gantt')) {
       onNavigate && onNavigate('timeline');
-      if (!user) return "Please sign in to access the Timeline.";
-      return "Showing Timeline view...";
+      if (!user) return t("assistant.responses.signInToAccess", { view: t("app.nav.timeline") });
+      return t("assistant.responses.showingView", { view: t("app.nav.timeline") });
     }
 
     // Time/Date
     if (lowerText.includes('time') || lowerText.includes('date') || lowerText.includes('day')) {
-      return `Today is ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+      const now = new Date();
+      return t("assistant.responses.todayIs", {
+        date: now.toLocaleDateString(i18n.language),
+        time: now.toLocaleTimeString(i18n.language),
+      });
     }
 
     // Help
     if (lowerText.includes('help') || lowerText.includes('what can you do')) {
-      return "I can help you check your tasks or navigate the app. Try asking 'How many tasks?', 'Go to Board', 'Show Calendar', or 'Check Goals'.";
+      return t("assistant.responses.help");
     }
 
     // Default
-    return "I'm still learning. Try asking about your tasks, navigation, or check the Quick Actions below!";
+    return t("assistant.responses.default");
   };
 
   const sendUserMessage = (text) => {
@@ -176,11 +204,11 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
   };
 
   return (
-    <div className="chat-assistant-container">
+    <div className="chat-assistant-container" ref={containerRef}>
       <button 
         className={`chat-toggle-btn ${isOpen ? 'active' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        title={isOpen ? "Close Chat" : "Open Chat"}
+        title={isOpen ? t("assistant.ui.closeChat") : t("assistant.ui.openChat")}
       >
         <ChatBubbleLeftRightIcon className="icon-svg" />
       </button>
@@ -188,12 +216,9 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
       <div className={`chat-interface ${isOpen ? 'visible' : ''}`}>
         <div className="chat-header">
           <div className="chat-header-info">
-            <h3>Assistant Bot</h3>
-            <span className="status-indicator">Online</span>
+            <h3>{t("assistant.ui.title")}</h3>
+            <span className="status-indicator">{t("assistant.ui.statusOnline")}</span>
           </div>
-          <button className="close-btn" onClick={() => setIsOpen(false)} aria-label="Close chat">
-            &times;
-          </button>
         </div>
           
         <div className="chat-messages">
@@ -201,7 +226,7 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
             <div key={msg.id} className={`message-row ${msg.sender}`}>
               {msg.sender === 'bot' && (
                 <div className="message-icon bot-icon">
-                  <img src={botLogo} alt="Bot" className="avatar-img" />
+                  <img src={botLogo} alt={t("assistant.ui.botAlt")} className="avatar-img" />
                 </div>
               )}
               
@@ -212,7 +237,7 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
               {msg.sender === 'user' && (
                 <div className="message-icon user-icon">
                   {user && user.picture ? (
-                    <img src={user.picture} alt="User" className="avatar-img" referrerPolicy="no-referrer" />
+                    <img src={user.picture} alt={t("assistant.ui.userAlt")} className="avatar-img" referrerPolicy="no-referrer" />
                   ) : (
                     <UserCircleIcon className="icon-xs" />
                   )}
@@ -224,7 +249,7 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
           {isTyping && (
             <div className="message-row bot">
               <div className="message-icon bot-icon">
-                <img src={botLogo} alt="Bot" className="avatar-img" />
+                <img src={botLogo} alt={t("assistant.ui.botAlt")} className="avatar-img" />
               </div>
               <div className="message-bubble bot typing-indicator">
                 <div className="typing-dot"></div>
@@ -242,7 +267,7 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
             <button 
               className="scroll-arrow left" 
               onClick={() => scrollQuickActions('left')}
-              aria-label="Scroll left"
+              aria-label={t("assistant.ui.scrollLeft")}
             >
               <ChevronLeftIcon className="icon-sm" />
             </button>
@@ -250,19 +275,19 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
           
           <div className="quick-actions" ref={quickActionsRef} style={getMaskStyle()}>
             <button onClick={() => handleQuickAction("How many tasks do I have?")}>
-              📊 Task Count
+              📊 {t("assistant.quickActions.taskCount")}
             </button>
             <button onClick={() => handleQuickAction("Go to Dashboard")}>
-              🏠 Dashboard
+              🏠 {t("assistant.quickActions.dashboard")}
             </button>
             <button onClick={() => handleQuickAction("Show Calendar")}>
-              📅 Calendar
+              📅 {t("assistant.quickActions.calendar")}
             </button>
             <button onClick={() => handleQuickAction("Open Board View")}>
-              📋 Board
+              📋 {t("assistant.quickActions.board")}
             </button>
             <button onClick={() => handleQuickAction("Check Goals")}>
-              🎯 Goals
+              🎯 {t("assistant.quickActions.goals")}
             </button>
           </div>
 
@@ -270,7 +295,7 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
             <button 
               className="scroll-arrow right" 
               onClick={() => scrollQuickActions('right')}
-              aria-label="Scroll right"
+              aria-label={t("assistant.ui.scrollRight")}
             >
               <ChevronRightIcon className="icon-sm" />
             </button>
@@ -278,15 +303,15 @@ const ChatAssistant = ({ user, todos, onNavigate }) => {
         </div>
 
         <form className="chat-input-area" onSubmit={handleSendMessage}>
-          {inputValue.length > 0 && <span className="user-typing">User is typing...</span>}
+          {inputValue.length > 0 && <span className="user-typing">{t("assistant.ui.userTyping")}</span>}
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Type a message..."
+            placeholder={t("assistant.ui.placeholder")}
             className="chat-input"
           />
-          <button type="submit" className="send-btn" aria-label="Send message"></button>
+          <button type="submit" className="send-btn" aria-label={t("assistant.ui.send")}></button>
         </form>
       </div>
     </div>

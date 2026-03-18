@@ -10,7 +10,9 @@
     "header": {
       "profile": "Perfil",
       "settings": "Ajustes",
-      "language": "Idioma"
+      "language": "Idioma",
+      "logoAlt": "Logo de Task Senpai",
+      "profileAlt": "Perfil"
     },
     "profile": {
       "title_guest": "Bienvenido a Task Senpai",
@@ -34,7 +36,8 @@
       "es": "Español",
       "fr": "Francés",
       "de": "Alemán",
-      "ms": "Malayo"
+      "ms": "Malayo",
+      "changed": "Idioma cambiado a {{language}}"
     },
     "settings": {
       "title": "Ajustes",
@@ -43,7 +46,178 @@
       "theme_light": "Claro",
       "sound": "Efectos de sonido",
       "notifications": "Notificaciones",
-      "compact_mode": "Modo compacto"
+      "compact_mode": "Modo compacto",
+      "rememberLastView": "Continuar donde lo dejé",
+      "startPage": "Página de inicio",
+      "fallbackPage": "Página alternativa"
+    },
+    "notifications": {
+      "enable": "Activar",
+      "inApp": "Avisos en la app",
+      "desktop": "Notificaciones de escritorio",
+      "dueToday": "Alertas para hoy",
+      "overdue": "Alertas de atraso",
+      "log": "Registro",
+      "clear": "Limpiar",
+      "empty": "Aún no hay notificaciones"
+    }
+  },
+  "landing": {
+    "kicker": {
+      "focus": "集中",
+      "plan": "計画",
+      "achieve": "達成"
+    },
+    "hero": {
+      "title": "Task Senpai",
+      "highlight": "Domina tu flujo de trabajo",
+      "jpTagline": "先輩モード • 今日も一歩ずつ",
+      "subtitle": "Organiza, prioriza y sigue tu trabajo con facilidad. La herramienta definitiva para la productividad personal y profesional."
+    },
+    "capabilities": {
+      "kanban": "Tablero Kanban",
+      "timeline": "Cronología",
+      "calendar": "Calendario",
+      "goals": "Metas",
+      "assistant": "Bot asistente",
+      "music": "Música de enfoque"
+    },
+    "actions": {
+      "startFree": "Empieza gratis",
+      "viewDemo": "Ver demo"
+    },
+    "socialProof": {
+      "label": "Diseñado y construido por",
+      "team": "Equipo de Task Senpai"
+    },
+    "preview": {
+      "brand": "TaskSenpai"
+    },
+    "previewTabs": {
+      "dashboard": {
+        "label": "Panel",
+        "title": "Empieza el día de un vistazo",
+        "desc": "Ve qué vence hoy, qué está atrasado y qué sigue."
+      },
+      "board": {
+        "label": "Tablero",
+        "title": "Arrastra, suelta, listo",
+        "desc": "Mueve tareas entre estados con un Kanban fluido."
+      },
+      "timeline": {
+        "label": "Cronología",
+        "title": "Planifica tu semana visualmente",
+        "desc": "Distribuye tareas por fechas y evita sorpresas."
+      },
+      "calendar": {
+        "label": "Calendario",
+        "title": "Fechas que sí se quedan",
+        "desc": "Elige inicio/fin rápido y mantén tu agenda limpia."
+      },
+      "goals": {
+        "label": "Metas",
+        "title": "Convierte metas en progreso",
+        "desc": "Sigue rachas y hitos con empujoncitos amigables."
+      }
+    },
+    "featuresSection": {
+      "title": "Todo lo que necesitas para avanzar más rápido",
+      "subtitle": "De captura rápida a planificación diaria: Task Senpai lo hace divertido y enfocado."
+    },
+    "features": {
+      "smartFlow": {
+        "title": "Flujo inteligente",
+        "desc": "Captura tareas rápido y refina con prioridad, inicio y vencimiento."
+      },
+      "dragDrop": {
+        "title": "Tablero con arrastrar",
+        "desc": "Mueve tarjetas entre columnas y actualiza el estado al instante."
+      },
+      "calendarClarity": {
+        "title": "Claridad en calendario",
+        "desc": "Planifica con fechas reales y equilibra tu semana."
+      },
+      "timelinePlanning": {
+        "title": "Planificación por cronología",
+        "desc": "Visualiza el trabajo en el tiempo y detecta sobrecarga temprano."
+      },
+      "assistantBot": {
+        "title": "Bot asistente",
+        "desc": "Acciones rápidas y guía amable para avanzar sin fricción."
+      },
+      "focusMode": {
+        "title": "Modo enfoque",
+        "desc": "Música y animaciones sutiles para mantenerte en la zona."
+      }
+    },
+    "cta": {
+      "title": "¿Listo para tomar el control?",
+      "subtitle": "Empieza pequeño, gana impulso y sube de nivel tu flujo de trabajo.",
+      "button": "Empezar ahora"
+    },
+    "footer": {
+      "brand": "Task Senpai",
+      "privacy": "Privacidad",
+      "terms": "Términos"
+    }
+  },
+  "assistant": {
+    "greeting": "¡Hola! Soy tu bot asistente. ¿En qué puedo ayudarte hoy?",
+    "ui": {
+      "title": "Bot asistente",
+      "statusOnline": "En línea",
+      "openChat": "Abrir chat",
+      "closeChat": "Cerrar chat",
+      "botAlt": "Bot",
+      "userAlt": "Usuario",
+      "scrollLeft": "Desplazar a la izquierda",
+      "scrollRight": "Desplazar a la derecha",
+      "userTyping": "El usuario está escribiendo...",
+      "placeholder": "Escribe un mensaje...",
+      "send": "Enviar mensaje"
+    },
+    "quickActions": {
+      "taskCount": "Conteo de tareas",
+      "dashboard": "Panel",
+      "calendar": "Calendario",
+      "board": "Tablero",
+      "goals": "Metas"
+    },
+    "responses": {
+      "greeting": "¡Hola! ¿Cómo puedo ayudarte con tus tareas hoy?",
+      "taskStats": "Tienes {{total}} tareas en total: {{completed}} completadas y {{pending}} pendientes. ¡Buen trabajo!",
+      "signInToAccess": "Por favor inicia sesión para acceder a {{view}}.",
+      "navigatingTo": "Navegando a {{view}}...",
+      "switchingTo": "Cambiando a la vista {{view}}...",
+      "openingView": "Abriendo la vista {{view}}...",
+      "takingYouTo": "Llevándote a la vista {{view}}...",
+      "showingView": "Mostrando la vista {{view}}...",
+      "todayIs": "Hoy es {{date}} {{time}}",
+      "help": "Puedo ayudarte a revisar tus tareas o navegar por la app. También puedes usar las Acciones rápidas abajo.",
+      "default": "Aún estoy aprendiendo. Pregunta sobre tus tareas o navegación, o usa las Acciones rápidas abajo."
+    }
+  },
+  "music": {
+    "ui": {
+      "player": "Reproductor de música",
+      "changeTrack": "Cambiar pista",
+      "selectTrack": "Seleccionar pista"
+    },
+    "controls": {
+      "play": "Reproducir",
+      "pause": "Pausar",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "mute": "Silenciar",
+      "unmute": "Activar sonido",
+      "volume": "Volumen",
+      "seek": "Buscar",
+      "loopOn": "Bucle activado",
+      "loopOff": "Bucle desactivado"
+    },
+    "tracks": {
+      "track1": { "name": "Pista 1", "artist": "Task Senpai" },
+      "track2": { "name": "Pista 2", "artist": "Task Senpai" }
     }
   },
   "dashboard": {
@@ -306,6 +480,95 @@
       "couldNotLoad": "No se pudieron cargar las metas",
       "undoSuccessful": "Deshacer exitoso",
       "undoFailed": "No se pudo deshacer"
+    }
+  },
+  "tutorial": {
+    "title": "Ver demo",
+    "subtitle": "Un tour rápido de lo que puedes hacer",
+    "logoAlt": "Task Senpai",
+    "stepsNavLabel": "Pasos del tutorial",
+    "actions": { "close": "Cerrar", "next": "Siguiente", "back": "Atrás", "finish": "Finalizar" },
+    "steps": {
+      "welcome": {
+        "label": "Bienvenida",
+        "title": "Bienvenido a Task Senpai",
+        "desc": "Esta demo te muestra las pantallas principales y para qué sirve cada una.",
+        "bullets": [
+          "Sigue los pasos de la izquierda para aprender cada pantalla.",
+          "Usa las imágenes como referencia rápida.",
+          "Puedes abrir la demo cuando quieras desde el inicio."
+        ]
+      },
+      "dashboard": {
+        "label": "Panel",
+        "title": "Panel: vista diaria",
+        "desc": "Empieza aquí para ver qué requiere atención antes de organizar tareas.",
+        "bullets": [
+          "Resumen de lo vencido, lo de hoy y lo próximo.",
+          "Salta al Tablero para editar o completar tareas.",
+          "Mantén el foco con una lista clara de siguientes pasos."
+        ]
+      },
+      "board": {
+        "label": "Tablero",
+        "title": "Tablero: arrastra y organiza",
+        "desc": "Gestiona tareas activamente y cambia su estado con facilidad.",
+        "bullets": [
+          "Agrega tareas rápido y ajusta detalles después.",
+          "Arrastra entre columnas para actualizar el estado al instante.",
+          "Busca y filtra para enfocarte en lo importante."
+        ]
+      },
+      "calendar": {
+        "label": "Calendario",
+        "title": "Calendario: planifica con fechas",
+        "desc": "Mantén consistentes las fechas de inicio y vencimiento en tu plan.",
+        "bullets": [
+          "Elige fechas rápidamente y equilibra la carga.",
+          "Detecta acumulación de deadlines con anticipación.",
+          "Combínalo con el Tablero para ajustar tu plan."
+        ]
+      },
+      "goals": {
+        "label": "Metas",
+        "title": "Metas: convierte resultados en acciones",
+        "desc": "Define objetivos y sigue el progreso a través de tus tareas.",
+        "bullets": [
+          "Agrega una meta (por ejemplo: completar 5 tareas de alta prioridad).",
+          "Asigna una fecha límite para mantener el ritmo.",
+          "Revisa lo restante y el ritmo necesario para ajustar temprano."
+        ]
+      },
+      "assistant": {
+        "label": "Asistente",
+        "title": "Bot asistente: ayuda rápida",
+        "desc": "Úsalo para resúmenes, sugerencias y atajos de navegación.",
+        "bullets": [
+          "Pide un resumen de tu carga de trabajo.",
+          "Ve directo a la vista que necesitas.",
+          "Recibe sugerencias sobre qué hacer después."
+        ]
+      },
+      "music": {
+        "label": "Música",
+        "title": "Música de enfoque: entra en ritmo",
+        "desc": "Mantén la concentración mientras planificas y ejecutas tareas.",
+        "bullets": [
+          "Reproduce/pausa y cambia de pista sin salir del flujo.",
+          "Ajusta volumen o silencia al instante.",
+          "Activa loop para sesiones largas."
+        ]
+      },
+      "finish": {
+        "label": "Listo",
+        "title": "Ya puedes empezar",
+        "desc": "Eso es todo. Empieza con el Panel, organiza en el Tablero y sigue progreso con Metas.",
+        "bullets": [
+          "Empieza pequeño: agrega tareas y muévelas por el Tablero.",
+          "Crea una meta semanal y mantenla visible.",
+          "Vuelve a la demo cuando lo necesites."
+        ]
+      }
     }
   }
 }

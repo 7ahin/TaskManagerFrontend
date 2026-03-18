@@ -10,7 +10,9 @@
     "header": {
       "profile": "プロフィール",
       "settings": "設定",
-      "language": "言語"
+      "language": "言語",
+      "logoAlt": "Task Senpai ロゴ",
+      "profileAlt": "プロフィール"
     },
     "profile": {
       "title_guest": "タスク先輩へようこそ",
@@ -34,7 +36,8 @@
       "es": "スペイン語",
       "fr": "フランス語",
       "de": "ドイツ語",
-      "ms": "マレー語"
+      "ms": "マレー語",
+      "changed": "言語を{{language}}に変更しました"
     },
     "settings": {
       "title": "設定",
@@ -43,7 +46,178 @@
       "theme_light": "ライト",
       "sound": "効果音",
       "notifications": "通知",
-      "compact_mode": "コンパクトモード"
+      "compact_mode": "コンパクトモード",
+      "rememberLastView": "前回の続きから再開",
+      "startPage": "開始ページ",
+      "fallbackPage": "代替ページ"
+    },
+    "notifications": {
+      "enable": "有効化",
+      "inApp": "アプリ内トースト",
+      "desktop": "デスクトップ通知",
+      "dueToday": "今日が期限の通知",
+      "overdue": "期限超過の通知",
+      "log": "履歴",
+      "clear": "クリア",
+      "empty": "通知はまだありません"
+    }
+  },
+  "landing": {
+    "kicker": {
+      "focus": "集中",
+      "plan": "計画",
+      "achieve": "達成"
+    },
+    "hero": {
+      "title": "Task Senpai",
+      "highlight": "ワークフローを極めよう",
+      "jpTagline": "先輩モード • 今日も一歩ずつ",
+      "subtitle": "タスクを整理し、優先順位をつけ、かんたんに進捗を追跡。個人にも仕事にも使える生産性ツールです。"
+    },
+    "capabilities": {
+      "kanban": "カンバンボード",
+      "timeline": "タイムライン",
+      "calendar": "カレンダー",
+      "goals": "目標",
+      "assistant": "アシスタントボット",
+      "music": "集中ミュージック"
+    },
+    "actions": {
+      "startFree": "無料で始める",
+      "viewDemo": "デモを見る"
+    },
+    "socialProof": {
+      "label": "Designed & Built by",
+      "team": "Task Senpai Team"
+    },
+    "preview": {
+      "brand": "TaskSenpai"
+    },
+    "previewTabs": {
+      "dashboard": {
+        "label": "ダッシュボード",
+        "title": "一目で今日がわかる",
+        "desc": "期限・期限超過・次に重要なことをすぐ確認。"
+      },
+      "board": {
+        "label": "ボード",
+        "title": "ドラッグして完了へ",
+        "desc": "スムーズなカンバンでステータスを更新。"
+      },
+      "timeline": {
+        "label": "タイムライン",
+        "title": "週間を視覚的に計画",
+        "desc": "日付ごとに整理して、詰め込みを防ぐ。"
+      },
+      "calendar": {
+        "label": "カレンダー",
+        "title": "日付がちゃんと決まる",
+        "desc": "開始/期限日を素早く設定して予定を整理。"
+      },
+      "goals": {
+        "label": "目標",
+        "title": "目標を進捗に変える",
+        "desc": "連続記録やマイルストーンを楽しく追跡。"
+      }
+    },
+    "featuresSection": {
+      "title": "もっと速く進めるための全部",
+      "subtitle": "素早い入力から日々の計画まで。Task Senpaiが楽しく集中を支えます。"
+    },
+    "features": {
+      "smartFlow": {
+        "title": "スマートフロー",
+        "desc": "タスクを素早く追加し、優先度・開始日・期限日で整える。"
+      },
+      "dragDrop": {
+        "title": "ドラッグ＆ドロップ",
+        "desc": "列間でカードを移動して、即座にステータス更新。"
+      },
+      "calendarClarity": {
+        "title": "カレンダーで明確に",
+        "desc": "本当の締切に合わせて、週のバランスを保つ。"
+      },
+      "timelinePlanning": {
+        "title": "タイムライン計画",
+        "desc": "時系列で可視化して、早めに負荷を察知。"
+      },
+      "assistantBot": {
+        "title": "アシスタントボット",
+        "desc": "クイック操作とガイドで迷わず前へ。"
+      },
+      "focusMode": {
+        "title": "集中モード",
+        "desc": "BGMと控えめなアニメーションでゾーンへ。"
+      }
+    },
+    "cta": {
+      "title": "さあ、コントロールしよう",
+      "subtitle": "小さく始めて勢いをつけ、ワークフローをレベルアップ。",
+      "button": "今すぐ始める"
+    },
+    "footer": {
+      "brand": "Task Senpai",
+      "privacy": "プライバシー",
+      "terms": "利用規約"
+    }
+  },
+  "assistant": {
+    "greeting": "こんにちは！アシスタントボットです。今日は何をお手伝いしましょうか？",
+    "ui": {
+      "title": "アシスタントボット",
+      "statusOnline": "オンライン",
+      "openChat": "チャットを開く",
+      "closeChat": "チャットを閉じる",
+      "botAlt": "ボット",
+      "userAlt": "ユーザー",
+      "scrollLeft": "左にスクロール",
+      "scrollRight": "右にスクロール",
+      "userTyping": "入力中...",
+      "placeholder": "メッセージを入力...",
+      "send": "送信"
+    },
+    "quickActions": {
+      "taskCount": "タスク数",
+      "dashboard": "ダッシュボード",
+      "calendar": "カレンダー",
+      "board": "ボード",
+      "goals": "目標"
+    },
+    "responses": {
+      "greeting": "こんにちは！タスクのことで何をお手伝いできますか？",
+      "taskStats": "タスクは合計{{total}}件です（完了{{completed}}件／未完了{{pending}}件）。この調子です！",
+      "signInToAccess": "{{view}}にアクセスするにはサインインしてください。",
+      "navigatingTo": "{{view}}へ移動します...",
+      "switchingTo": "{{view}}ビューに切り替えます...",
+      "openingView": "{{view}}ビューを開きます...",
+      "takingYouTo": "{{view}}ビューへ移動します...",
+      "showingView": "{{view}}ビューを表示します...",
+      "todayIs": "今日は{{date}} {{time}}です",
+      "help": "タスク確認や画面移動をお手伝いできます。下のクイック操作も使ってみてください。",
+      "default": "まだ学習中です。タスクや画面移動について聞くか、下のクイック操作を使ってみてください。"
+    }
+  },
+  "music": {
+    "ui": {
+      "player": "ミュージックプレイヤー",
+      "changeTrack": "曲を変更",
+      "selectTrack": "曲を選択"
+    },
+    "controls": {
+      "play": "再生",
+      "pause": "一時停止",
+      "previous": "前へ",
+      "next": "次へ",
+      "mute": "ミュート",
+      "unmute": "ミュート解除",
+      "volume": "音量",
+      "seek": "シーク",
+      "loopOn": "ループオン",
+      "loopOff": "ループオフ"
+    },
+    "tracks": {
+      "track1": { "name": "トラック 1", "artist": "Task Senpai" },
+      "track2": { "name": "トラック 2", "artist": "Task Senpai" }
     }
   },
   "dashboard": {
@@ -306,6 +480,95 @@
       "couldNotLoad": "目標を読み込めませんでした",
       "undoSuccessful": "元に戻しました",
       "undoFailed": "元に戻せませんでした"
+    }
+  },
+  "tutorial": {
+    "title": "デモを見る",
+    "subtitle": "使い方がすぐ分かるクイックツアー",
+    "logoAlt": "Task Senpai",
+    "stepsNavLabel": "チュートリアル手順",
+    "actions": { "close": "閉じる", "next": "次へ", "back": "戻る", "finish": "完了" },
+    "steps": {
+      "welcome": {
+        "label": "ようこそ",
+        "title": "Task Senpaiへようこそ",
+        "desc": "このデモでは主要な画面と機能を短時間で紹介します。",
+        "bullets": [
+          "左の手順から各画面の目的を確認できます。",
+          "画像は「どこを見るか」の目印になります。",
+          "ランディングからいつでもデモを開けます。"
+        ]
+      },
+      "dashboard": {
+        "label": "ダッシュボード",
+        "title": "ダッシュボード：今日の全体像",
+        "desc": "まずはダッシュボードで優先度と期限を把握します。",
+        "bullets": [
+          "今日/期限切れ/今後の予定をひと目で確認。",
+          "タスクからボードへ移動して編集・完了できます。",
+          "次にやることを整理して勢いを保ちます。"
+        ]
+      },
+      "board": {
+        "label": "ボード",
+        "title": "ボード：整理とステータス管理",
+        "desc": "ボードはタスクを追加し、状態を動かす中心の画面です。",
+        "bullets": [
+          "タスクを素早く追加して、詳細は後で整えられます。",
+          "ドラッグ&ドロップで列を移動して状態更新。",
+          "検索やフィルタで作業を絞り込めます。"
+        ]
+      },
+      "calendar": {
+        "label": "カレンダー",
+        "title": "カレンダー：日付を整える",
+        "desc": "開始日・期限を揃えて現実的な計画にします。",
+        "bullets": [
+          "日付を素早く選択して負荷を分散。",
+          "締切が重なる箇所を早めに発見。",
+          "ボードと併用して計画を調整できます。"
+        ]
+      },
+      "goals": {
+        "label": "目標",
+        "title": "目標：成果を行動に落とし込む",
+        "desc": "目標を作って、タスク全体の進捗を追いかけます。",
+        "bullets": [
+          "目標を追加（例：高優先度を5件完了）。",
+          "期限を設定してペースを保つ。",
+          "残り・必要ペースを見て早めに調整。"
+        ]
+      },
+      "assistant": {
+        "label": "アシスタント",
+        "title": "アシスタント：要約とナビゲーション",
+        "desc": "要約や次の一手が欲しいときに使います。",
+        "bullets": [
+          "作業量の要約をすぐ確認。",
+          "必要な画面へ素早く移動。",
+          "次に何をするかのヒントを得られます。"
+        ]
+      },
+      "music": {
+        "label": "音楽",
+        "title": "集中用音楽：作業のリズムを作る",
+        "desc": "計画や実行中の集中をサポートします。",
+        "bullets": [
+          "作業を止めずに再生/停止・曲変更。",
+          "音量調整やミュートを即操作。",
+          "ループで長めの集中セッションにも。"
+        ]
+      },
+      "finish": {
+        "label": "完了",
+        "title": "準備OK",
+        "desc": "デモは以上です。ダッシュボード→ボード→目標の順で始めるのがおすすめです。",
+        "bullets": [
+          "まずは少数のタスクを追加して列を移動してみましょう。",
+          "今週の目標を1つ作って見える場所に置く。",
+          "いつでもデモに戻れます。"
+        ]
+      }
     }
   }
 }
