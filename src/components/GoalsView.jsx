@@ -438,11 +438,12 @@ function GoalsView({ todos, onGoBoard }) {
     if (!title) return;
     if (!Number.isFinite(target) || target <= 0) return;
 
+    const dueIso = newGoalDueDate ? new Date(newGoalDueDate).toISOString() : null;
     const newGoal = {
       title,
       type: newGoalType === "completed_high" ? "completed_high" : "completed_all",
       target: Math.floor(target),
-      dueDate: newGoalDueDate || null,
+      dueDate: dueIso,
     };
 
     try {
@@ -483,7 +484,7 @@ function GoalsView({ todos, onGoBoard }) {
                     title: g.title,
                     type: g.type,
                     target: g.target,
-                    dueDate: g.dueDate || null,
+                    dueDate: g.dueDate ? new Date(g.dueDate).toISOString() : null,
                   });
                   setGoals((prev) => [back, ...prev]);
                   toast.success(translate("goals.toast.undoSuccessful"));
@@ -963,7 +964,7 @@ function GoalsView({ todos, onGoBoard }) {
                       const type = String(data.get("type") || "");
                       const target = Math.max(1, Math.floor(Number(String(data.get("target") || ""))));
                       const dueDateRaw = String(data.get("dueDate") || "");
-                      const dueDate = dueDateRaw ? dueDateRaw : null;
+                      const dueDate = dueDateRaw ? new Date(dueDateRaw).toISOString() : null;
                       if (!title) return;
                       handleSaveEdit({
                         ...editingGoal,
